@@ -1,0 +1,42 @@
+GET http://localhost:3000/
+
+###
+POST http://localhost:3000/
+
+{
+    "name": "John Doe",
+    "email": "t@t.com"
+}
+
+### Users
+GET http://localhost:3000/users
+###
+GET http://localhost:3000/users/213453456
+###
+POST http://localhost:3000/users
+Content-Type: application/json
+
+{
+    "name": "John Doe",
+    "email": "t@t.com"
+}
+###
+GET http://localhost:3000/users/1685114219273
+###
+PUT http://localhost:3000/users/1685114219274
+Content-Type: application/json
+
+{
+    "name": "John Doe",
+    "email": "t@tt.com"
+}
+###
+PATCH http://localhost:3000/users/1685114302443
+Content-Type: application/json
+
+{
+    "name": "John Doe",
+    "email": "fdzdeg@fzeg.com"
+}
+###
+DELETE http://localhost:3000/users/1685114219273

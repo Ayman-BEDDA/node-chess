@@ -1,0 +1,41 @@
+version: '3.6'
+
+services:
+  mongo:
+    image: mongo
+    ports:
+      - 27017:27017
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: password
+    volumes:
+      - ./SampleCollections:/usr/local/sampleCollections
+      - db-data:/data/db
+    working_dir: /usr/local/sampleCollections
+
+  db:
+    image: postgres
+    ports:
+      - 5432:5432
+    environment:
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: app
+    volumes:
+      - pg-data:/var/lib/postgresql/data
+
+  server:
+    image: node
+    ports:
+      - 3000:3000
+    environment:
+      DATABASE_URL: postgres://root:password@db:5432/app
+      JWT_SECRET: ImAstrongSecret
+    working_dir: /usr/src/app
+    volumes:
+      - ./server:/usr/src/app
+    command: npm run dev
+
+volumes:
+  db-data: {}
+  pg-data: {}
