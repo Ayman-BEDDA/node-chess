@@ -6,20 +6,35 @@ node-chess is a Node.js application for playing chess. It provides a server-side
 ## Installation
 1. Clone the repository:
 
-        ```git clone git@github.com:Ayman-BEDDA/node-chess.git```
+```bash
+git clone git@github.com:Ayman-BEDDA/node-chess.git
+```
 
 2. Install the dependencies:
 
-        ```npm install```
+```bash
+npm install
+```
 
 3. Start the docker containers:
 
-        ```docker-compose up -d```
+```bash
+docker-compose up -d
+```
 
 4. Connect to MongoDB:
 
-        ```docker-compose exec mongo mongosh --username root --password password```
+```bash
+docker-compose exec mongo mongosh --username root --password password
+```
 
 5. Connect to PostgreSQL:
 
-        ```docker-compose exec db psql -U root -d app -h db```
+```bash
+docker-compose exec db psql -U root -d app -h db
+```
+
+6. Do migrations (replace x with alter or force):
+```bash
+docker-compose exec server node migrate x
+```

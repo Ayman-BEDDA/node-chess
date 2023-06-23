@@ -1,4 +1,4 @@
-let users = [];
+const {User} = require("../db/models/User");
 
 module.exports = function UserService() {
   return {

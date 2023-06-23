@@ -1,6 +1,7 @@
-const { connection } = require("./db");
+const { connection } = require("./db/db");
 
-connection.sync({ force: true }).then(() => {
+const mode = process.argv[2] ?? "alter";
+connection.sync({ [mode]: true }).then(() => {
     console.log("Database synchronized");
     connection.close();
 });

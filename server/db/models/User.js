@@ -36,8 +36,8 @@ module.exports = function (connection) {
         type: DataTypes.STRING,
         allowNull: false,
         validate: {
-          min: 8,
-          is: /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*])/,
+          //min: 8,
+          //is: /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*])/,
         },
       },
     },
