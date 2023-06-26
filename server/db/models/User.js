@@ -17,10 +17,18 @@ module.exports = function (connection) {
 
   User.init(
     {
-      lastname: DataTypes.STRING,
-      firstname: DataTypes.STRING,
+      id: {
+        type: DataTypes.INTEGER,
+        autoIncrement: true,
+        primaryKey: true
+      },
+      login: {
+        type: DataTypes.STRING(64),
+        unique: true,
+        allowNull: false
+      },
       email: {
-        type: DataTypes.STRING,
+        type: DataTypes.STRING(320),
         unique: true,
         allowNull: false,
         validate: {
@@ -33,12 +41,39 @@ module.exports = function (connection) {
         },
       },
       password: {
-        type: DataTypes.STRING,
+        type: DataTypes.STRING(256),
         allowNull: false,
         validate: {
           //min: 8,
           //is: /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*])/,
         },
+      },
+      elo: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+        defaultValue: 500
+      },
+      media: {
+        type: DataTypes.STRING(128),
+        allowNull: false,
+        defaultValue: "default.png"
+      },
+      isBanned: {
+        type: DataTypes.BOOLEAN,
+        allowNull: false,
+        defaultValue: false
+      },
+      isValid: {
+        type: DataTypes.BOOLEAN,
+        allowNull: false,
+        defaultValue: false
+      },
+      id_role: {
+        type: DataTypes.INTEGER,
+        references: {
+          model: 'roles',
+          key: 'id',
+        }
       },
     },
     {
