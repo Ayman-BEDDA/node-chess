@@ -1,99 +1,53 @@
-const { Model, DataTypes } = require("sequelize");
-
-module.exports = function (connection) {
+module.exports = (connection) => {
+  const { DataTypes, Model } = require("sequelize");
+  const bcrypt = require("bcryptjs");
   class User extends Model {
-    async checkPassword(password) {
-      const bcrypt = require("bcryptjs");
+    isPasswordValid(password) {
       return bcrypt.compare(password, this.password);
-    }
-
-    generateToken() {
-      const jwt = require("jsonwebtoken");
-      return jwt.sign({ id: this.id }, process.env.JWT_SECRET, {
-        expiresIn: "1y",
-      });
     }
   }
 
   User.init(
     {
-      id: {
-        type: DataTypes.INTEGER,
-        autoIncrement: true,
-        primaryKey: true
-      },
-      login: {
-        type: DataTypes.STRING(64),
-        unique: true,
-        allowNull: false
-      },
+      lastname: DataTypes.STRING,
+      firstname: DataTypes.STRING,
       email: {
-        type: DataTypes.STRING(320),
-        unique: true,
+        type: DataTypes.STRING,
         allowNull: false,
+        unique: true,
         validate: {
           isEmail: true,
-          isNotNull: function (value) {
-            if (value === null) {
-              throw new Error("Email cannot be null");
-            }
-          },
         },
       },
       password: {
-        type: DataTypes.STRING(256),
+        type: DataTypes.STRING,
         allowNull: false,
         validate: {
-          //min: 8,
+          len: [1, 32],
           //is: /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*])/,
         },
       },
-      elo: {
-        type: DataTypes.INTEGER,
-        allowNull: false,
-        defaultValue: 500
-      },
-      media: {
-        type: DataTypes.STRING(128),
-        allowNull: false,
-        defaultValue: "default.png"
-      },
-      isBanned: {
-        type: DataTypes.BOOLEAN,
-        allowNull: false,
-        defaultValue: false
-      },
-      isValid: {
-        type: DataTypes.BOOLEAN,
-        allowNull: false,
-        defaultValue: false
-      },
-      id_role: {
-        type: DataTypes.INTEGER,
-        references: {
-          model: 'roles',
-          key: 'id',
-        }
-      },
     },
-    {
-      sequelize: connection,
-      tableName: "users",
-    }
+    { sequelize: connection, tableName: "users" }
   );
 
-  async function encryptPassword(user, options) {
-    if (!options?.fields.includes("password")) {
-      return;
-    }
-    const bcrypt = require("bcryptjs");
-    const salt = await bcrypt.genSalt(10);
-    const hash = await bcrypt.hash(user.password, salt);
-    user.password = hash;
+  function updatePassword(user) {
+    return bcrypt.genSalt(10).then((salt) =>
+      bcrypt.hash(user.password, salt).then((hash) => {
+        user.password = hash;
+      })
+    );
   }
 
-  User.addHook("beforeCreate", encryptPassword);
-  User.addHook("beforeUpdate", encryptPassword);
+  User.addHook("beforeCreate", (user) => {
+    return updatePassword(user);
+  });
+
+  User.addHook("beforeUpdate", async (user, options) => {
+    if (options.fields.includes("password")) {
+      return updatePassword(user);
+    }
+  });
 
   return User;
 };
