@@ -1,17 +1,9 @@
-const { Model, DataTypes } = require("sequelize");
-
-module.exports = function (connection) {
+module.exports = (connection) => {
+  const { DataTypes, Model } = require("sequelize");
+  const bcrypt = require("bcryptjs");
   class User extends Model {
-    async checkPassword(password) {
-      const bcrypt = require("bcryptjs");
+    isPasswordValid(password) {
       return bcrypt.compare(password, this.password);
-    }
-
-    generateToken() {
-      const jwt = require("jsonwebtoken");
-      return jwt.sign({ id: this.id }, process.env.JWT_SECRET, {
-        expiresIn: "1y",
-      });
     }
   }
 
@@ -21,44 +13,41 @@ module.exports = function (connection) {
       firstname: DataTypes.STRING,
       email: {
         type: DataTypes.STRING,
-        unique: true,
         allowNull: false,
+        unique: true,
         validate: {
           isEmail: true,
-          isNotNull: function (value) {
-            if (value === null) {
-              throw new Error("Email cannot be null");
-            }
-          },
         },
       },
       password: {
         type: DataTypes.STRING,
         allowNull: false,
         validate: {
-          //min: 8,
+          len: [1, 32],
           //is: /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*])/,
         },
       },
     },
-    {
-      sequelize: connection,
-      tableName: "users",
-    }
+    { sequelize: connection, tableName: "users" }
   );
 
-  async function encryptPassword(user, options) {
-    if (!options?.fields.includes("password")) {
-      return;
-    }
-    const bcrypt = require("bcryptjs");
-    const salt = await bcrypt.genSalt(10);
-    const hash = await bcrypt.hash(user.password, salt);
-    user.password = hash;
+  function updatePassword(user) {
+    return bcrypt.genSalt(10).then((salt) =>
+      bcrypt.hash(user.password, salt).then((hash) => {
+        user.password = hash;
+      })
+    );
   }
 
-  User.addHook("beforeCreate", encryptPassword);
-  User.addHook("beforeUpdate", encryptPassword);
+  User.addHook("beforeCreate", (user) => {
+    return updatePassword(user);
+  });
+
+  User.addHook("beforeUpdate", async (user, options) => {
+    if (options.fields.includes("password")) {
+      return updatePassword(user);
+    }
+  });
 
   return User;
 };

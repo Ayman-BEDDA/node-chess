@@ -1,6 +1,6 @@
 module.exports = function Controller(Service, options = {}) {
   return {
-    getAll: async (req, res) => {
+    getAll: async (req, res, next) => {
       const { page, itemsPerPage, order, ...filters } = req.query;
       try {
         const results = await Service.findAll(filters, {
@@ -11,33 +11,29 @@ module.exports = function Controller(Service, options = {}) {
 
         res.json(results);
       } catch (err) {
-        res.status(500).json(err);
+        next(err);
       }
     },
-    getOne: async (req, res) => {
+    getOne: async (req, res, next) => {
       const { id } = req.params;
       try {
         const result = await Service.findOne({ id: parseInt(id, 10) });
         if (result) res.json(result);
         else res.sendStatus(404);
       } catch (err) {
-        res.status(500).json(err);
+        next(err);
       }
     },
-    create: async (req, res) => {
+    create: async (req, res, next) => {
       const { body } = req;
       try {
         const result = await Service.create(body);
         res.status(201).json(result);
       } catch (err) {
-        if (err.name === "ValidationError") {
-          res.status(422).json(err.errors);
-        } else {
-          res.status(500).json(err);
-        }
+        next(err);
       }
     },
-    replace: async (req, res) => {
+    replace: async (req, res, next) => {
       const { id } = req.params;
       const { body } = req;
       try {
@@ -48,14 +44,10 @@ module.exports = function Controller(Service, options = {}) {
         if (created) res.status(201).json(result);
         else res.json(result);
       } catch (err) {
-        if (err.name === "ValidationError") {
-          res.status(422).json(err.errors);
-        } else {
-          res.status(500).json(err);
-        }
+        next(err);
       }
     },
-    update: async (req, res) => {
+    update: async (req, res, next) => {
       const { id } = req.params;
       const { body } = req;
       try {
@@ -63,21 +55,17 @@ module.exports = function Controller(Service, options = {}) {
         if (result) res.json(result);
         else res.sendStatus(404);
       } catch (err) {
-        if (err.name === "ValidationError") {
-          res.status(422).json(err.errors);
-        } else {
-          res.status(500).json(err);
-        }
+        next(err);
       }
     },
-    delete: async (req, res) => {
+    delete: async (req, res, next) => {
       const { id } = req.params;
       try {
         const nbDeleted = await Service.delete({ id: parseInt(id, 10) });
         if (nbDeleted) res.sendStatus(204);
         else res.sendStatus(404);
       } catch (err) {
-        res.status(500).json(err);
+        next(err);
       }
     },
   };
