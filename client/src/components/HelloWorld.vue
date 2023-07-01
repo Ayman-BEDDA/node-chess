@@ -4,7 +4,17 @@ defineProps({
     type: String,
     required: true
   }
-})
+});
+
+// Vue2
+// export default {
+//   props: {
+//     msg: {
+//       type: String,
+//       required: true
+//     }
+//   }
+// }
 </script>
 
 <template>

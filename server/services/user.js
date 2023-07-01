@@ -1,93 +1,83 @@
-const {User} = require("../db/models/User");
+const { User } = require("../db");
+const Sequelize = require("sequelize");
+const ValidationError = require("../errors/ValidationError");
 
 module.exports = function UserService() {
   return {
     findAll: async function (filters, options) {
-      let filteredUsers = users.filter((user) =>
-        Object.entries(filters).every(([key, value]) => user[key] === value)
-      );
+      let dbOptions = {
+        where: filters,
+      };
       // options.order = {name: "ASC", dob: "DESC"}
       if (options.order) {
-        filteredUsers = filteredUsers.sort((a, b) =>
-          compare(a, b, options.order)
-        );
+        // => [["name", "ASC"], ["dob", "DESC"]]
+        dbOptions.order = Object.entries(options.order);
       }
       if (options.limit) {
-        filteredUsers = filteredUsers.slice(
-          options.offset,
-          options.offset + options.limit
-        );
+        dbOptions.limit = options.limit;
+        dbOptions.offset = options.offset;
       }
-      return filteredUsers;
+      return User.findAll(dbOptions);
     },
     findOne: async function (filters) {
-      return users.find((user) =>
-        Object.entries(filters).every(([key, value]) => user[key] === value)
-      );
+      return User.findOne({ where: filters });
     },
     create: async function (data) {
-      const user = { id: Date.now(), ...data };
-      if (!user.email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(user.email)) {
-        const error = new Error();
-        error.name = "ValidationError";
-        error.errors = {
-          email: "Email is not valid",
-        };
-        throw error;
+      try {
+        return await User.create(data);
+      } catch (e) {
+        if (e instanceof Sequelize.ValidationError) {
+          throw ValidationError.fromSequelizeValidationError(e);
+        }
+        throw e;
       }
-      users.push(user);
-      return user;
     },
-    replace: async (filters, newData) => {
-      const userIndex = users.findIndex((user) =>
-        Object.entries(filters).every(([key, value]) => user[key] === value)
-      );
-      if (userIndex === -1) {
-        users.push(newData);
-        return [[newData, true]];
-      } else {
-        users.splice(userIndex, 1, newData);
-        return [[newData, false]];
+    replace: async function (filters, newData) {
+      try {
+        const nbDeleted = await this.delete(filters);
+        const user = await this.create(newData);
+        return [[user, nbDeleted === 0]];
+      } catch (e) {
+        if (e instanceof Sequelize.ValidationError) {
+          throw ValidationError.fromSequelizeValidationError(e);
+        }
+        throw e;
       }
     },
     update: async (filters, newData) => {
-      const user = users.find((user) =>
-        Object.entries(filters).every(([key, value]) => user[key] === value)
-      );
-      if (!user) return [];
-      Object.assign(user, newData);
-      return [user];
-    },
-    delete: (filters) => {
-      let nbDeleted = 0;
-      users = users.filter((user) => {
-        if (
-          Object.entries(filters).every(([key, value]) => user[key] === value)
-        ) {
-          nbDeleted++;
-          return false;
-        } else {
-          return true;
-        }
-      });
-      return nbDeleted;
-    },
+      try {
+        const [nbUpdated, users] = await User.update(newData, {
+          where: filters,
+          returning: true,
+          individualHooks: true,
+        });
 
+        return users;
+      } catch (e) {
+        if (e instanceof Sequelize.ValidationError) {
+          throw ValidationError.fromSequelizeValidationError(e);
+        }
+        throw e;
+      }
+    },
+    delete: async (filters) => {
+      return User.destroy({ where: filters });
+    },
+    login: async (email, password) => {
+      const user = await User.findOne({ where: { email } });
+      if (!user) {
+        throw new ValidationError({
+          email: "Invalid credentials",
+        });
+      }
+      const isPasswordValid = await user.isPasswordValid(password);
+      if (!isPasswordValid) {
+        throw new ValidationError({
+          email: "Invalid credentials",
+        });
+      }
+
+      return user;
+    },
   };
 };
-
-function compare(a, b, order, index = 0) {
-  const [key, direction] = Object.entries(order)[index];
-  if (direction === "ASC") {
-    if (a[key] === b[key]) {
-      return compare(a, b, order, index + 1);
-    }
-    return a[key] > b[key] ? 1 : -1;
-  }
-  if (direction === "DESC") {
-    if (a[key] === b[key]) {
-      return compare(a, b, order, index + 1);
-    }
-    return a[key] < b[key] ? 1 : -1;
-  }
-}
