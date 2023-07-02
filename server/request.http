@@ -4,7 +4,7 @@ GET http://localhost:3000/
 POST http://localhost:3000/
 
 {
-    "name": "John Doe",
+    "login": "John Doe",
     "email": "t@t.com"
 }
 
@@ -17,7 +17,7 @@ POST http://localhost:3000/users
 Content-Type: application/json
 
 {
-    "name": "John Doe",
+    "login": "John Doe",
     "email": "t@test.com",
     "password": "123456"
 }
@@ -28,7 +28,7 @@ PUT http://localhost:3000/users/24
 Content-Type: application/json
 
 {
-    "firstname": "John Doe",
+    "login": "John Doe",
     "email": "t2@t.com",
     "password": "123456"
 }
@@ -37,7 +37,7 @@ PATCH http://localhost:3000/users/3
 Content-Type: application/json
 
 {
-    "lastname": "doe"
+    "login": "doe"
 }
 ###
 DELETE http://localhost:3000/users/1
@@ -50,7 +50,7 @@ POST http://localhost:3000/register
 Content-Type: application/json
 
 {
-    "name": "John Doe",
+    "login": "John Doe",
     "email": "t@test123546.com",
     "password": "123456"
 }

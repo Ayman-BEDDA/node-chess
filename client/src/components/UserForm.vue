@@ -7,8 +7,7 @@ const { onSubmit } = defineProps({
   }
 });
 const defaultValue = {
-  lastname: '',
-  firstname: '',
+  login: '',
   email: '',
   password: ''
 };
@@ -27,17 +26,9 @@ function handleSubmit() {
 
 <template>
   <form @submit.prevent="handleSubmit">
-    <label for="lastname">Lastname</label>
-    <input
-      :value="formData.lastname"
-      @input="formData.lastname = $event.target.value"
-      type="text"
-      id="lastname"
-    />
-    <p v-if="errors.lastname">{{ errors.lastname.join('\n') }}</p>
-    <label for="firstname">Firstname</label>
-    <input v-model.lazy="formData.firstname" type="text" id="firstname" />
-    <p v-if="errors.firstname">{{ errors.firstname.join('\n') }}</p>
+    <label for="login">Login</label>
+    <input v-model.trim="formData.login" type="text" id="login" />
+    <p v-if="errors.login">{{ errors.login.join('\n') }}</p>
     <label for="email">Email</label>
     <input v-model.trim="formData.email" type="email" id="email" />
     <p v-if="errors.email">{{ errors.email.join('\n') }}</p>
