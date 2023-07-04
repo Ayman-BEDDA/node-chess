@@ -5,6 +5,7 @@ import TheWelcome from './components/TheWelcome.vue';
 import { ref, reactive } from 'vue';
 import UserForm from './components/UserForm.vue';
 import LoginForm from './components/LoginForm.vue';
+import LogoutForm from './components/LogoutForm.vue';
 import UserList from './views/UserList.vue';
 import jwtDecode from 'jwt-decode';
 
@@ -121,6 +122,26 @@ async function loginUser(_user) {
   }
   throw new Error('Fetch failed');
 }
+async function logoutUser() {
+  const token = localStorage.getItem('token');
+
+  const response = await fetch(`http://localhost:3000/logout`, {
+    method: 'POST',
+    headers: {
+      'Content-type': 'application/json',
+      Authorization: `Bearer ${token}` // Ajoutez l'en-tête d'autorisation avec le token
+    }
+  });
+
+  if (response.ok) {
+    localStorage.removeItem('token');
+    // Réinitialisez les données de l'utilisateur si nécessaire
+    return Promise.resolve();
+  } else {
+    throw new Error('Logout failed');
+  }
+}
+
 </script>
 
 <template>
@@ -156,6 +177,7 @@ async function loginUser(_user) {
     <UserForm v-if="!user" :onSubmit="registerUser" />
     <LoginForm v-if="!user" :onSubmit="loginUser" />
     <UserList v-if="user" />
+    <LogoutForm v-if="user" :onSubmit="logoutUser" />
   </main>
 </template>
 

@@ -18,5 +18,13 @@ module.exports = function SecurityController(UserService) {
         next(err);
       }
     },
+    logout: async (req, res, next) => {
+      try {
+        res.clearCookie("token");
+        res.sendStatus(200);
+      } catch (err) {
+        next(err);
+      }
+    },
   };
 };
