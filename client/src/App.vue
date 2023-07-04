@@ -1,89 +1,15 @@
 <script setup>
-import Button from './components/Button.vue';
-import HelloWorld from './components/HelloWorld.vue';
-import TheWelcome from './components/TheWelcome.vue';
 import { ref, reactive } from 'vue';
 import UserForm from './components/UserForm.vue';
 import LoginForm from './components/LoginForm.vue';
-import LogoutForm from './components/LogoutForm.vue';
+import Navbar from './components/Navbar.vue';
 import UserList from './views/UserList.vue';
-import jwtDecode from 'jwt-decode';
+import jwtDecode from 'jwt-decode'
 
-// Vue2
-// import HelloWorld from './components/HelloWorld.vue'
-// import TheWelcome from './components/TheWelcome.vue'
-// export default {
-//   components: {
-//     HelloWorld,
-//     TheWelcome
-//   }
-// }
-function handleClick1() {
-  alert('You clicked me 1!');
-}
-function handleClick2() {
-  isYellow.value = !isYellow.value;
-}
-function handleClick3() {
-  theme.main.backgroundColor = theme.main.backgroundColor === 'red' ? 'cyan' : 'red';
-  theme.main.color = theme.main.color === 'white' ? 'black' : 'white';
-}
-const arrayButtons = [
-  {
-    title: 'Click Me 1',
-    variant: 'default',
-    onClick: handleClick1
-  },
-  {
-    title: 'Click Me 2',
-    variant: 'square',
-    onClick: handleClick2
-  },
-  {
-    title: 'Click Me 3',
-    variant: 'round',
-    onClick: handleClick3,
-    disabled: true
-  },
-  {
-    title: 'Click Me 4',
-    variant: 'default'
-  },
-  {
-    title: 'Click Me 5',
-    variant: 'coucou'
-  }
-];
-const objButtons = {
-  button1: {
-    title: 'Click Me 1',
-    variant: 'default',
-    onClick: handleClick1,
-    disabled: false
-  },
-  button2: {
-    title: 'Click Me 2',
-    variant: 'square',
-    onClick: handleClick2,
-    disabled: false
-  },
-  button3: {
-    title: 'Click Me 3',
-    variant: 'round',
-    onClick: handleClick3,
-    disabled: true
-  }
-};
 
-const showWelcome = true;
-const addWelcome = true;
-const isYellow = ref(false);
-const theme = reactive({
-  main: {
-    backgroundColor: 'red',
-    color: 'white'
-  }
-});
+// Font Awesome
+import '@fortawesome/fontawesome-free/css/all.css';
+import '@fortawesome/fontawesome-free/js/all.js';
 
 const token = localStorage.getItem('token');
 const user = ref(token ? jwtDecode(token) : null);
@@ -123,42 +49,41 @@ async function loginUser(_user) {
   throw new Error('Fetch failed');
 }
 async function logoutUser() {
-  const token = localStorage.getItem('token');
-
-  const response = await fetch(`http://localhost:3000/logout`, {
-    method: 'POST',
-    headers: {
-      'Content-type': 'application/json',
-      Authorization: `Bearer ${token}` // Ajoutez l'en-tête d'autorisation avec le token
-    }
-  });
-
-  if (response.ok) {
-    localStorage.removeItem('token');
-    // Réinitialisez les données de l'utilisateur si nécessaire
-    return Promise.resolve();
-  } else {
-    throw new Error('Logout failed');
-  }
+  user.value = null;
+  localStorage.removeItem('token');
 }
 
 </script>
 
 <template>
-    <h1>Hello App!</h1>
-    <p>
-        <router-link to="/">Go to Home</router-link>
-        <router-link to="/admin">Go to Admin Dashboard</router-link>
-    </p>
+    <Navbar v-if="user" :user="user" :logoutUser="logoutUser" /> <!-- Utilisez le composant Navbar ici -->
     <router-view></router-view>
-
-    <main :style="theme.main">
-    <TheWelcome />
-    <UserForm v-if="!user" :onSubmit="registerUser" />
-    <LoginForm v-if="!user" :onSubmit="loginUser" />
+    
     <UserList v-if="user" />
-    <LogoutForm v-if="user" :onSubmit="logoutUser" />
-  </main>
+
+    <div class="container">
+      <div class="form-container">
+        <UserForm v-if="!user" :onSubmit="registerUser" />
+      </div>
+      <div class="form-container">
+        <LoginForm v-if="!user" :onSubmit="loginUser" />
+      </div>
+    </div>
 </template>
+
+<style>
+
+.container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+
+.form-container {
+  flex: 1;
+  margin: 0 auto;
+}
+</style>
 
 <script></script>
