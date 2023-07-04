@@ -1,64 +1,50 @@
-GET http://localhost:3000/
+###  Users
+#GET http://localhost:3000/users
+#Content-Type: application/json
+#
+#{
+#  "login": "ayman",
+###  "email": "a@a.com",
+#  "password": "password123",
+#  "elo": 500,
+#  "media": "default.png",
+#  "isBanned": false,
+#  "isValid": false
+#}
+
+### Roles
+#PATCH http://localhost:3000/users/2
+#Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MiwibG9naW4iOiJheW1hbiIsImlkX3JvbGUiOjIsImlhdCI6MTY4ODUwMDkzOSwiZXhwIjoxNjg4NTA0NTM5fQ.LFg4d1GI3MysOG8uULO9k0oyPPY6CuJHKxIiffnueUs
+#Content-Type: application/json
+#
+#{
+#    "id_role": 1
+#}
 
 ###
-POST http://localhost:3000/
-
-{
-    "login": "John Doe",
-    "email": "t@t.com"
-}
-
-### Users
-GET http://localhost:3000/users
-###
-GET http://localhost:3000/users/213453456
-###
-POST http://localhost:3000/users
-Content-Type: application/json
-
-{
-    "login": "John Doe",
-    "email": "t@test.com",
-    "password": "123456"
-}
-###
-GET http://localhost:3000/users/1
-###
-PUT http://localhost:3000/users/24
-Content-Type: application/json
-
-{
-    "login": "John Doe",
-    "email": "t2@t.com",
-    "password": "123456"
-}
-###
-PATCH http://localhost:3000/users/3
-Content-Type: application/json
-
-{
-    "login": "doe"
-}
-###
-DELETE http://localhost:3000/users/1
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NCwiZnVsbE5hbWUiOiJudWxsIG51bGwiLCJpYXQiOjE2ODc1MzczOTYsImV4cCI6MTY4NzU0MDk5Nn0.fai0ZvnkcvtyRywQXOKsZiarVbJ3aaBXjL7R1P6n248
+GET http://localhost:3000/roles
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MywibG9naW4iOiJiZWRkYSIsImlkX3JvbGUiOjEsImlhdCI6MTY4ODUwMTE4OCwiZXhwIjoxNjg4NTA0Nzg4fQ.5inlv-c5NdWn06nnsix_p8ZFzdKD8C-LlKqSHcJrnR0
 
 ############
 ### Auth ###
-############
-POST http://localhost:3000/register
-Content-Type: application/json
-
-{
-    "login": "John Doe",
-    "email": "t@test123546.com",
-    "password": "123456"
-}
+############CNF
+#POST http://localhost:3000/register
+#Content-Type: application/json
+#
+#{
+#  "login": "bedda",
+###  "email": "b@a.com",
+#  "password": "password123",
+#  "elo": 500,
+#  "media": "default.png",
+#  "isBanned": false,
+#  "isValid": false
+#}
 ###
-POST http://localhost:3000/login
-Content-Type: application/json
-
-{
-    "email": "t@test123546.com",
-    "password": "123456"
-}
+#POST http://localhost:3000/login
+#Content-Type: application/json
+#
+#{
+###  "email": "b@a.com",
+#  "password": "password123"
+#}
