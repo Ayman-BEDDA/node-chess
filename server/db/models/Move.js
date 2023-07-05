@@ -1,28 +1,32 @@
 const { Model, DataTypes } = require("sequelize");
 
 module.exports = function (connection) {
-  class Friend extends Model {}
+  class Move extends Model {}
 
-  Friend.init(
+  Move.init(
     {
       id: {
         type: DataTypes.INTEGER,
         autoIncrement: true,
         primaryKey: true
       },
-      status: {
+      fromSquare: {
         type: DataTypes.STRING(16),
-        allowNull: false,
-        defaultValue: 'waiting'
       },
-      id_user: {
+      toSquare: {
+        type: DataTypes.STRING(16),
+      },
+      nbMove: {
+        type: DataTypes.INTEGER,
+      },
+      id_game: {
         type: DataTypes.INTEGER,
         references: {
-          model: 'users',
+          model: 'games',
           key: 'id',
         }
       },
-      id_user_receiver: {
+      id_user: {
         type: DataTypes.INTEGER,
         references: {
           model: 'users',
@@ -32,9 +36,9 @@ module.exports = function (connection) {
     },
     {
       sequelize: connection,
-      tableName: "friends",
+      tableName: "moves",
     }
   );
 
-  return Friend;
+  return Move;
 };
