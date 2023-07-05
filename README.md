@@ -38,3 +38,8 @@ docker-compose exec db psql -U root -d app -h db
 ```bash
 docker-compose exec server node migrate x
 ```
+
+7. Do fixture:
+```bash
+docker-compose exec server node fixtures/index.js
+```
