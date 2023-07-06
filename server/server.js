@@ -2,6 +2,7 @@ const express = require("express");
 const app = express();
 const UserRouter = require("./routes/user");
 const ReportRouter = require("./routes/report");
+const GameRouter = require("./routes/game");
 const SecurityRouter = require("./routes/security");
 const ValidationError = require("./errors/ValidationError");
 const cors = require("cors");
@@ -18,6 +19,7 @@ app.use("/", SecurityRouter);
 // app.use(checkAuth); -> protect every routes below
 app.use("/users", checkAuth, UserRouter); // protect only this route
 app.use("/reports", checkAuth, ReportRouter); // protect only this route
+app.use("/games", checkAuth, GameRouter); // protect only this route
 
 app.get("/", (req, res) => {
   res.send("Hello World!");
