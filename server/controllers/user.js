@@ -67,6 +67,16 @@ module.exports = function UserController(UserService) {
             console.error(error);
             res.status(500).json({ error: 'Failed to retrieve the game statistics for the user.' });
           }
+        },
+        getFriends: async (req, res) => {
+          const userId = req.params.id_user;
+          try {
+            const friends = await UserService.getFriends(userId);
+            res.status(200).json(friends);
+          } catch (error) {
+            console.error(error);
+            res.status(500).json({ error: 'Failed to retrieve the friends for the user.' });
+          }
         }
     };
 };

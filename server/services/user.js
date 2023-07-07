@@ -1,4 +1,4 @@
-const { User, Game } = require("../db");
+const { User, Game, Friend} = require("../db");
 const Sequelize = require("sequelize");
 const ValidationError = require("../errors/ValidationError");
 
@@ -184,6 +184,46 @@ module.exports = function UserService() {
       } catch (e) {
         throw new Error('Failed to retrieve the game stats for the user.');
       }
+    },
+    getFriends: async (userId) => {
+      try {
+        const user = await User.findOne({
+          where: {
+            id: userId,
+          }
+        });
+        if (!user) {
+          throw new Error('User not found.');
+        }
+
+        const friends = await Friend.findAll({
+          where: {
+            [Sequelize.Op.or]: [
+              { id_user: userId },
+              { id_user_receiver: userId },
+            ],
+            status: 'accepted',
+          },
+        });
+
+        const friendsIds = await User.findAll({
+          where: {
+            [Sequelize.Op.not]: {
+              id: userId,
+            },
+            [Sequelize.Op.or]: [
+              { id: friends.map(friend => friend.id_user) },
+              { id: friends.map(friend => friend.id_user_receiver) },
+            ],
+          },
+        });
+
+        return friendsIds;
+
+      } catch (e) {
+        throw new Error('Failed to retrieve the friends for the user.');
+      }
     }
+
   };
 };
