@@ -1,4 +1,4 @@
-const { User, Game, Friend} = require("../db");
+const { User, Game, Friend, Article, Buy} = require("../db");
 const Sequelize = require("sequelize");
 const ValidationError = require("../errors/ValidationError");
 
@@ -223,7 +223,25 @@ module.exports = function UserService() {
       } catch (e) {
         throw new Error('Failed to retrieve the friends for the user.');
       }
-    }
+    },
+    getBuys: async (userId) => {
+      try {
+        const buys = await Buy.findAll({
+          where: {
+            id_user: userId,
+          },
+        });
 
+        const buysIds = await Article.findAll({
+          where: {
+            id: buys.map(buy => buy.id_article),
+          },
+        });
+
+        return buysIds;
+      } catch (e) {
+        throw new Error('Failed to retrieve the buys for the user.');
+      }
+    }
   };
 };

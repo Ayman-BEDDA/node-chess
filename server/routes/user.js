@@ -19,5 +19,6 @@ router.get("/:id_user/losses", Controller.getNbLosses);
 router.get("/:id_user/draws", Controller.getNbDraws);
 router.get("/:id_user/gamestats", Controller.getGameStats);
 router.get("/:id_user/friends", Controller.getFriends);
+router.get("/:id_user/buys", Controller.getBuys);
 
 module.exports = router; //export du genericRouter + route lastgame
