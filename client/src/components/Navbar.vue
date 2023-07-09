@@ -1,7 +1,10 @@
 <template>
     <nav>
+    <router-link to="/me">
+        <img :src="user.media" width="50" height="50" />
+        {{ user.login }}
+    </router-link>
     <router-link to="/">Home</router-link>
-    <router-link to="/admin">Admin Dashboard</router-link>
     <button @click="logoutUser"><i class="fas fa-sign-out-alt"></i> Se déconnecter</button>
     </nav>
 </template>
