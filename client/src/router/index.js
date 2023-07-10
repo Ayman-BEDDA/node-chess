@@ -33,6 +33,7 @@ const routes = [
     path: '/:pathMatch(.*)*',
     redirect: "/",
   },
+  {
     path: '/stats',
     name: 'Stats',
     component: Stats,
