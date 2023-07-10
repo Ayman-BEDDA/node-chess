@@ -3,7 +3,6 @@ import { ref, reactive } from 'vue';
 import UserForm from './components/UserForm.vue';
 import LoginForm from './components/LoginForm.vue';
 import Navbar from './components/Navbar.vue';
-import UserList from './views/UserList.vue';
 import jwtDecode from 'jwt-decode'
 
 
@@ -51,6 +50,7 @@ async function loginUser(_user) {
 async function logoutUser() {
   user.value = null;
   localStorage.removeItem('token');
+  window.location.href = "/";
 }
 
 </script>
@@ -58,8 +58,6 @@ async function logoutUser() {
 <template>
     <Navbar v-if="user" :user="user" :logoutUser="logoutUser" /> <!-- Utilisez le composant Navbar ici -->
     <router-view></router-view>
-    
-    <UserList v-if="user" />
 
     <div class="container">
       <div class="form-container">
