@@ -1,7 +1,10 @@
 <template>
-    <nav v-if="shouldShowNavbar">
+    <nav>
+    <router-link to="/me">
+        <img :src="user.media" width="50" height="50" />
+        {{ user.login }}
+    </router-link>
     <router-link to="/">Home</router-link>
-    <router-link to="/admin">Dashboard admin</router-link>
     <button @click="logoutUser"><i class="fas fa-sign-out-alt"></i> Se déconnecter</button>
     </nav>
 </template>
@@ -17,13 +20,7 @@
         type: Function,
         required: true
       }
-    },
-    computed: {
-    shouldShowNavbar() {
-      const currentPath = this.$route.path;
-      return !currentPath.includes('/admin');
     }
-  } 
   }
   </script>
   

@@ -63,11 +63,12 @@ module.exports = (connection) => {
       },
       id_role: {
         type: DataTypes.INTEGER,
+        allowNull: false,
+        defaultValue: 2,
         references: {
-          model: 'roles',
-          key: 'id',
+            model: "roles",
         }
-      },
+      }
     },
     {
       sequelize: connection,

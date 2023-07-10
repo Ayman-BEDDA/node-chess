@@ -56,8 +56,8 @@ async function logoutUser() {
 </script>
 
 <template>
-    <Navbar v-if="user" :user="user" :logoutUser="logoutUser" /> <!-- Utilisez le composant Navbar ici -->
-    <router-view></router-view>
+    <Navbar v-if="user" :user="user" :logoutUser="logoutUser" />
+    <router-view v-if="user" :user="user"></router-view>
 
     <div class="container">
       <div class="form-container">
@@ -84,4 +84,12 @@ async function logoutUser() {
 }
 </style>
 
-<script></script>
+<script>
+export default {
+data() {
+  return {
+    user : null,
+  }
+},
+}
+</script>
