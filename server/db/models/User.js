@@ -1,6 +1,7 @@
 module.exports = (connection) => {
   const { DataTypes, Model } = require("sequelize");
   const bcrypt = require("bcryptjs");
+
   class User extends Model {
     isPasswordValid(password) {
       return bcrypt.compare(password, this.password);

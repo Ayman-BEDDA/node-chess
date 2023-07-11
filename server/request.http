@@ -12,18 +12,26 @@
 #  "isValid": false
 #}
 
-### Roles
-#PATCH http://localhost:3000/users/2
-#Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MiwibG9naW4iOiJheW1hbiIsImlkX3JvbGUiOjIsImlhdCI6MTY4ODUwMDkzOSwiZXhwIjoxNjg4NTA0NTM5fQ.LFg4d1GI3MysOG8uULO9k0oyPPY6CuJHKxIiffnueUs
+### Articles
+POST http://localhost:3000/articles
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwibG9naW4iOiJqb2huX2RvZSIsImlkX3JvbGUiOjIsImlhdCI6MTY4ODk5ODc3MSwiZXhwIjoxNjg5MDAyMzcxfQ.R9_nbNsG0HHXaTgHT8cG-XElSyqCEhTl-RAPfNGRSNk
+Content-Type: application/json
+
+{
+    "libelle": "skin aid",
+    "price": 50,
+    "media": "default.png",
+    "id_money": 1
+}
+
+### Buy article
+#POST http://localhost:3000/articles/1/buy
+#Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MywibG9naW4iOiJiZWRkYSIsImlkX3JvbGUiOjEsImlhdCI6MTY4ODk5NTU1NSwiZXhwIjoxNjg4OTk5MTU1fQ.7PV5bDvPVeTETR4HRgC0R_SdpzaBF64mZ2gFZyli7Kg
 #Content-Type: application/json
-#
-#{
-#    "id_role": 1
-#}
 
 ###
-GET http://localhost:3000/roles
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MywibG9naW4iOiJiZWRkYSIsImlkX3JvbGUiOjEsImlhdCI6MTY4ODUwMTE4OCwiZXhwIjoxNjg4NTA0Nzg4fQ.5inlv-c5NdWn06nnsix_p8ZFzdKD8C-LlKqSHcJrnR0
+#GET http://localhost:3000/roles
+#Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MywibG9naW4iOiJiZWRkYSIsImlkX3JvbGUiOjEsImlhdCI6MTY4ODUwMTE4OCwiZXhwIjoxNjg4NTA0Nzg4fQ.5inlv-c5NdWn06nnsix_p8ZFzdKD8C-LlKqSHcJrnR0
 
 ############
 ### Auth ###
@@ -45,6 +53,6 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MywibG9naW4iO
 #Content-Type: application/json
 #
 #{
-###  "email": "b@a.com",
+###  "email": "john.doe@example.com",
 #  "password": "password123"
 #}

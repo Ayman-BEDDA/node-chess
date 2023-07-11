@@ -3,6 +3,8 @@ import { ref } from 'vue';
 import jwtDecode from 'jwt-decode';
 import Home from '../views/Home.vue';
 import Admin from '../views/Admin.vue';
+import Admin_users from '../views/Admin_users.vue';
+import Admin_reports from '../views/Admin_reports.vue';
 import Stats from '../views/Stats.vue';
 
 const routes = [
@@ -16,6 +18,20 @@ const routes = [
     name: 'Admin',
     component: Admin,
     meta: { requiresAuth: true, requiresAdmin: true },
+  },
+  {
+    path: '/admin/users',
+    name: 'Admin_users',
+    component: Admin_users,
+  },
+  {
+    path: '/admin/reports',
+    name: 'Admin_reports',
+    component: Admin_reports,
+  },
+  {
+    path: '/:pathMatch(.*)*',
+    redirect: "/",
   },
   {
     path: '/stats',

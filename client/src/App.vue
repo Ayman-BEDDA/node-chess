@@ -50,6 +50,7 @@ async function loginUser(_user) {
 async function logoutUser() {
   user.value = null;
   localStorage.removeItem('token');
+  window.location.href = "/";
 }
 
 </script>

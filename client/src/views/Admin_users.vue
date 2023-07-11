@@ -1,3 +1,36 @@
+<script setup>
+import UserList from './UserList.vue';
+import { ref, reactive } from 'vue';
+import jwtDecode from 'jwt-decode'
+
+const token = localStorage.getItem('token');
+const user = ref(token ? jwtDecode(token) : null);
+
+document.addEventListener('DOMContentLoaded', function() {
+  const menuIconEl = document.querySelector('.menu-icon');
+  const sidenavEl = document.querySelector('.sidenav');
+  const sidenavCloseEl = document.querySelector('.sidenav__close-icon');
+
+  function toggleClassName(el, className) {
+    if (el.classList.contains(className)) {
+      el.classList.remove(className);
+    } else {
+      el.classList.add(className);
+    }
+  }
+
+  // Open the side nav on click
+  menuIconEl.addEventListener('click', function() {
+    toggleClassName(sidenavEl, 'active');
+  });
+
+  // Close the side nav on click
+  sidenavCloseEl.addEventListener('click', function() {
+    toggleClassName(sidenavEl, 'active');
+  });
+});
+</script>
+
 <template>
 <div class="grid-container">
   <div class="menu-icon">
@@ -24,47 +57,15 @@
       <li class="sidenav__list-item"><router-link to="/" class="nav-link">Page d'accueil</router-link></li>
     </ul>
   </aside>
- <!--End Sidenav--> 
+  <!--End Sidenav--> 
   
   <!-- Begin Main-->
-  <main class="main">
+  <main>
     <div class="main__col--1">
-      <h2>Liste des sanctions</h2>
+      <h2>Liste des utilisateurs</h2>
     </div>
-    
-    <div class="main-header">
-      <div class="main-header__heading">Hello User</div>
-      <div class="main-header__updates">Recent Items</div>
-    </div> <!--End Main Header-->
- 
-    <!--Begin Main Overview-->
-    <div class="main-overview">
-      <div class="overviewcard">
-        <div class="overviewcard__icon">Overview 1</div>
-        <div class="overviewcard__info">Card</div>
-      </div>
-      <div class="overviewcard">
-        <div class="overviewcard_icon">Overview 2</div>
-        <div class="overviewcard__info">Card</div>
-      </div>
-      <div class="overviewcard">
-        <div class="overviewcard__icon">Overview 3</div>
-        <div class="overviewcard__info">Card</div>
-      </div>
-      <div class="overviewcard">
-        <div class="overviewcard__icon">Overview 4</div>
-        <div class="overviewcard__info">Card</div>
-      </div>
-    </div>
-   <!--End Main Overview--> 
-  
-    <!--Begin Main Cards-->
-    <div class="main-cards">
-      <div class="card">Card</div>
-      <div class="card">Card</div>
-      <div class="card">Card</div>
-    </div>
-    
+
+    <UserList v-if="user" />
   </main>
 <!-- End Main -->
  <!--Begin Footer--> 
@@ -80,37 +81,10 @@
 
 <script>
 export default {
-  name: 'Admin',
-  // Logique du composant Admin
+  name: 'Admin_users',
+  // Logique du composant Admin_users
 }
 </script>
-
-<script setup>
-document.addEventListener('DOMContentLoaded', function() {
-  const menuIconEl = document.querySelector('.menu-icon');
-  const sidenavEl = document.querySelector('.sidenav');
-  const sidenavCloseEl = document.querySelector('.sidenav__close-icon');
-
-  function toggleClassName(el, className) {
-    if (el.classList.contains(className)) {
-      el.classList.remove(className);
-    } else {
-      el.classList.add(className);
-    }
-  }
-
-  // Open the side nav on click
-  menuIconEl.addEventListener('click', function() {
-    toggleClassName(sidenavEl, 'active');
-  });
-
-  // Close the side nav on click
-  sidenavCloseEl.addEventListener('click', function() {
-    toggleClassName(sidenavEl, 'active');
-  });
-});
-</script>
-
 
 <style scoped>
 /* Styles spécifiques à Admin.vue */
