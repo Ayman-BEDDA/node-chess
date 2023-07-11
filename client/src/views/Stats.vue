@@ -1,8 +1,10 @@
+
 <script setup>
 import { reactive, onMounted, ref } from 'vue';
 import jwtDecode from 'jwt-decode'
 
 const lastgames = reactive([]);
+const gamestats = reactive([]);
 const isLoading = ref(true);
 const token = localStorage.getItem('token');
 const user = ref(token ? jwtDecode(token) : null);
@@ -19,7 +21,22 @@ onMounted(async () => {
     } else {
         alert('Error while fetching');
     }
+
+  const response2 = await fetch(`http://localhost:3000/users/${user.value.id}/gamestats`, {
+    headers: {
+      Authorization: 'Bearer ' + localStorage.getItem('token')
+    }
+  });
+    if (response2.ok) {
+      const data = await response2.json();
+      gamestats.push(data);
+    } else {
+        alert('Error while fetching');
+    }
 });
+
+console.log(gamestats);
+
 
 const getGameStyle = (game) => {
   if (game.Winner === user.value?.id) {
@@ -27,7 +44,7 @@ const getGameStyle = (game) => {
   } else if (game.Winner !== null) {
     return { backgroundColor: '#D31A45', color: 'white', fontWeight: 'bold', borderRadius: '10px', borderLeft: '5px solid #E84057',};
   }
-  return { backgroundColor: '#000', color: 'white', fontWeight: 'bold', borderRadius: '10px', borderLeft: '5px solid #adadad',};
+  return { color: 'white', fontWeight: 'bold', borderRadius: '10px', borderLeft: '5px solid #adadad',};
 };
 </script>
 
@@ -35,6 +52,28 @@ const getGameStyle = (game) => {
   <div class="stats">
     <div class="stats-block">
       <h1>Stats</h1>
+      <div v-if="!isLoading">
+        <div v-for="stat in gamestats" :key="stat.id">
+          <div class="stat">
+            <h1>{{ stat.nbGames }}</h1>
+            <p>Games played</p>
+          </div>
+          <div class="all-stats">
+            <div class="stat">
+              <h1>{{ stat.nbWins }}</h1>
+              <p>Wins</p>
+            </div>
+            <div class="stat">
+              <h1>{{ stat.nbDraws }}</h1>
+              <p>Draws</p>
+            </div>
+            <div class="stat">
+              <h1>{{ stat.nbLosses }}</h1>
+              <p>Losses</p>
+            </div>
+          </div>
+        </div>
+      </div> 
     </div>
     <div class="lastgames-block">
       <div v-if="!isLoading">
@@ -51,6 +90,9 @@ const getGameStyle = (game) => {
               <div class="player">
                 <div class="black">{{ lastgame.blackUser.login }}</div>
                 <img class="avatar" :src="lastgame.blackUser.media" />
+                <div class="result">
+                  {{ lastgame.Winner === null ? 'DRAW' : lastgame.Winner === user.id ? 'VICTORY' : 'DEFEAT' }}
+                </div>
               </div>
               
             </div>
@@ -112,6 +154,20 @@ h3 {
   flex-direction: column;
   background: rgba(0, 0, 0, .5);
   border-radius: 10px;
+}
+
+.stat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.all-stats {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around;
+  width: 100%;
 }
 
 .game {
