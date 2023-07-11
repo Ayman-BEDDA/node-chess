@@ -1,4 +1,6 @@
 const { Friend } = require("../db/models/Friend");
+const Sequelize = require("sequelize");
+const ValidationError = require("../errors/ValidationError");
 
 module.exports = function FriendService() {
   return {
@@ -13,11 +15,11 @@ module.exports = function FriendService() {
           dbOptions.limit = options.limit;
           dbOptions.offset = options.offset;
         }
-        return Friend.findAll(dbOptions);
+        console.log(Friend);
+        //return Friend.findAll(dbOptions);
     },
     findOne: async function (filters) {
-      // Use the Sequelize findOne method
-      return Friend.findOne({ where: filters });
+        return User.findOne({ where: filters });
     },
     create: async function (data) {
         try {
@@ -30,18 +32,35 @@ module.exports = function FriendService() {
         }
     },
     replace: async (filters, newData) => {
-      // Use the Sequelize update method for replace
-      const result = await Friend.update(newData, { where: filters });
-      return result ? Friend.findOne({ where: filters }) : null;
+        try {
+          const nbDeleted = await this.delete(filters);
+          const friend = await this.create(newData);
+          return [[friend, nbDeleted === 0]];
+        } catch (e) {
+          if (e instanceof Sequelize.ValidationError) {
+            throw ValidationError.fromSequelizeValidationError(e);
+          }
+          throw e;
+        }
     },
     update: async (filters, newData) => {
-      // Use the Sequelize update method for update
-      await Friend.update(newData, { where: filters });
-      return Friend.findOne({ where: filters });
+        try {
+            const [nbUpdated, friends] = await Friend.update(newData, {
+              where: filters,
+              returning: true,
+              individualHooks: true,
+            });
+    
+            return friends;
+          } catch (e) {
+            if (e instanceof Sequelize.ValidationError) {
+              throw ValidationError.fromSequelizeValidationError(e);
+            }
+            throw e;
+          }
     },
     delete: async (filters) => {
-      // Use the Sequelize destroy method
-      return Friend.destroy({ where: filters });
+        return Friend.destroy({ where: filters });
     },
   };
 };
