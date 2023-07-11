@@ -35,5 +35,10 @@ module.exports = function (connection) {
     }
   );
 
+  Buy.associate = (models) => {
+    Buy.belongsTo(models.Article, { foreignKey: 'id_article', as: 'article' });
+    Buy.belongsTo(models.User, { foreignKey: 'id_user', as: 'user' });
+  };
+
   return Buy;
 };

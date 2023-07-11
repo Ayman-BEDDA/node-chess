@@ -36,5 +36,10 @@ module.exports = function (connection) {
     }
   );
 
+  Friend.associate = (models) => {
+    Friend.belongsTo(models.User, { foreignKey: 'id_user', as: 'user' });
+    Friend.belongsTo(models.User, { foreignKey: 'id_user_receiver', as: 'user_receiver' });
+  };
+
   return Friend;
 };

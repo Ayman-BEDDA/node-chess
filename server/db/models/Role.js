@@ -21,5 +21,9 @@ module.exports = function (connection) {
     }
   );
 
+  Role.associate = (models) => {
+    Role.hasMany(models.User, { foreignKey: 'id_role', as: 'users' });
+  }
+  
   return Role;
 };

@@ -36,5 +36,10 @@ module.exports = function (connection) {
     }
   );
 
+  Article.associate = (models) => {
+    Article.belongsTo(models.Money, { foreignKey: 'id_money', as: 'money' });
+    Article.hasMany(models.Buy, { foreignKey: 'id_article', as: 'buys' });
+  };
+
   return Article;
 };

@@ -81,22 +81,35 @@ module.exports = function UserService() {
     },
     getLastGames: async (userId) => {
       try {
-      const games = await Game.findAll({
-        where: {
-          [Sequelize.Op.or]: [
-            { WhiteUserID: userId },
-            { BlackUserID: userId },
+        const games = await Game.findAll({
+          where: {
+            [Sequelize.Op.or]: [
+              { WhiteUserID: userId },
+              { BlackUserID: userId },
+            ],
+            GameStatus: "end",
+          },
+          include: [
+            {
+              model: User,
+              as: "whiteUser",
+            },
+            {
+              model: User,
+              as: "blackUser",
+            },
+            {
+              model: User,
+              as: "winnerUser",
+            },
           ],
-          "GameStatus": "end",
-        },
-        order: [["updatedAt", "DESC"]],
-        limit: 10,
-      });
-
-      return games;
+          order: [["updatedAt", "DESC"]],
+        });
+      
+        return games;
       } catch (e) {
         throw new Error('Failed to retrieve the last 10 games for the user.');
-        }
+      }
     },
     getNbGames: async (userId) => {
       try {
