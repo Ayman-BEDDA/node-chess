@@ -29,7 +29,7 @@ function handleSubmit() {
     <label for="email" class="label">Email</label>
     <input v-model.trim="formData.email" type="email" id="email" class="input" />
     <p v-if="errors.email" class="error">{{ errors.email.join('\n') }}</p>
-    <label for="password" class="label">Password</label>
+    <label for="password" class="label">Mot de passe</label>
     <input v-model="formData.password" type="password" id="password" class="input" />
     <p v-if="errors.password" class="error">{{ errors.password.join('\n') }}</p>
     <button type="submit" class="button">Submit</button>
@@ -44,6 +44,9 @@ function handleSubmit() {
   align-items: center;
   width: 300px;
   margin: 0 auto;
+  background-color: rgba(0, 0, 0, 0.5);
+  border-radius: 10px;
+  padding: 35px;
 }
 
 .label {
@@ -68,16 +71,19 @@ function handleSubmit() {
 
 .button {
   padding: 10px 20px;
-  background-color: #007bff;
   color: #fff;
-  border: none;
   border-radius: 5px;
-  font-size: 16px;
+  font-size: 18px;
   cursor: pointer;
+  transition: all 0.3s ease-in-out;
+  background: none;
+  text-shadow: 0px 0px 10px rgba(255, 255, 255, 0.5);
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  margin-top: 20px; 
 }
 
 button:hover {
-  background-color: #0056b3;
+  text-shadow: 0px 0px 10px rgba(255, 255, 255);
 }
 
 pre {

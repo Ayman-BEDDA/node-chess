@@ -6,9 +6,10 @@
   background-size: cover;
   background-repeat: no-repeat;
   background-position: center;
+  background-attachment: fixed;
   height: 100vh;
   width: 100vw;
-  overflow: hidden;
+  overflow: auto;
   color: aliceblue;
   margin: 0;
   padding: 0;

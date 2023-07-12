@@ -111,91 +111,104 @@ module.exports = function UserService() {
         throw new Error('Failed to retrieve the last 10 games for the user.');
       }
     },
-    getNbGames: async (userId) => {
-      try {
-        const nbGames = await Game.count({
-          where: {
-            [Sequelize.Op.or]: [
-              { WhiteUserID: userId },
-              { BlackUserID: userId },
-            ],
-            "GameStatus": "end",
-          },
-        });
-        return nbGames;
-      } catch (e) {
-        throw new Error('Failed to retrieve the number of games for the user.');
-      }
-    },
-    getNbWins: async (userId) => {
-      try {
-        const nbWins = await Game.count({
-          where: {
-            [Sequelize.Op.or]: [
-              { WhiteUserID: userId },
-              { BlackUserID: userId },
-            ],
-            "GameStatus": "end",
-            "Winner": userId,
-          },
-        });
-        return nbWins;
-      } catch (e) {
-        throw new Error('Failed to retrieve the number of wins for the user.');
-      }
-    },
-    getNbLosses: async (userId) => {
-      try {
-        const nbLosses = await Game.count({
-          where: {
-            [Sequelize.Op.or]: [
-              { WhiteUserID: userId },
-              { BlackUserID: userId },
-            ],
-            "GameStatus": "end",
-            "Winner": {
-              [Sequelize.Op.not]: userId,
-            },
-          },
-        });
-        return nbLosses;
-      } catch (e) {
-        throw new Error('Failed to retrieve the number of losses for the user.');
-      }
-    },
-    getNbDraws: async (userId) => {
-      try {
-        const nbDraws = await Game.count({
-          where: {
-            [Sequelize.Op.or]: [
-              { WhiteUserID: userId },
-              { BlackUserID: userId },
-            ],
-            "GameStatus": "end",
-            "Winner": null,
-          },
-        });
-        return nbDraws;
-      } catch (e) {
-        throw new Error('Failed to retrieve the number of draws for the user.');
-      }
-    },
+    // getNbGames: async (userId) => {
+    //   try {
+    //     const nbGames = await Game.count({
+    //       where: {
+    //         [Sequelize.Op.or]: [
+    //           { WhiteUserID: userId },
+    //           { BlackUserID: userId },
+    //         ],
+    //         "GameStatus": "end",
+    //       },
+    //     });
+    //     return nbGames;
+    //   } catch (e) {
+    //     throw new Error('Failed to retrieve the number of games for the user.');
+    //   }
+    // },
+    // getNbWins: async (userId) => {
+    //   try {
+    //     const nbWins = await Game.count({
+    //       where: {
+    //         [Sequelize.Op.or]: [
+    //           { WhiteUserID: userId },
+    //           { BlackUserID: userId },
+    //         ],
+    //         "GameStatus": "end",
+    //         "Winner": userId,
+    //       },
+    //     });
+    //     return nbWins;
+    //   } catch (e) {
+    //     throw new Error('Failed to retrieve the number of wins for the user.');
+    //   }
+    // },
+    // getNbLosses: async (userId) => {
+    //   try {
+    //     const nbLosses = await Game.count({
+    //       where: {
+    //         [Sequelize.Op.or]: [
+    //           { WhiteUserID: userId },
+    //           { BlackUserID: userId },
+    //         ],
+    //         "GameStatus": "end",
+    //         "Winner": {
+    //           [Sequelize.Op.not]: userId,
+    //         },
+    //       },
+    //     });
+    //     return nbLosses;
+    //   } catch (e) {
+    //     throw new Error('Failed to retrieve the number of losses for the user.');
+    //   }
+    // },
+    // getNbDraws: async (userId) => {
+    //   try {
+    //     const nbDraws = await Game.count({
+    //       where: {
+    //         [Sequelize.Op.or]: [
+    //           { WhiteUserID: userId },
+    //           { BlackUserID: userId },
+    //         ],
+    //         "GameStatus": "end",
+    //         "Winner": null,
+    //       },
+    //     });
+    //     return nbDraws;
+    //   } catch (e) {
+    //     throw new Error('Failed to retrieve the number of draws for the user.');
+    //   }
+    // },
     getGameStats: async (userId) => {
       try {
-        const nbGames = await UserService().getNbGames(userId);
-        const nbWins = await UserService().getNbWins(userId);
-        const nbLosses = await UserService().getNbLosses(userId);
-        const nbDraws = await UserService().getNbDraws(userId);
-        const lastGames = await UserService().getLastGames(userId);
+        const games = await Game.findAll({
+          where: {
+            [Sequelize.Op.or]: [
+              { WhiteUserID: userId },
+              { BlackUserID: userId },
+            ],
+            GameStatus: "end",
+          },
+          order: [["updatedAt", "DESC"]],
+        });
+
+        const nbGames = games.length;
+        const nbWins = games.filter(game => game.Winner === userId).length;
+        const nbLosses = games.filter(game => game.Winner !== userId && game.Winner !== null).length;
+        const nbDraws = games.filter(game => game.Winner === null).length;
+        const winRate = nbGames === 0 ? 0 : Math.round((nbWins / nbGames) * 100);
+
         return {
           nbGames,
           nbWins,
           nbLosses,
           nbDraws,
-          lastGames,
+          winRate,
         };
-      } catch (e) {
-        throw new Error('Failed to retrieve the game stats for the user.');
+      }
+      catch (e) {
+        throw new Error('Failed to retrieve the stats for the user.');
       }
     },
     getFriends: async (userId) => {
@@ -243,15 +256,19 @@ module.exports = function UserService() {
           where: {
             id_user: userId,
           },
-        });
+          include: [
+            {
+              model: Article,
+              as: 'article',
+            },
+            {
+              model: User,
+              as: 'user',
+            },
+          ],
+        }); 
 
-        const buysIds = await Article.findAll({
-          where: {
-            id: buys.map(buy => buy.id_article),
-          },
-        });
-
-        return buysIds;
+        return buys;
       } catch (e) {
         throw new Error('Failed to retrieve the buys for the user.');
       }

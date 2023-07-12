@@ -59,12 +59,12 @@ async function logoutUser() {
     <Navbar v-if="user" :user="user" :logoutUser="logoutUser" />
     <router-view v-if="user" :user="user"></router-view>
 
-    <div class="container">
+    <div v-if="!user" class="container">
       <div class="form-container">
-        <UserForm v-if="!user" :onSubmit="registerUser" />
+        <UserForm  :onSubmit="registerUser" />
       </div>
       <div class="form-container">
-        <LoginForm v-if="!user" :onSubmit="loginUser" />
+        <LoginForm :onSubmit="loginUser" />
       </div>
     </div>
 </template>
@@ -86,10 +86,10 @@ async function logoutUser() {
 
 <script>
 export default {
-data() {
-  return {
-    user : null,
-  }
-},
+  data() {
+    return {
+      user : null,
+    }
+  },
 }
 </script>
