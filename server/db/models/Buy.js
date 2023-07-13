@@ -9,14 +9,6 @@ module.exports = function (connection) {
             type: DataTypes.INTEGER, autoIncrement: true, primaryKey: true
         }, date: {
             type: DataTypes.DATE, allowNull: false, defaultValue: DataTypes.NOW
-        }, id_article: {
-            type: DataTypes.INTEGER, references: {
-                model: 'articles', key: 'id',
-            }
-        }, id_user: {
-            type: DataTypes.INTEGER, references: {
-                model: 'users', key: 'id',
-            }
         },
     }, {
         sequelize: connection, tableName: "buys",

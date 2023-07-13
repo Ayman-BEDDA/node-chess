@@ -84,11 +84,17 @@ module.exports = function ArticleService() {
                 }
 
                 try {
-                    return await Buy.create({
-                        date: new Date(),
-                        id_article: articleId,
-                        id_user: userId,
-                    });
+                    const checkBuy = await Buy.findOne({ where: { id_article: articleId, id_user: userId } });
+                    if (!checkBuy) {
+                        return await Buy.create({
+                            date: new Date(),
+                            id_article: articleId,
+                            id_user: userId,
+                        });
+                    } else {
+                        throw new ValidationError({ buy: 'Article already bought' });
+                    }
+
                 } catch (e) {
                     if (e instanceof Sequelize.ValidationError) {
                         throw ValidationError.fromSequelizeValidationError(e);
@@ -100,5 +106,12 @@ module.exports = function ArticleService() {
                 throw error;
             }
         },
+        getArticlesMoney: async function(id_money) {
+            try {
+                return await Article.findAll({where: {id_money: id_money, euros: { [Sequelize.Op.ne]: null }}})
+            } catch (error) {
+                throw error;
+            }
+        }
     }
 }

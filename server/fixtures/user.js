@@ -14,14 +14,14 @@ async function generateTestData() {
     media: "default.png",
     isBanned: false,
     isValid: true,
-    id_role: 3,
+    id_role: 1,
   });
 
   for (let i = 0; i < 10; i++) {
     await User.create({
       login: faker.internet.userName(),
       email: faker.internet.email(),
-      password: faker.internet.password(),
+      password: 'password123',
       elo: Math.floor(Math.random() * 1000) + 500,
       media: "default.png",
       isBanned: false,
@@ -34,12 +34,12 @@ async function generateTestData() {
     await User.create({
       login: faker.internet.userName(),
       email: faker.internet.email(),
-      password: faker.internet.password(),
+      password: 'password123',
       elo: Math.floor(Math.random() * 1000) + 500,
       media: "default.png",
       isBanned: false,
-      isValid: false,
-      id_role: 1,
+      isValid: true,
+      id_role: 3,
     });
   }
 }
