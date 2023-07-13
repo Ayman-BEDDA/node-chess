@@ -28,7 +28,7 @@ async function generateFriendData() {
 
     const friend = {
       status: status,
-      id_user: users[i].id,
+      user: users[i].id,
       id_user_receiver: users[friendId].id,
     };
 
