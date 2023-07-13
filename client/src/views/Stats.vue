@@ -1,9 +1,11 @@
 <script setup>
-import { reactive, onMounted, ref } from 'vue';
+import { reactive, onMounted, ref, computed} from 'vue';
 
 const lastgames = reactive([]);
 const gamestats = reactive([]);
 const isLoading = ref(true);
+const currentPage = ref(1);
+const pageSize = 10;
 
 const props = defineProps({
   user: {
@@ -42,6 +44,26 @@ onMounted(async () => {
     alert('Error while fetching lastgames');
   }
 });
+
+const paginatedLastgames = computed(() => {
+  const startIndex = (currentPage.value - 1) * pageSize;
+  const endIndex = startIndex + pageSize;
+  return lastgames.slice(startIndex, endIndex);
+});
+
+const totalPages = computed(() => Math.ceil(lastgames.length / pageSize));
+
+function nextPage() {
+  if (currentPage.value < totalPages.value) {
+    currentPage.value++;
+  }
+}
+
+function previousPage() {
+  if (currentPage.value > 1) {
+    currentPage.value--;
+  }
+}
 
 const getGameStyle = (game) => {
   if (game.Winner === user.value?.id) {
@@ -88,7 +110,7 @@ const getGameStyle = (game) => {
     <div class="lastgames-block">
       <div v-if="!isLoading">
         <h3>Dernières parties</h3>
-          <div v-for="lastgame in lastgames" :key="lastgame.id" :style="getGameStyle(lastgame)">
+          <div v-for="lastgame in paginatedLastgames" :key="lastgame.id" :style="getGameStyle(lastgame)">
             <div class="game">
               <div class="player">
                 <img class="avatar" :src="lastgame.whiteUser.media" />
@@ -104,6 +126,11 @@ const getGameStyle = (game) => {
               </div>
             </div>
           </div>
+          <div class="pagination">
+            <p>Parties trouvées : {{ lastgames.length }}</p>
+            <button @click="previousPage" :disabled="currentPage === 1" class="pagination__button"><li class="fas fa-chevron-left"></li></button>
+            <button @click="nextPage" :disabled="currentPage === totalPages" class="pagination__button"><li class="fas fa-chevron-right"></li></button>
+          </div>
           <p v-if="lastgames.length === 0" class="no-games">Aucune partie jouée</p>
       </div>
     </div>
@@ -111,6 +138,36 @@ const getGameStyle = (game) => {
 </template>
 
 <style scoped>
+
+  .pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: absolute;
+    bottom: 0;
+    margin-bottom: 5px;
+    margin-left: 10px;
+    margin-top: 10px;
+  }
+
+  .pagination p {
+    color: white;
+    margin-right: 10px;
+  }
+
+  .pagination__button {
+    color: white;
+    padding: 5px 10px;
+    margin: 0 5px;
+    border-radius: 5px;
+    background-color: rgba(0, 0, 0, 0.5);
+    border: none;
+    cursor: pointer;
+  }
+
+  .pagination__button:disabled {
+    cursor: not-allowed;
+  }
   .stats {
     display: flex;
     flex-wrap: nowrap;
@@ -144,6 +201,8 @@ const getGameStyle = (game) => {
     width: 100%;
     height: 100%;
     padding-top: 10px;
+    padding-bottom: 30px;
+    position: relative;
   }
 
   .stat {
@@ -166,6 +225,7 @@ const getGameStyle = (game) => {
     align-items: center;
     margin-bottom: 10px;
     padding: 5px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.5);
   }
 
   .player {

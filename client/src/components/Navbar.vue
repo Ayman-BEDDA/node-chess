@@ -16,7 +16,7 @@
 <template>
   <nav>
     <div class="navbar">
-      <router-link to="/"><i class="fas fa-home"></i> Accueil</router-link>
+      <router-link to="/"><img src="../assets/logo.png" alt="logo" class="logo"/></router-link>
       <div class="dropdown">
         {{ user.login }}
         <img :src="user.media" class="avatar" />
@@ -88,9 +88,6 @@
 .dropdown-content a:hover {background-color: #f1f1f1; border-radius: 5px;}
 .dropdown-content button:hover {background-color: #f1f1f1; border-radius: 5px;}
 
-
-
-
 .dropdown:hover .dropdown-content {
   display: block;
 }
@@ -101,6 +98,16 @@
   height: 30px;
   border-radius: 50%;
   margin-left: 10px;
+}
+
+.logo {
+  width: 150px;
+  height: 150px;
+  transition: all 0.3s ease-in-out;
+}
+
+.logo:hover {
+  filter: drop-shadow(0px 0px 10px rgba(255, 255, 255, 0.9));
 }
 </style>
   

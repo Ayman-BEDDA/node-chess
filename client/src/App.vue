@@ -60,22 +60,27 @@ async function logoutUser() {
     <router-view v-if="user" :user="user"></router-view>
 
     <div v-if="!user" class="container">
+      <img src="./assets/logo.png" alt="logo" class="logo"/>
       <div class="form-container">
-        <UserForm  :onSubmit="registerUser" />
-      </div>
-      <div class="form-container">
-        <LoginForm :onSubmit="loginUser" />
+        <UserForm v-if="currentForm === 'register'" :onSubmit="registerUser" @change-form="toggleForm('login')" />
+        <LoginForm v-else :onSubmit="loginUser" @change-form="toggleForm('register')" />
       </div>
     </div>
 </template>
 
 <style>
 
+.logo {
+  width: 175px;
+  height: 175px;
+}
+
 .container {
   display: flex;
   justify-content: center;
   align-items: center;
   height: 100vh;
+  flex-direction: column;
 }
 
 .form-container {
@@ -89,7 +94,13 @@ export default {
   data() {
     return {
       user : null,
+      currentForm: 'login',
     }
+  },
+  methods: {
+    toggleForm(form) {
+      this.currentForm = form;
+    },
   },
 }
 </script>

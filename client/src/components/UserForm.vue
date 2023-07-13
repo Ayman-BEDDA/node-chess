@@ -22,6 +22,8 @@ function handleSubmit() {
     })
     .catch((_errors) => (errors.value = _errors));
 }
+
+defineEmits(['change-form']);
 </script>
 
 <template>
@@ -36,7 +38,8 @@ function handleSubmit() {
     <label for="password" class="label">Mot de passe</label>
     <input v-model.number="formData.password" type="password" id="password" class="input" />
     <p v-if="errors.password" class="error">{{ errors.password.join('\n') }}</p>
-    <button type="submit" class="button">Submit</button>
+    <button type="submit" class="button">S'inscrire</button>
+    <p v-on:click="$emit('change-form')" class="link">Déjà inscrit ?</p>
   </form>
   <pre>{{ formData }}</pre>
 </template>
@@ -48,7 +51,7 @@ function handleSubmit() {
   align-items: center;
   width: 300px;
   margin: 0 auto;
-  background-color: rgba(0, 0, 0, 0.5);
+  background-color: rgba(0, 0, 0, 0.7);
   border-radius: 10px;
   padding: 35px;
 }
@@ -65,6 +68,18 @@ function handleSubmit() {
   width: 100%;
   margin-bottom: 10px;
   font-size: 16px;
+}
+
+.link {
+  color: #fff;
+  font-size: 14px;
+  margin-top: 20px;
+  cursor: pointer;
+  transition: all 0.3s ease-in-out;
+}
+
+.link:hover {
+  text-decoration: underline;
 }
 
 .error {
@@ -87,12 +102,19 @@ function handleSubmit() {
 }
 
 button:hover {
-  background-color: rgba(255, 255, 255, 0.1);
+  background-color: rgba(255, 255, 255, 0.2);
 }
 
 pre {
+  color: #fff;
+  font-size: 14px;
+  font-weight: bold;
+  color: white;
   margin-top: 20px;
-  font-size: 14px;  
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
 }
 </style>
 
