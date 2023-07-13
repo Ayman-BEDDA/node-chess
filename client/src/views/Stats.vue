@@ -108,8 +108,8 @@ const getGameStyle = (game) => {
       </div> 
     </div>
     <div class="lastgames-block">
-      <div v-if="!isLoading">
         <h3>Dernières parties</h3>
+        <div v-if="!isLoading">
           <div v-for="lastgame in paginatedLastgames" :key="lastgame.id" :style="getGameStyle(lastgame)">
             <div class="game">
               <div class="player">
