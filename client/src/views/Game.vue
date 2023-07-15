@@ -8,6 +8,7 @@ onMounted(() => {
   import('../assets/jquery-3.7.0.min.js')
 })
 const board = Chessboard('board');
+
 </script>
 
 <template>
