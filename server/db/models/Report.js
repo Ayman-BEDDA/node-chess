@@ -51,5 +51,10 @@ module.exports = function (connection) {
     }
   );
 
+  Report.associate = (models) => {
+    Report.belongsTo(models.User, { foreignKey: 'id_user', as: 'user' });
+    Report.belongsTo(models.User, { foreignKey: 'id_user_reported', as: 'user_reported' });
+  };
+
   return Report;
 };

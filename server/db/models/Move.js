@@ -41,5 +41,10 @@ module.exports = function (connection) {
     }
   );
 
+  Move.associate = (models) => {
+    Move.belongsTo(models.Game, { foreignKey: 'id_game', as: 'game' });
+    Move.belongsTo(models.User, { foreignKey: 'id_user', as: 'user' });
+  };
+
   return Move;
 };

@@ -67,20 +67,37 @@ module.exports = (connection) => {
         allowNull: false,
         defaultValue: false
       },
-      id_role: {
-        type: DataTypes.INTEGER,
-        allowNull: false,
-        defaultValue: 2,
-        references: {
-            model: "roles",
+        lastDailyRewardDate: {
+            type: DataTypes.DATE,
+            allowNull: true, // ou false si vous souhaitez que la date de dernière connexion soit obligatoire
+        },
+        id_role: {
+            type: DataTypes.INTEGER,
+            allowNull: false,
+            references: {
+                model: "roles",
+            }
         }
-      }
     },
     {
       sequelize: connection,
       tableName: "users",
     }
   );
+
+User.associate = (models) => {
+  User.belongsTo(models.Role, { foreignKey: 'id_role', as: 'role' });
+  User.hasMany(models.Game, { foreignKey: 'WhiteUserID', as: 'whiteUser' });
+  User.hasMany(models.Game, { foreignKey: 'BlackUserID', as: 'blackUser' });
+  User.hasMany(models.Game, { foreignKey: 'Winner', as: 'winnerUser' });
+  User.hasMany(models.Friend, { foreignKey: 'id_user', as: 'user' });
+  User.hasMany(models.Friend, { foreignKey: 'id_user_receiver', as: 'userReceiver' });
+  User.hasMany(models.Move, { foreignKey: 'id_user', as: 'moveUser' });
+  User.hasMany(models.Report, { foreignKey: 'id_user', as: 'reportUser' });
+  User.hasMany(models.Report, { foreignKey: 'id_user_reported', as: 'reportedUser' });
+  User.hasMany(models.Own, { foreignKey: 'id_user', as: 'ownUser' });
+  User.hasMany(models.Buy, { foreignKey: 'id_user', as: 'buyUser' });
+};
 
   function updatePassword(user) {
     return bcrypt.genSalt(10).then((salt) =>

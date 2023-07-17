@@ -1,10 +1,6 @@
 <template>
-  
-    <h1>Bienvenue, {{ user.login }} !</h1>
     <!-- Contenu de la page d'accueil -->
-    <div>
-      <MainMenu :user="user" />
-    </div>
+    <MainMenu :user="user" />
 </template>
 
 <script >
@@ -27,12 +23,6 @@ export default {
 
 <style scoped>
 /* Styles spécifiques à Home.vue */
-  div {
-    margin: 0 auto;
-    text-align: center;
-    height: 100vh;
-  }
-
   h1 {
     margin-left: 1rem;
     font-size: 3em;

@@ -45,5 +45,12 @@ module.exports = function (connection) {
     }
   );
 
+  Game.associate = (models) => {
+    Game.belongsTo(models.User, { foreignKey: 'WhiteUserID', as: 'whiteUser' });
+    Game.belongsTo(models.User, { foreignKey: 'BlackUserID', as: 'blackUser' });
+    Game.belongsTo(models.User, { foreignKey: 'Winner', as: 'winnerUser' });
+    Game.hasMany(models.Move, { foreignKey: 'id_game', as: 'moves' });
+  };
+
   return Game;
 };

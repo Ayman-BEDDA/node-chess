@@ -22,19 +22,28 @@ module.exports = function (connection) {
         type: DataTypes.STRING(64),
         allowNull: false
       },
-      id_money: {
-        type: DataTypes.INTEGER,
-        references: {
-          model: 'moneys',
-          key: 'id',
-        }
-      },
+        euros: {
+            type: DataTypes.INTEGER,
+            allowNull: true
+        },
+        id_money: {
+            type: DataTypes.INTEGER,
+            references: {
+                model: 'moneys',
+                key: 'id',
+            }
+        },
     },
     {
       sequelize: connection,
       tableName: "articles",
     }
   );
+
+  Article.associate = (models) => {
+    Article.belongsTo(models.Money, { foreignKey: 'id_money', as: 'money' });
+    Article.hasMany(models.Buy, { foreignKey: 'id_article', as: 'buys' });
+  };
 
   return Article;
 };
