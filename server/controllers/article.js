@@ -72,11 +72,20 @@ module.exports = function Controller(Service, options = {}) {
             const id_article = req.params.idArticle;
             const id_user = req.user.id;
             try {
-                await Service.buyArticle(id_article, id_user);
-                res.sendStatus(200)
+                const result = await Service.buyArticle(id_article, id_user);
+                res.status(201).json(result);
             } catch (error) {
                 next(error);
             }
         },
+        getArticlesMoney: async (req, res, next) => {
+            const id_money = 3;
+            try {
+                const result = await Service.getArticlesMoney(id_money);
+                res.json(result);
+            } catch (error) {
+                next(error);
+            }
+        }
     };
 };

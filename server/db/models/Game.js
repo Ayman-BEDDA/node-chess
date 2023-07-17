@@ -15,14 +15,16 @@ module.exports = function (connection) {
         references: {
           model: 'users', 
           key: 'id', 
-        }
+        },
+        onDelete: 'CASCADE'
       },
       BlackUserID: {
         type: DataTypes.INTEGER,
         references: {
           model: 'users', 
           key: 'id', 
-        }
+        },
+        onDelete: 'CASCADE'
       },
       GameStatus: {
         type: DataTypes.STRING(32),
@@ -33,7 +35,8 @@ module.exports = function (connection) {
         references: {
           model: 'users', 
           key: 'id', 
-        }
+        },
+        onDelete: 'CASCADE'
       },
     },
     {

@@ -11,6 +11,8 @@ import ResetPassword from '../views/security/ResetPassword.vue';
 import Login from '../views/security/Login.vue';
 import Register from '../views/security/Register.vue';
 import Verify from '../views/security/Verify.vue';
+import Shop from '../views/Shop.vue'
+import Game from '../views/Game.vue';
 
 const routes = [
   {
@@ -75,6 +77,18 @@ const routes = [
     path: '/stats',
     name: 'Stats',
     component: Stats,
+    meta: { requiresAuth: true },
+  },
+  {
+    path: '/shop',
+    name: 'Shop',
+    component: Shop,
+    meta: { requiresAuth: true },
+  },
+  {
+    path: '/play',
+    name: 'Play',
+    component: Game,
     meta: { requiresAuth: true },
   }
 ];

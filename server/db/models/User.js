@@ -1,6 +1,12 @@
 module.exports = (connection) => {
   const { DataTypes, Model } = require("sequelize");
   const bcrypt = require("bcryptjs");
+  const Friend = require("./Friend")(connection);
+  const Buy = require("./Buy")(connection);
+  const Move = require("./Move")(connection);
+  const Own = require("./Own")(connection);
+  const Report = require("./Report")(connection);
+  const Game = require("./Game")(connection);
 
   class User extends Model {
     isPasswordValid(password) {
@@ -61,6 +67,10 @@ module.exports = (connection) => {
         allowNull: false,
         defaultValue: false
       },
+      lastDailyRewardDate: {
+            type: DataTypes.DATE,
+            allowNull: true, // ou false si vous souhaitez que la date de dernière connexion soit obligatoire
+      },
       id_role: {
         type: DataTypes.INTEGER,
         allowNull: false,
@@ -110,6 +120,54 @@ User.associate = (models) => {
     if (options.fields.includes("password")) {
       return updatePassword(user);
     }
+  });
+
+  User.addHook("beforeDestroy", async (user) => {
+    await Friend.destroy({
+      where: {
+        [Op.or]: [
+          { id_user: user.id },
+          { id_user_receiver: user.id }
+        ]
+      }
+    });
+
+    await Buy.destroy({
+      where: {
+        id_user: user.id
+      }
+    });
+
+    await Move.destroy({
+      where: {
+        id_user: user.id
+      }
+    });
+
+    await Own.destroy({
+      where: {
+        id_user: user.id
+      }
+    });
+
+    await Report.destroy({
+      where: {
+        [Op.or]: [
+          { id_user: user.id },
+          { id_user_reported: user.id }
+        ]
+      }
+    });
+
+    await Game.destroy({
+      where: {
+        [Op.or]: [
+          { WhiteUserID: user.id },
+          { BlackUserID: user.id },
+          { Winner: user.id }
+        ]
+      }
+    });
   });
 
   return User;

@@ -4,7 +4,7 @@ const MoneyModel = require('../db/models/Money');
 const Money = MoneyModel(sequelize);
 
 async function generateMoneyData() {
-  const moneys = ['free', 'premium']
+  const moneys = ['premium', 'free', 'euros']
 
   for (let i = 0; i < moneys.length; i++) {
     const money = {

@@ -1,4 +1,4 @@
-const { User, Game, Friend, Article, Buy} = require("../db");
+const { User, Game, Friend, Article, Buy, Own} = require("../db");
 const Sequelize = require("sequelize");
 const ValidationError = require("../errors/ValidationError");
 
@@ -23,12 +23,36 @@ module.exports = function UserService() {
       return User.findOne({ where: filters });
     },
     create: async function (data) {
+      let createdUser;
+      let createdOwns;
+
       try {
-        return await User.create(data);
+        // Créer l'utilisateur
+        createdUser = await User.create(data);
+
+        // Créer les enregistrements Own associés à l'utilisateur
+        createdOwns = await Own.bulkCreate([
+          { id_user: createdUser.id, id_money: 1, amount: 0 },
+          { id_user: createdUser.id, id_money: 2, amount: 0 }
+        ]);
+
+        // Retourner l'utilisateur créé
+        return createdUser;
       } catch (e) {
+        // En cas d'erreur, supprimer l'utilisateur et les Owns associés
+        if (createdUser) {
+          await createdUser.destroy();
+        }
+        if (createdOwns) {
+          await Own.destroy({ where: { id_user: createdUser.id } });
+        }
+
+        // Gérer les erreurs de validation
         if (e instanceof Sequelize.ValidationError) {
           throw ValidationError.fromSequelizeValidationError(e);
         }
+
+        // Lancer l'erreur
         throw e;
       }
     },
@@ -82,6 +106,8 @@ module.exports = function UserService() {
           email: "Votre compte n'est pas encore activé. Veuillez vérifier votre boîte de réception pour activer votre compte.",
         });
       }
+      user.lastLoginDate = new Date();
+      await user.save();
 
       return user;
     },
@@ -307,6 +333,6 @@ module.exports = function UserService() {
       } catch (e) {
         throw new Error('Failed to retrieve the buys for the user.');
       }
-    }
+    },
   };
 };
