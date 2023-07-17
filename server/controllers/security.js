@@ -7,7 +7,7 @@ module.exports = function SecurityController(UserService) {
         const { email, password } = req.body;
         const user = await UserService.login(email, password);
         const token = jwt.sign(
-          { id: user.id, login: user.login, id_role: user.id_role, isValid: user.isValid, isBanned: user.isBanned },
+          { id: user.id, login: user.login, id_role: user.id_role, isValid: user.isValid, isBanned: user.isBanned, lastDailyRewardDate: user.lastDailyRewardDate },
           process.env.JWT_SECRET,
           {
             expiresIn: "3h",
