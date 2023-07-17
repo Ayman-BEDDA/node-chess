@@ -29,6 +29,9 @@
 #Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwibG9naW4iOiJhZG1pbiIsImlkX3JvbGUiOjEsImlzVmFsaWQiOnRydWUsImlzQmFubmVkIjpmYWxzZSwiaWF0IjoxNjg5MjYzNDMxLCJleHAiOjE2ODkyNzQyMzF9.bmtTeGqKEWXCuAg_xrqwGTwMv35uYM5vSRNDe0ut5LM
 #Content-Type: application/json
 
+#GET http://localhost:3000/owns
+#Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwibG9naW4iOiJhZG1pbiIsImlkX3JvbGUiOjEsImlzVmFsaWQiOnRydWUsImlzQmFubmVkIjpmYWxzZSwiaWF0IjoxNjg5NTI1Mjc4LCJleHAiOjE2ODk1MzYwNzh9.HTk0nJoPrnmJzpNOqym54h8BYsktbrQTZYpZ_6Xt2LQ
+
 ### Money
 #POST http://localhost:3000/moneys
 #Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MywibG9naW4iOiJiZWRkYSIsImlkX3JvbGUiOjEsImlzVmFsaWQiOmZhbHNlLCJpc0Jhbm5lZCI6ZmFsc2UsImlhdCI6MTY4OTA4NDQyMSwiZXhwIjoxNjg5MDk1MjIxfQ.tB54P3eccgNBoXmcIUIFgxfu60yn3f6rf9-Xdah3dr8
@@ -39,9 +42,9 @@
 #}
 
 
-### Buy article
-POST http://localhost:3000/articles/1/buy
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwibG9naW4iOiJhZG1pbiIsImlkX3JvbGUiOjEsImlzVmFsaWQiOnRydWUsImlzQmFubmVkIjpmYWxzZSwiaWF0IjoxNjg5MjYzNDMxLCJleHAiOjE2ODkyNzQyMzF9.bmtTeGqKEWXCuAg_xrqwGTwMv35uYM5vSRNDe0ut5LM
+#### Buy article
+POST http://localhost:3000/articles/24/buy
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwibG9naW4iOiJhZG1pbiIsImlkX3JvbGUiOjEsImlzVmFsaWQiOnRydWUsImlzQmFubmVkIjpmYWxzZSwiaWF0IjoxNjg5NjA5MTEwLCJleHAiOjE2ODk2MTk5MTB9.s7W202jXlI41LC5x6dlJp77t9QDFz6R1pHxDNfUScNw
 Content-Type: application/json
 
 ###

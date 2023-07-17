@@ -59,6 +59,14 @@ module.exports = function OwnService() {
             return {
                 clientSecret: paymentIntent.client_secret
             }
+        },
+
+        async getOwns(userId) {
+            const owns = await Own.findAll({ where: { id_user: userId } });
+            if (!owns) {
+                throw new ValidationError({ owns: 'You do not have any owns' });
+            }
+            return owns;
         }
     };
 };

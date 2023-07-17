@@ -6,5 +6,6 @@ const controller = new OwnController(new OwnService());
 
 router.patch("/", controller.dailyRewards);
 router.patch("/:idArticle/buy-money", controller.buyPremiumMoney);
+router.get("/", controller.getOwns);
 
 module.exports = router;
