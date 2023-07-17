@@ -6,6 +6,7 @@ import Admin from '../views/Admin.vue';
 import Admin_users from '../views/Admin_users.vue';
 import Admin_reports from '../views/Admin_reports.vue';
 import Stats from '../views/Stats.vue';
+import Game from '../views/Game.vue';
 
 const routes = [
   {
@@ -37,6 +38,11 @@ const routes = [
     path: '/stats',
     name: 'Stats',
     component: Stats,
+  },
+  {
+    path: '/play',
+    name: 'Play',
+    component: Game,
   }
 ];
 

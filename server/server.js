@@ -7,6 +7,7 @@ const SecurityRouter = require("./routes/security");
 const RoleRouter = require("./routes/role");
 const ArticleRouter = require("./routes/article");
 const MoneyRouter = require("./routes/money");
+const FriendRouter = require("./routes/friend");
 const OwnRouter = require("./routes/own");
 const ValidationError = require("./errors/ValidationError");
 const cors = require("cors");
@@ -32,6 +33,7 @@ app.use("/articles", checkAuth, checkValidation, checkNotBan, ArticleRouter);
 app.use("/moneys", checkAuth, checkAdmin, MoneyRouter);
 app.use("/owns", checkAuth, OwnRouter);
 app.use("/games", checkAuth, GameRouter); // protect only this route
+app.use("/friends", FriendRouter); //Friend
 
 app.get("/", (req, res) => {
   res.send("Hello World!");
