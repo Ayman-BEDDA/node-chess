@@ -8,15 +8,6 @@ const errors = ref({});
 const success = ref(false);
 const selectedCategory = ref("all");
 
-const props = defineProps({
-  user: {
-    type: Object,
-    required: true
-  }
-});
-
-const user = ref(props.user);
-
 onMounted(async () => {
   const articlesResponses = await fetch(`http://localhost:3000/articles`, {
     headers: {
@@ -86,6 +77,8 @@ const filteredArticles = computed(() => {
   } else if (selectedCategory.value === "euro") {
     return articles.filter(article => article.id_money === 3);
   }
+  // Default return statement
+  return [];
 });
 
 function filterCategory(category) {

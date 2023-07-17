@@ -1,17 +1,14 @@
-<script>
+<script setup >
 import {computed, onMounted, reactive, ref, inject} from "vue";
+import router from '../router';
 
 const moneys = reactive([]);
 
 const user = inject('user');
 
-const props = defineProps({
-  computed: {
-    shouldShowNavbar() {
-      const currentPath = this.$route.path;
-      return !currentPath.includes('/admin');
-    }
-  }
+const shouldShowNavbar = computed(() => {
+  const currentPath = router.currentRoute.value.path;
+  return !currentPath.includes('/admin');
 });
 
 onMounted(async () => {
