@@ -2,3 +2,5 @@ SampleCollections
 node_modules
 
 server/.DS_Store
+
+server/.env

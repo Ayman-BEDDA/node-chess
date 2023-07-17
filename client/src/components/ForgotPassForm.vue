@@ -1,45 +1,37 @@
 <script setup>
-import { defineProps, reactive, ref } from 'vue';
-
-const props = defineProps({
+import { reactive, ref } from 'vue';
+const { onSubmit } = defineProps({
   onSubmit: {
     type: Function,
     required: true
   }
 });
-
 const defaultValue = {
   email: '',
-  password: ''
 };
-
 const formData = reactive({ ...defaultValue });
 const errors = ref({});
 
 function handleSubmit() {
-  props.onSubmit(formData)
+  onSubmit(formData)
     .then(() => {
       Object.assign(formData, defaultValue);
       errors.value = {};
     })
-    .catch(_errors => {
-      errors.value = _errors;
-    });
+    .catch((_errors) => (errors.value = _errors));
 }
+
 </script>
 
 <template>
   <form class="form" @submit.prevent="handleSubmit">
-    <h1>Connexion</h1>
+    <h1>Réinitialisation MDP</h1>
     <label for="email" class="label">Email</label>
     <input v-model.trim="formData.email" type="email" id="email" class="input" />
     <p v-if="errors.email" class="error">{{ errors.email.join('\n') }}</p>
-    <label for="password" class="label">Password</label>
-    <input v-model="formData.password" type="password" id="password" class="input"/>
-    <p v-if="errors.password" class="error">{{ errors.password.join('\n') }}</p>
-    <button type="submit" class="button">Se connecter</button>
-    <router-link to="/register" class="link">Pas encore inscrit ?</router-link>
-    <router-link to="/forgot-password" class="link">Mot de passe oublié ?</router-link>
+    <button type="submit" class="button">Envoyer</button>
+    <router-link to="/login" class="link">Se connecter</router-link>
+
   </form>
   <pre>{{ formData }}</pre>
 </template>

@@ -68,7 +68,11 @@ module.exports = (connection) => {
         references: {
             model: "roles",
         }
-      }
+      },
+      token: {
+        type: DataTypes.STRING(256),
+        allowNull: true,
+      },
     },
     {
       sequelize: connection,

@@ -1,20 +1,18 @@
-<script>
-  export default {
-    props: {
-      user: {
-        type: Object,
-        required: true
-      },
-      logoutUser: {
-        type: Function,
-        required: true
-      }
-    }
-  }
+<script setup>
+import { inject } from 'vue';
+
+const user = inject('user');
+
+const logOut = () => {
+  user.value = null;
+  localStorage.removeItem('token');
+  window.location.href = '/login';
+}
+
 </script>
   
 <template>
-  <nav>
+  <nav v-if="user">
     <div class="navbar">
       <router-link to="/"><img src="../assets/logo.png" alt="logo" class="logo"/></router-link>
       <div class="dropdown">
@@ -22,7 +20,7 @@
         <img :src="user.media" class="avatar" />
         <div class="dropdown-content">
           <router-link to="/me"><i class="fas fa-user"></i> Mon profil</router-link>
-          <button @click="logoutUser"><i class="fas fa-sign-out-alt"></i> Se déconnecter</button>
+          <button @click="logOut"><i class="fas fa-sign-out-alt"></i> Se déconnecter</button>
         </div>
       </div>
     </div>

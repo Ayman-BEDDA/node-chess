@@ -1,51 +1,47 @@
-<template>
-    <div class="main-menu">
-      <div class="button v12" @click="navigateTo('play')">
-        <span class="label">Play</span>
-        <span class="icon">
-            <span></span>
-        </span>
-      </div>
-      <div class="button v12" @click="navigateTo('stats')">
-        <span class="label">Stats</span>
-        <span class="icon">
-            <span></span>
-        </span>
-      </div>
-      <div class="button v12" @click="navigateTo('shop')">
-        <span class="label">Shop</span>
-        <span class="icon">
-            <span></span>
-        </span>
-      </div>
-      <div v-if="user.id_role == 3" class="button v12" @click="navigateTo('admin')">
-        <span class="label">Admin</span>
-        <span class="icon">
-            <span></span>
-        </span>
-      </div>
-    </div>
-  </template>
-  
-  <script>
-  export default {
-    methods: {
-      navigateTo(route) {
-        this.$router.push('/' + route);
-        console.log('Navigating to', route);
-      }
-    },
-    props: {
-      user: {
-        type: Object,
-        required: true
-      },
-    }
-    }
-  </script>
-  
-  <style scoped>
+<script setup>
 
+import { inject } from 'vue';
+import router from '../router';
+
+const user = inject('user');
+
+function navigateTo(route) {
+    router.push(`/${route}`);
+}
+
+</script>
+
+<template>
+  <div class="main-menu">
+    <div class="button v12" @click="navigateTo('play')">
+      <span class="label">Play</span>
+      <span class="icon">
+          <span></span>
+      </span>
+    </div>
+    <div class="button v12" @click="navigateTo('stats')">
+      <span class="label">Stats</span>
+      <span class="icon">
+          <span></span>
+      </span>
+    </div>
+    <div class="button v12" @click="navigateTo('shop')">
+      <span class="label">Shop</span>
+      <span class="icon">
+          <span></span>
+      </span>
+    </div>
+    <div v-if="user?.id_role === 3" class="button v12" @click="navigateTo('admin')">
+      <span class="label">Admin</span>
+      <span class="icon">
+          <span></span>
+      </span>
+    </div>
+  </div>
+</template>
+
+  
+<style scoped>
 .main-menu {
     width: 100%;
     height: 80%;
@@ -217,5 +213,5 @@
   right: 0;
   bottom: 0;
 }
-  </style>
+</style>
   

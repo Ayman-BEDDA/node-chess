@@ -1,25 +1,15 @@
-<template>
-    <!-- Contenu de la page d'accueil -->
-    <MainMenu :user="user" />
-</template>
-
-<script >
+<script setup>
+import { inject } from 'vue';
 import MainMenu from '../components/MainMenu.vue';
 
-export default {
-  name: 'Home',
-  components: {
-    MainMenu
-  },
-  props: {
-    user: {
-      type: Object,
-      required: true
-    }
-  },
-  // Logique du composant Home
-}
+inject('user');
+
 </script>
+
+<template>
+    <!-- Contenu de la page d'accueil -->
+    <MainMenu />
+</template>
 
 <style scoped>
 /* Styles spécifiques à Home.vue */
