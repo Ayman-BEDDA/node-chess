@@ -10,7 +10,7 @@ module.exports = function SecurityController(UserService) {
           { id: user.id, login: user.login, id_role: user.id_role },
           process.env.JWT_SECRET,
           {
-            expiresIn: "1h",
+            expiresIn: "5h",
           }
         );
         res.json({ token });

@@ -1,5 +1,5 @@
 <template>
-    <nav>
+    <nav v-if="shouldShowNavbar">
     <router-link to="/me">
         <img :src="user.media" width="50" height="50" />
         {{ user.login }}
@@ -20,7 +20,13 @@
         type: Function,
         required: true
       }
-    }
+    },
+    computed: {
+      shouldShowNavbar() {
+        const currentPath = this.$route.path;
+        return !currentPath.includes('/admin');
+      }
+    } 
   }
   </script>
   

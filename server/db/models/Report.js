@@ -33,14 +33,16 @@ module.exports = function (connection) {
         references: {
           model: 'users',
           key: 'id',
-        }
+        },
+        onDelete: 'CASCADE'
       },
       id_user_reported: {
         type: DataTypes.INTEGER,
         references: {
           model: 'users',
           key: 'id',
-        }
+        },
+        onDelete: 'CASCADE'
       },
     },
     {
