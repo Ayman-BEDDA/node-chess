@@ -23,7 +23,7 @@ describe("UserService", () => {
         login: "testUser",
         email: "testUser@example.com",
         password: "password123",
-        // Ajoutez tous les autres champs nécessaires.
+        id_role: 3
       };
 
       const mockUser = {
@@ -50,19 +50,27 @@ describe("UserService", () => {
         login: "testUser",
         email: "testUser@example.com",
         password: "password123",
-        // Ajoutez tous les autres champs nécessaires.
+        id_role: 3
+      };
+
+      const mockUser = {
+        ...mockData,
+        id: 1,
+        destroy: jest.fn(),
       };
 
       const mockError = new Error("Test error");
 
-      User.create.mockRejectedValue(mockError);
+      User.create.mockResolvedValue(mockUser);
+      Own.bulkCreate.mockRejectedValue(mockError);
 
       const service = UserService();
 
       await expect(service.create(mockData)).rejects.toThrow(mockError);
 
       expect(User.create).toHaveBeenCalledWith(mockData);
-      expect(User.destroy).toHaveBeenCalled();
+      expect(Own.bulkCreate).toHaveBeenCalled();
+      expect(mockUser.destroy).toHaveBeenCalled();
     });
   });
 });
