@@ -1,4 +1,4 @@
-const { Friend } = require("../db/models/Friend");
+const { Friend } = require("../db");
 const Sequelize = require("sequelize");
 const ValidationError = require("../errors/ValidationError");
 
@@ -15,11 +15,10 @@ module.exports = function FriendService() {
           dbOptions.limit = options.limit;
           dbOptions.offset = options.offset;
         }
-        console.log(Friend);
-        //return Friend.findAll(dbOptions);
+        return Friend.findAll(dbOptions);
     },
     findOne: async function (filters) {
-        return User.findOne({ where: filters });
+        return Friend.findOne({ where: filters });
     },
     create: async function (data) {
         try {
