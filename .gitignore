@@ -4,4 +4,5 @@ node_modules
 server/.DS_Store
 
 server/.env
+client/.env
 .env
