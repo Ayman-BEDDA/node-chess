@@ -29,7 +29,7 @@
   <!-- Begin Main-->
   <main class="main">
     <div class="main__col--1">
-      <h2>Liste des sanctions</h2>
+      <h2>Dashboard Admin</h2>
     </div>
     
     <div class="main-header">

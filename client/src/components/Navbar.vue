@@ -9,12 +9,18 @@
         type: Function,
         required: true
       }
-    }
+    },
+    computed: {
+      shouldShowNavbar() {
+        const currentPath = this.$route.path;
+        return !currentPath.includes('/admin');
+      }
+    } 
   }
 </script>
   
 <template>
-  <nav>
+  <nav v-if="shouldShowNavbar">
     <div class="navbar">
       <router-link to="/"><img src="../assets/logo.png" alt="logo" class="logo"/></router-link>
       <div class="dropdown">
