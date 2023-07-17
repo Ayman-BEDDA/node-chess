@@ -31,8 +31,6 @@
   export default {
     methods: {
       navigateTo(route) {
-        // Implement your navigation logic here
-        // For example, you can use Vue Router to handle the navigation
         this.$router.push('/' + route);
         console.log('Navigating to', route);
       }
@@ -50,7 +48,7 @@
 
 .main-menu {
     width: 100%;
-    height: 100%;
+    height: 80%;
     position: relative;
     overflow: hidden;
     display: flex;

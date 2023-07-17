@@ -78,5 +78,14 @@ module.exports = function Controller(Service, options = {}) {
                 next(error);
             }
         },
+        getArticlesMoney: async (req, res, next) => {
+            const id_money = 3;
+            try {
+                const result = await Service.getArticlesMoney(id_money);
+                res.json(result);
+            } catch (error) {
+                next(error);
+            }
+        }
     };
 };

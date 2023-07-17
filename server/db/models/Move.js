@@ -31,7 +31,8 @@ module.exports = function (connection) {
         references: {
           model: 'users',
           key: 'id',
-        }
+        },
+        onDelete: 'CASCADE'
       },
     },
     {
