@@ -59,6 +59,28 @@ function handleGetDailyRewards() {
     });
 }
 
+const logOut = () => {
+    fetch('http://localhost:3000/logout', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + localStorage.getItem('token'),
+      },
+    })
+      .then(response => {
+        if (response.ok) {
+          localStorage.removeItem('token');
+          user.value = null;
+          router.push('/login');
+        } else {
+          console.error('Logout failed');
+        }
+      })
+      .catch(error => {
+        console.error('Logout failed:', error);
+      });
+};
+
 </script>
   
 <template>

@@ -20,10 +20,9 @@ module.exports = function SecurityController(UserService) {
         next(err);
       }
     },
-    logout: async (res, next) => {
+    logout: async (req, res, next) => {
       try {
-        res.clearCookie("token");
-        res.sendStatus(200);
+        res.status(200).json({ message: 'Vous êtes déconnecté.' });
       } catch (err) {
         next(err);
       }
