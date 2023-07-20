@@ -1,19 +1,53 @@
 <template>
   <div class="report-list">
-    <input type="text" v-model="searchQuery" placeholder="Search reports" class="search-input">
-    <ul v-if="!isLoading" class="report-list__list">
-      <li v-if="filteredReports.length" v-for="report in paginatedReports" :key="report.id" class="report-list__item">
-        {{ report.id }} {{ report.message }} {{ report.status }}
-      </li>
-      <li v-if="filteredReports.length === 0" class="report-list__item report-list__item--empty">No reports</li>
-    </ul>
+    <input type="text" v-model="searchQuery" placeholder="Rechercher des sanctions" class="search-input">
+    <table v-if="!isLoading" class="report-list__table responsive-table">
+      <thead>
+        <tr>
+          <th>Message</th>
+          <th>Status</th>
+          <th>Utilisateur</th>
+          <th>Utilisateur signalé</th>
+          <th>Crée à</th>
+          <th>Modifié à</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr v-if="filteredReports.length" v-for="report in paginatedReports" :key="report.id" class="report-list__item">
+          <td>{{ report.message }}</td>
+          <td>{{ report.status }}</td>
+          <td>{{ report.user.login }}</td>
+          <td>{{ report.user_reported.login }}</td>
+          <td>{{ formatDate(report.createdAt) }}</td>
+          <td>{{ formatDate(report.updatedAt) }}</td>
+        </tr>
+        <tr v-if="filteredReports.length === 0" class="report-list__item report-list__item--empty">
+          <td colspan="4">Pas de sanctions</td>
+        </tr>
+      </tbody>
+    </table>
     <h2 v-if="isLoading" class="loading-text">Loading ...</h2>
     <div class="pagination">
-      <button @click="previousPage" :disabled="currentPage === 1" class="pagination__button">Previous</button>
-      <button @click="nextPage" :disabled="currentPage === totalPages" class="pagination__button">Next</button>
+      <button @click="previousPage" :disabled="currentPage === 1" class="pagination__button">Précédent</button>
+      <button @click="nextPage" :disabled="currentPage === totalPages" class="pagination__button">Suivant</button>
     </div>
   </div>
 </template>
+
+<script>
+  import dayjs from 'dayjs';
+  import 'dayjs/locale/fr';
+
+  dayjs.locale('fr');
+  export default {
+    methods: {
+      formatDate(dateString) {
+        const date = dayjs(dateString);
+        return date.format('dddd D MMMM, YYYY');
+      }
+    }
+  }
+</script>
 
 <script setup>
 import { reactive, onMounted, ref, computed, watch } from 'vue';
@@ -44,7 +78,7 @@ const filteredReports = computed(() => {
     return reports;
   } else {
     const query = filteredQuery.value.toLowerCase();
-    return reports.filter(report => report.id.toString().includes(query));
+    return reports.filter(report => report.message.toLowerCase().includes(query) || report.status.toLowerCase().includes(query) || report.user.login.toLowerCase().includes(query) || report.user_reported.login.toLowerCase().includes(query));
   }
 });
 
@@ -82,6 +116,27 @@ watch([filteredReports, currentPage], () => {
 
 
 <style scoped>
+.report-list__table {
+  width: 100%;
+  margin-bottom: 20px;
+  border-collapse: collapse;
+}
+
+.report-list__table td {
+  padding: 10px;
+  border: 1px solid #ccc;
+  text-align: left;
+  color: black;
+}
+
+.report-list__table th {
+  padding: 10px;
+  border: 1px solid #ccc;
+  text-align: left;
+  color: black;
+  background-color: #28a745;
+}
+
 .report-list {
   width: 100%;
   margin: 0 auto;
@@ -134,5 +189,39 @@ watch([filteredReports, currentPage], () => {
 .pagination__button:disabled {
   background-color: #ccc;
   cursor: not-allowed;
+}
+
+.responsive-table {
+  width: 100%;
+  margin-bottom: 20px;
+  border-collapse: collapse;
+}
+
+.responsive-table th,
+.responsive-table td {
+  padding: 10px;
+  border: 1px solid #ccc;
+  text-align: left;
+  color: black;
+}
+
+@media (max-width: 600px) {
+  .responsive-table td {
+    display: block;
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  /* Ajoutez ces styles pour afficher les en-têtes uniquement pour les écrans plus larges */
+  .responsive-table th {
+    display: none;
+  }
+
+  .responsive-table td:before {
+    content: attr(data-label);
+    font-weight: bold;
+    margin-bottom: 5px;
+    display: block;
+  }
 }
 </style>

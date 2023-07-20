@@ -1,6 +1,6 @@
 <script setup>
 import AdminDashboard from '../components/AdminDashboard.vue';
-import UserList from './UserList.vue';
+import MoneyList from './MoneyList.vue';
 import { ref, reactive } from 'vue';
 import jwtDecode from 'jwt-decode'
 
@@ -10,7 +10,7 @@ const user = ref(token ? jwtDecode(token) : null);
 
 <template>
   <AdminDashboard>
-    <template v-slot:title>Liste des utilisateurs</template>
-    <UserList v-if="user" />
+    <template v-slot:title>Liste des monnaies</template>
+    <MoneyList v-if="user" />
   </AdminDashboard>
 </template>

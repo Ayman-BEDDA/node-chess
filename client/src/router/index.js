@@ -5,6 +5,9 @@ import Home from '../views/Home.vue';
 import Admin from '../views/Admin.vue';
 import Admin_users from '../views/Admin_users.vue';
 import Admin_reports from '../views/Admin_reports.vue';
+import Admin_buys from '../views/Admin_buys.vue';
+import Admin_articles from '../views/Admin_articles.vue';
+import Admin_moneys from '../views/Admin_moneys.vue';
 import Stats from '../views/Stats.vue';
 import ForgotPassword from '../views/security/ForgotPassword.vue';
 import ResetPassword from '../views/security/ResetPassword.vue';
@@ -68,6 +71,21 @@ const routes = [
     name: 'Admin_reports',
     component: Admin_reports,
     meta: { requiresAuth: true, requiresAdmin: true },
+  },
+  {
+    path: '/admin/buys',
+    name: 'Admin_buys',
+    component: Admin_buys,
+  },
+  {
+    path: '/admin/articles',
+    name: 'Admin_articles',
+    component: Admin_articles,
+  },
+  {
+    path: '/admin/moneys',
+    name: 'Admin_moneys',
+    component: Admin_moneys,
   },
   {
     path: '/:pathMatch(.*)*',

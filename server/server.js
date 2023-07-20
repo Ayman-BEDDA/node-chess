@@ -10,6 +10,7 @@ const ArticleRouter = require("./routes/article");
 const MoneyRouter = require("./routes/money");
 const FriendRouter = require("./routes/friend");
 const OwnRouter = require("./routes/own");
+const BuyRouter = require("./routes/buy");
 const ValidationError = require("./errors/ValidationError");
 const cors = require("cors");
 const checkFormat = require("./middlewares/check-format");
@@ -34,6 +35,7 @@ app.use("/articles", checkAuth, checkValidation, checkNotBan, ArticleRouter);
 app.use("/moneys", checkAuth, checkAdmin, MoneyRouter);
 app.use("/owns", checkAuth, OwnRouter);
 app.use("/games", checkAuth, GameRouter); // protect only this route
+app.use("/buys", checkAuth, BuyRouter); 
 app.use("/friends", FriendRouter); //Friend
 
 app.get("/", (req, res) => {
