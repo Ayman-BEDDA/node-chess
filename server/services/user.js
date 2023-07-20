@@ -1,4 +1,4 @@
-const { User, Game, Friend, Article, Buy, Own} = require("../db");
+const { User, Game, Friend, Article, Buy, Own, Role} = require("../db");
 const Sequelize = require("sequelize");
 const ValidationError = require("../errors/ValidationError");
 
@@ -7,8 +7,11 @@ module.exports = function UserService() {
     findAll: async function (filters, options) {
       let dbOptions = {
         where: filters,
+        include: [
+          { model: Role, as: 'role' },
+        ],
       };
-      // options.order = {name: "ASC", dob: "DESC"}
+      options.order = {createdAt: "ASC"}
       if (options.order) {
         // => [["name", "ASC"], ["dob", "DESC"]]
         dbOptions.order = Object.entries(options.order);

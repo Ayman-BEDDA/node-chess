@@ -8,6 +8,7 @@ const RoleRouter = require("./routes/role");
 const ArticleRouter = require("./routes/article");
 const MoneyRouter = require("./routes/money");
 const OwnRouter = require("./routes/own");
+const BuyRouter = require("./routes/buy");
 const ValidationError = require("./errors/ValidationError");
 const cors = require("cors");
 const checkFormat = require("./middlewares/check-format");
@@ -32,6 +33,7 @@ app.use("/articles", checkAuth, checkValidation, checkNotBan, ArticleRouter);
 app.use("/moneys", checkAuth, checkAdmin, MoneyRouter);
 app.use("/owns", checkAuth, OwnRouter);
 app.use("/games", checkAuth, GameRouter); // protect only this route
+app.use("/buys", checkAuth, BuyRouter); 
 
 app.get("/", (req, res) => {
   res.send("Hello World!");

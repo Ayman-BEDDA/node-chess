@@ -5,6 +5,9 @@ import Home from '../views/Home.vue';
 import Admin from '../views/Admin.vue';
 import Admin_users from '../views/Admin_users.vue';
 import Admin_reports from '../views/Admin_reports.vue';
+import Admin_buys from '../views/Admin_buys.vue';
+import Admin_articles from '../views/Admin_articles.vue';
+import Admin_moneys from '../views/Admin_moneys.vue';
 import Stats from '../views/Stats.vue';
 
 const routes = [
@@ -30,6 +33,21 @@ const routes = [
     component: Admin_reports,
   },
   {
+    path: '/admin/buys',
+    name: 'Admin_buys',
+    component: Admin_buys,
+  },
+  {
+    path: '/admin/articles',
+    name: 'Admin_articles',
+    component: Admin_articles,
+  },
+  {
+    path: '/admin/moneys',
+    name: 'Admin_moneys',
+    component: Admin_moneys,
+  },
+  {
     path: '/:pathMatch(.*)*',
     redirect: "/",
   },
@@ -50,7 +68,7 @@ router.beforeEach((to, from, next) => {
   const user = ref(token ? jwtDecode(token) : null);
 
   const isLogged = !!user.value;
-  const isAdmin = user.value?.id_role === 3;
+  const isAdmin = user.value?.id_role === 1;
 
   if (to.matched.some(record => record.meta.requiresAuth)) {
     if (!isLogged) {

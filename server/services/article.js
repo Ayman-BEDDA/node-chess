@@ -1,4 +1,4 @@
-const { Article, User, Own, Buy } = require('../db');
+const { Article, User, Own, Buy, Money } = require('../db');
 const Sequelize = require('sequelize');
 const ValidationError = require('../errors/ValidationError');
 
@@ -17,8 +17,11 @@ module.exports = function ArticleService() {
         findAll: async function (filters, options) {
             let dbOptions = {
                 where: filters,
+                include: [
+                    { model: Money, as: 'money', attributes: ['type'] }
+                ],
             };
-            // options.order = {name: "ASC", dob: "DESC"}
+            options.order = {createdAt: "ASC"}
             if (options.order) {
                 // => [["name", "ASC"], ["dob", "DESC"]]
                 dbOptions.order = Object.entries(options.order);
