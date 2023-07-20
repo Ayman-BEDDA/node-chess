@@ -89,6 +89,8 @@ module.exports = function ArticleService() {
                 try {
                     const checkBuy = await Buy.findOne({ where: { id_article: articleId, id_user: userId } });
                     if (!checkBuy) {
+                        money.amount = money.amount - article.price;
+                        await money.save();
                         return await Buy.create({
                             date: new Date(),
                             id_article: articleId,

@@ -1,3 +1,4 @@
+require("dotenv").config();
 const express = require("express");
 const app = express();
 const UserRouter = require("./routes/user");
@@ -7,6 +8,7 @@ const SecurityRouter = require("./routes/security");
 const RoleRouter = require("./routes/role");
 const ArticleRouter = require("./routes/article");
 const MoneyRouter = require("./routes/money");
+const FriendRouter = require("./routes/friend");
 const OwnRouter = require("./routes/own");
 const BuyRouter = require("./routes/buy");
 const ValidationError = require("./errors/ValidationError");
@@ -26,7 +28,7 @@ app.use(checkFormat);
 app.use(express.json());
 app.use("/", SecurityRouter);
 //app.use(checkAuth); protect all routes below
-app.use("/users", checkAuth,checkAdmin, UserRouter); // protect only this route
+app.use("/users", UserRouter); // protect only this route
 app.use("/reports", checkAuth, ReportRouter); // protect only this route
 app.use("/roles", checkAuth, checkAdmin, RoleRouter); // protect only this route
 app.use("/articles", checkAuth, checkValidation, checkNotBan, ArticleRouter);
@@ -34,6 +36,7 @@ app.use("/moneys", checkAuth, checkAdmin, MoneyRouter);
 app.use("/owns", checkAuth, OwnRouter);
 app.use("/games", checkAuth, GameRouter); // protect only this route
 app.use("/buys", checkAuth, BuyRouter); 
+app.use("/friends", FriendRouter); //Friend
 
 app.get("/", (req, res) => {
   res.send("Hello World!");
@@ -46,5 +49,5 @@ app.post("/", (req, res) => {
 app.use(errorHandler);
 
 app.listen(3000, () => {
-  console.log("Server running on port 3000");
+  console.log("Server running on port 3001");
 });

@@ -12,7 +12,7 @@ async function generateArticleData() {
         const article = {
             libelle: faker.commerce.productName(),
             price: faker.commerce.price(),
-            media: faker.image.imageUrl(),
+            media: "./assets/echiquier-bois.jpg",
             id_money: faker.datatype.number({ min: 1, max: 2 })
         };
         articles.push(article);

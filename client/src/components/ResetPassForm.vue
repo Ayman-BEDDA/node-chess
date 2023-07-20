@@ -1,5 +1,5 @@
 <script setup>
-import { defineProps, reactive, ref } from 'vue';
+import { defineProps, reactive, ref, computed } from 'vue';
 
 const props = defineProps({
   onSubmit: {
@@ -9,37 +9,42 @@ const props = defineProps({
 });
 
 const defaultValue = {
-  email: '',
-  password: ''
+    password: '',
+    passwordConfirm: ''
 };
 
 const formData = reactive({ ...defaultValue });
 const errors = ref({});
 
+const passwordsMatch = computed(() => {
+  return formData.password === formData.passwordConfirm;
+});
+
 function handleSubmit() {
-  props.onSubmit(formData)
-    .then(() => {
-      Object.assign(formData, defaultValue);
-      errors.value = {};
-    })
-    .catch(_errors => {
-      errors.value = _errors;
-    });
+    if (passwordsMatch.value) {
+        props.onSubmit(formData).then(() => {
+            formData.password = '';
+            errors.value = {};
+        }).catch((errors) => {
+            errors.value = errors;
+        });
+    } else {
+        errors.value.passwordConfirm = ['Les mots de passe ne correspondent pas'];
+    }
 }
+
 </script>
 
 <template>
   <form class="form" @submit.prevent="handleSubmit">
-    <h1>Connexion</h1>
-    <label for="email" class="label">Email</label>
-    <input v-model.trim="formData.email" type="email" id="email" class="input" />
-    <p v-if="errors.email" class="error">{{ errors.email.join('\n') }}</p>
-    <label for="password" class="label">Password</label>
+    <h1>Réinitialisation</h1>
+    <label for="password" class="label">Nouveau mot de passe</label>
     <input v-model="formData.password" type="password" id="password" class="input"/>
     <p v-if="errors.password" class="error">{{ errors.password.join('\n') }}</p>
-    <button type="submit" class="button">Se connecter</button>
-    <router-link to="/register" class="link">Pas encore inscrit ?</router-link>
-    <router-link to="/forgot-password" class="link">Mot de passe oublié ?</router-link>
+    <label for="passwordConfirm" class="label">Confirmer le mot de passe</label>
+    <input v-model="formData.passwordConfirm" type="password" id="passwordConfirm" class="input"/>
+    <p v-if="errors.passwordConfirm" class="error">{{ errors.passwordConfirm.join('\n') }}</p>
+    <button type="submit" class="button">Confirmer</button>
   </form>
   <pre>{{ formData }}</pre>
 </template>

@@ -9,12 +9,50 @@ import Admin_buys from '../views/Admin_buys.vue';
 import Admin_articles from '../views/Admin_articles.vue';
 import Admin_moneys from '../views/Admin_moneys.vue';
 import Stats from '../views/Stats.vue';
+import ForgotPassword from '../views/security/ForgotPassword.vue';
+import ResetPassword from '../views/security/ResetPassword.vue';
+import Login from '../views/security/Login.vue';
+import Register from '../views/security/Register.vue';
+import Verify from '../views/security/Verify.vue';
+import Shop from '../views/Shop.vue'
+import Game from '../views/Game.vue';
 
 const routes = [
+  {
+    path: '/forgot-password',
+    name: 'ForgotPassword',
+    component: ForgotPassword,
+    meta: { requiresAuth: false },
+  },
+  {
+    path: '/reset-password',
+    name: 'ResetPassword',
+    component: ResetPassword,
+    meta: { requiresAuth: false },
+  },
+  {
+    path: '/login',
+    name: 'Login',
+    component: Login,
+    meta: { requiresAuth: false },
+  },
+  {
+    path: '/register',
+    name: 'Register',
+    component: Register,
+    meta: { requiresAuth: false },
+  },
+  {
+    path: '/verify',
+    name: 'Verify',
+    component: Verify,
+    meta: { requiresAuth: false },
+  },
   {
     path: '/',
     name: 'Home',
     component: Home,
+    meta: { requiresAuth: true },
   },
   {
     path: '/admin',
@@ -26,11 +64,13 @@ const routes = [
     path: '/admin/users',
     name: 'Admin_users',
     component: Admin_users,
+    meta: { requiresAuth: true, requiresAdmin: true },
   },
   {
     path: '/admin/reports',
     name: 'Admin_reports',
     component: Admin_reports,
+    meta: { requiresAuth: true, requiresAdmin: true },
   },
   {
     path: '/admin/buys',
@@ -55,6 +95,19 @@ const routes = [
     path: '/stats',
     name: 'Stats',
     component: Stats,
+    meta: { requiresAuth: true },
+  },
+  {
+    path: '/shop',
+    name: 'Shop',
+    component: Shop,
+    meta: { requiresAuth: true },
+  },
+  {
+    path: '/play',
+    name: 'Play',
+    component: Game,
+    meta: { requiresAuth: true },
   }
 ];
 
@@ -71,8 +124,8 @@ router.beforeEach((to, from, next) => {
   const isAdmin = user.value?.id_role === 1;
 
   if (to.matched.some(record => record.meta.requiresAuth)) {
-    if (!isLogged) {
-      next({ name: 'Home' });
+    if (!isLogged && to.name !== 'Login' && to.name !== 'Register' && to.name !== 'ForgotPassword' && to.name !== 'ResetPassword' && to.name !== 'Verify') {
+      next({ name: 'Login' });
     } else {
       if (to.matched.some(record => record.meta.requiresAdmin)) {
         if (!isAdmin) {
@@ -85,7 +138,11 @@ router.beforeEach((to, from, next) => {
       }
     }
   } else {
-    next();
+    if (isLogged && (to.name === 'Login' || to.name === 'Register' || to.name === 'ForgotPassword' || to.name === 'ResetPassword' || to.name === 'Verify')) {
+      next({ name: 'Home' });
+    } else {
+      next();
+    }
   }
 });
 

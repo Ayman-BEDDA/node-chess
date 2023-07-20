@@ -23,7 +23,6 @@ function handleSubmit() {
     .catch((_errors) => (errors.value = _errors));
 }
 
-defineEmits(['change-form']);
 </script>
 
 <template>
@@ -39,7 +38,7 @@ defineEmits(['change-form']);
     <input v-model.number="formData.password" type="password" id="password" class="input" />
     <p v-if="errors.password" class="error">{{ errors.password.join('\n') }}</p>
     <button type="submit" class="button">S'inscrire</button>
-    <p v-on:click="$emit('change-form')" class="link">Déjà inscrit ?</p>
+    <router-link to="/login" class="link">Déjà inscrit ?</router-link>
   </form>
   <pre>{{ formData }}</pre>
 </template>
@@ -76,6 +75,7 @@ defineEmits(['change-form']);
   margin-top: 20px;
   cursor: pointer;
   transition: all 0.3s ease-in-out;
+  text-decoration: none;
 }
 
 .link:hover {

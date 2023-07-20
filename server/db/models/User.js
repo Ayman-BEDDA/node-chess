@@ -68,17 +68,21 @@ module.exports = (connection) => {
         defaultValue: false
       },
       lastDailyRewardDate: {
-          type: DataTypes.DATE,
-          allowNull: true, // ou false si vous souhaitez que la date de dernière connexion soit obligatoire
+            type: DataTypes.DATE,
+            allowNull: true, // ou false si vous souhaitez que la date de dernière connexion soit obligatoire
       },
       id_role: {
-          type: DataTypes.INTEGER,
-          allowNull: false,
-          defaultValue: 2,
-          references: {
-              model: "roles",
-          }
-      }
+        type: DataTypes.INTEGER,
+        allowNull: false,
+        defaultValue: 2,
+        references: {
+            model: "roles",
+        }
+      },
+      token: {
+        type: DataTypes.STRING(256),
+        allowNull: true,
+      },
     },
     {
       sequelize: connection,

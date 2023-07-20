@@ -1,5 +1,5 @@
 <script setup>
-import { reactive, onMounted, ref, computed} from 'vue';
+import { reactive, onMounted, ref, computed, inject} from 'vue';
 
 const lastgames = reactive([]);
 const gamestats = reactive([]);
@@ -7,14 +7,7 @@ const isLoading = ref(true);
 const currentPage = ref(1);
 const pageSize = 10;
 
-const props = defineProps({
-  user: {
-    type: Object,
-    required: true
-  }
-});
-
-const user = ref(props.user);
+const user = inject('user');
 
 onMounted(async () => {
   const lastgamesResponse = await fetch(`http://localhost:3000/users/${user.value.id}/lastgames`, {

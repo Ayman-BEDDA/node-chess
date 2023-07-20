@@ -101,6 +101,12 @@ module.exports = function UserService() {
       if (!isPasswordValid) {
         throw new ValidationError({
           email: "Invalid credentials",
+      });
+      }
+
+      if (user && !user.isValid) {
+        throw new ValidationError({
+          email: "Votre compte n'est pas encore activé. Veuillez vérifier votre boîte de réception pour activer votre compte.",
         });
       }
       user.lastLoginDate = new Date();
@@ -223,9 +229,38 @@ module.exports = function UserService() {
         });
 
         const nbGames = games.length;
-        const nbWins = games.filter(game => game.Winner === userId).length;
-        const nbLosses = games.filter(game => game.Winner !== userId && game.Winner !== null).length;
-        const nbDraws = games.filter(game => game.Winner === null).length;
+        const nbWins = await Game.count({
+          where: {
+            [Sequelize.Op.or]: [
+              { WhiteUserID: userId },
+              { BlackUserID: userId },
+            ],
+            GameStatus: "end",
+            Winner: userId,
+          },
+        });
+        const nbLosses = await Game.count({
+          where: {
+            [Sequelize.Op.or]: [
+              { WhiteUserID: userId },
+              { BlackUserID: userId },
+            ],
+            GameStatus: "end",
+            Winner: {
+              [Sequelize.Op.not]: userId,
+            },
+          },
+        });
+        const nbDraws = await Game.count({
+          where: {
+            [Sequelize.Op.or]: [
+              { WhiteUserID: userId },
+              { BlackUserID: userId },
+            ],
+            GameStatus: "end",
+            Winner: null,
+          },
+        });
         const winRate = nbGames === 0 ? 0 : Math.round((nbWins / nbGames) * 100);
 
         return {
