@@ -26,4 +26,6 @@ jobs:
           ${{ runner.OS }}-node-
     - run: cd server && npm install
     - run: cd server && npm run build --if-present
+    - name: Run database
+      run: cd server && node migrate force
     - run: cd server && npm test
