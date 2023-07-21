@@ -1,4 +1,5 @@
 const genericController = require("./generic");
+const UserService = require("../services/user")();
 
 module.exports = function FriendController(Service, options = {}) {
   const GenericController = genericController(Service, options);

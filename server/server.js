@@ -19,6 +19,7 @@ const checkAuth = require("./middlewares/check-auth");
 const checkAdmin  = require("./middlewares/check-role");
 const checkValidation = require("./middlewares/check-validation");
 const checkNotBan = require("./middlewares/check-not-banned");
+const port = process.env.NODE_ENV === 'test' ? 3005 : 3000;
 
 app.use(cors());
 
@@ -47,6 +48,8 @@ app.post("/", (req, res) => {
 
 app.use(errorHandler);
 
-app.listen(3000, () => {
-  console.log("Server running on port 3001");
+const server = app.listen(port, () => {
+  console.log("Server running on port " + port);
 });
+
+module.exports = server;
