@@ -18,6 +18,19 @@ async function generateOwnData() {
         id_money: 2,
         id_user: 1
     });
+
+    //fixture just for the users
+    await Own.create({
+        amount: 0,
+        id_money: 1,
+        id_user: 13
+    });
+
+    await Own.create({
+        amount: 0,
+        id_money: 2,
+        id_user: 13
+    });
 }
 
 module.exports = generateOwnData;

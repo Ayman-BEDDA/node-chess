@@ -118,7 +118,9 @@ function filterCategory(category) {
               <img src="../assets/echiquier-bois.jpg" class="image">
               <p class="libelle">{{ article.libelle }}</p>
               <div class="price">
-                <p>{{ article.price }}</p>
+                <p v-if="article.id_money === 1">{{ article.price }}</p>
+                <p v-if="article.id_money === 2">{{ article.price }}</p>
+                <p v-if="article.id_money === 3">{{ article.euros }}</p>
                 <img class="img-coin" v-if="article.id_money === 1" src="../assets/premium-coin.svg">
                 <img class="img-coin" v-if="article.id_money === 2" src="../assets/free-coins.svg">
                 <p class="price" v-if="article.id_money === 3"> €</p>
