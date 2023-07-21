@@ -10,13 +10,13 @@ async function generateOwnData() {
     await Own.create({
         amount: 0,
         id_money: 1,
-        id_user: 1
+        id_user: 3
     });
 
     await Own.create({
         amount: 0,
         id_money: 2,
-        id_user: 1
+        id_user: 3
     });
 
     //fixture just for the users
