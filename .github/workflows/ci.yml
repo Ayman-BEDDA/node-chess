@@ -34,6 +34,10 @@ jobs:
     - name: Run database migration
       run: docker-compose exec -T server node migrate force
 
+    # Run your database migration
+    - name: Run migration
+      run: docker-compose exec -T server node fixtures/index.js
+
     # Run your tests
     - name: Run tests
       run: docker-compose exec -T server npm test
