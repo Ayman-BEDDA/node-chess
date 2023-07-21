@@ -44,6 +44,6 @@ jobs:
     - name: Run migration
       run: docker-compose exec -T server node fixtures/index.js
 
-    # Run your tests
+    # Run your tests u
     - name: Run tests
       run: docker-compose exec -T server npm test
