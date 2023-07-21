@@ -26,6 +26,10 @@ jobs:
     - name: Build the Docker Compose stack
       run: docker-compose up -d
 
+    # Install dependencies
+    - name: Install Node.js dependencies
+      run: docker exec -T server npm install
+
     # Run your database migration
     - name: Run database migration
       run: docker-compose exec -T server node migrate force
