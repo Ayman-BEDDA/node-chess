@@ -30,10 +30,17 @@ jobs:
     - name: Install Node.js dependencies
       run: docker-compose exec -T server npm install
 
+    # Wait for the database to be ready
+    - name: Wait for database
+      run: |
+        wget https://raw.githubusercontent.com/vishnubob/wait-for-it/master/wait-for-it.sh -O /tmp/wait-for-it.sh
+        chmod +x /tmp/wait-for-it.sh
+        /tmp/wait-for-it.sh db:5432 --timeout=30
+
     # Run your database migration
     - name: Run database migration
       run: docker-compose exec -T server node migrate force
 
     # Run your tests
     - name: Run tests
-      run: docker-compose exec -T server npm test
+      run: docker-compose exec server npm test
