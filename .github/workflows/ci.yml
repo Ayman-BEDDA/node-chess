@@ -13,19 +13,23 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
-    - name: Use Node.js ${{ matrix.node-version }}
-      uses: actions/setup-node@v2
-      with:
-        node-version: ${{ matrix.node-version }}
-    - name: Cache node modules
-      uses: actions/cache@v2
-      with:
-        path: ~/.npm
-        key: ${{ runner.OS }}-node-${{ hashFiles('**/package-lock.json') }}
-        restore-keys: |
-          ${{ runner.OS }}-node-
-    - run: cd server && npm install
-    - run: cd server && npm run build --if-present
-    - name: Run database
-      run: cd server && node migrate force
-    - run: cd server && npm test
+
+    # Install Docker Compose
+    - name: Docker Compose Install
+      run: |
+        sudo rm /usr/local/bin/docker-compose
+        curl -L "https://github.com/docker/compose/releases/download/1.29.2/docker-compose-$(uname -s)-$(uname -m)" -o docker-compose
+        chmod +x docker-compose
+        sudo mv docker-compose /usr/local/bin/docker-compose
+
+    # Build and start your Docker containers
+    - name: Build the Docker Compose stack
+      run: docker-compose up -d
+
+    # Run your database migration
+    - name: Run database migration
+      run: docker-compose exec server node migrate force
+
+    # Run your tests
+    - name: Run tests
+      run: docker-compose exec server npm test
