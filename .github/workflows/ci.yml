@@ -30,6 +30,12 @@ jobs:
     - name: Install Node.js dependencies
       run: docker-compose exec -T server npm install
 
+    # Run security checks with Snyk
+    - name: Run Snyk to check for vulnerabilities
+      run: docker-compose exec -T server npx snyk test --all-projects --severity-threshold=high
+      env:
+        SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+
     # Run your database migration
     - name: Run database migration
       run: docker-compose exec -T server node migrate force
