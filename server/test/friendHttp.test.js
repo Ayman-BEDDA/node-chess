@@ -170,5 +170,6 @@ describe('Friend API', () => {
         await Role.destroy({ where: { id: role.id }});
         await Friend.destroy({ where: { id: friendRequest1.id }});
         await Friend.destroy({ where: { id: friendRequest2.id }});
+        app.close();
     });
 });
