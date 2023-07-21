@@ -1,18 +1,18 @@
 ##  Users
-POST http://localhost:3000/users
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwibG9naW4iOiJhZG1pbiIsImlkX3JvbGUiOm51bGwsImlzVmFsaWQiOnRydWUsImlzQmFubmVkIjpmYWxzZSwiaWF0IjoxNjg5MjQ3OTE5LCJleHAiOjE2ODkyNTg3MTl9.4UWnlHYLuIdKfINa2cPe2tGLo4h1zP_1BvhERgkFEko
-Content-Type: application/json
-
-{
-  "login": "bbbew",
-  "email": "test@v.fr",
-    "password": "test",
-  "elo": 10,
-  "media": "default.png",
-  "isBanned": false,
-  "isValid": true,
-  "id_role": 3
-}
+#POST http://localhost:3000/users
+#Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwibG9naW4iOiJhZG1pbiIsImlkX3JvbGUiOm51bGwsImlzVmFsaWQiOnRydWUsImlzQmFubmVkIjpmYWxzZSwiaWF0IjoxNjg5MjQ3OTE5LCJleHAiOjE2ODkyNTg3MTl9.4UWnlHYLuIdKfINa2cPe2tGLo4h1zP_1BvhERgkFEko
+#Content-Type: application/json
+#
+#{
+#  "login": "bbbew",
+###  "email": "test@v.fr",
+#    "password": "test",
+#  "elo": 10,
+#  "media": "default.png",
+#  "isBanned": false,
+#  "isValid": true,
+#  "id_role": 3
+#}
 
 ### Articles
 #POST http://localhost:3000/articles
@@ -32,9 +32,9 @@ Content-Type: application/json
 #Content-Type: application/json
 
 ### Buy Article money premium
-#PATCH http://localhost:3000/owns/11/buy-money
-#Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwibG9naW4iOiJhZG1pbiIsImlkX3JvbGUiOjEsImlzVmFsaWQiOnRydWUsImlzQmFubmVkIjpmYWxzZSwiaWF0IjoxNjg5MjYzNDMxLCJleHAiOjE2ODkyNzQyMzF9.bmtTeGqKEWXCuAg_xrqwGTwMv35uYM5vSRNDe0ut5LM
-#Content-Type: application/json
+PATCH http://localhost:3000/owns/11/buy-money
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwibG9naW4iOiJhZG1pbiIsImlkX3JvbGUiOjEsImlzVmFsaWQiOnRydWUsImlzQmFubmVkIjpmYWxzZSwibGFzdERhaWx5UmV3YXJkRGF0ZSI6IjIwMjMtMDctMjBUMTY6MzU6MDcuMzA4WiIsImlhdCI6MTY4OTk0NTM1NSwiZXhwIjoxNjg5OTU2MTU1fQ.xoPws5kE2uYTAgkqb74EYLnjRaoidRNb8vNjittxIio
+Content-Type: application/json
 
 #GET http://localhost:3000/owns
 #Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwibG9naW4iOiJhZG1pbiIsImlkX3JvbGUiOjEsImlzVmFsaWQiOnRydWUsImlzQmFubmVkIjpmYWxzZSwiaWF0IjoxNjg5NTI1Mjc4LCJleHAiOjE2ODk1MzYwNzh9.HTk0nJoPrnmJzpNOqym54h8BYsktbrQTZYpZ_6Xt2LQ
