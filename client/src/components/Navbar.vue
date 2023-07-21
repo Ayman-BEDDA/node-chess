@@ -28,36 +28,47 @@ const freeMoney = computed(() => moneys.filter(item => item.id_money === 2));
 
 ///daily rewards
 const errors = ref({});
-const success = ref(false);
+const success = ref();
 
-async function getDailyRewards() {
-  const response = await fetch(`http://localhost:3000/owns`, {
-    method: 'PATCH',
-    headers: {
-      Authorization: 'Bearer ' + localStorage.getItem('token'),
-      'Content-type': 'application/json'
-    },
-  });
-  if (response.status === 422) {
-    return Promise.reject(await response.json());
-  } else if (response.ok) {
-    return Promise.resolve(await response.json());
-  }
-  throw new Error('Fetch failed');
-}
-
-function handleGetDailyRewards() {
-  getDailyRewards()
-    .then(() => {
-      success.value = true;
-    })
-    .catch((err) => {
-      errors.value = err;
-      setTimeout(() => {
-        errors.value = {};
-      }, 3000);
+async function dailyRwards() {
+  try {
+    const response = await fetch(`http://localhost:3000/owns`, {
+      method: 'POST',
+      headers: {
+        Authorization: 'Bearer ' + localStorage.getItem('token'),
+        'Content-type': 'application/json'
+      },
     });
+
+    if (response.status === 422) {
+      throw await response.json();
+    } else if (response.ok) {
+      success.value = "You got your daily rewards ! (100 credits)";
+    } else {
+      throw new Error('Fetch failed');
+    }
+  } catch (error) {
+    errors.value = error;
+    setTimeout(() => {
+      errors.value = {};
+    }, 3000);
+    throw error; // Ajout de cette ligne pour rejeter la promesse avec l'erreur
+  }
 }
+
+const handleDailyRewards = () => {
+  dailyRwards().then(() => {
+    success.value = "You got your daily rewards ! (100 credits)";
+    setTimeout(() => {
+      success.value = null;
+    }, 3000);
+  }).catch((error) => {
+    errors.value = error;
+    setTimeout(() => {
+      errors.value = {};
+    }, 3000);
+  });
+};
 
 const logOut = () => {
     fetch('http://localhost:3000/logout', {
@@ -87,9 +98,12 @@ const logOut = () => {
   <nav v-if="user && shouldShowNavbar">
     <div class="navbar">
       <router-link to="/"><img src="../assets/logo.png" alt="logo" class="logo"/></router-link>
-      <div class="button-rewards">
-        <p>Get your daily rewards !</p>
-        <p>{{  }}</p>
+      <div>
+        <div class="button-rewards" @click="handleDailyRewards()">
+          <p>Get your daily rewards !</p>
+        </div>
+        <p class="error">{{errors.dailyReward}}</p>
+        <p class="success" v-if="success">{{ success }}</p>
       </div>
       <div class="moneys">
         <div class="section-money">
@@ -220,10 +234,19 @@ const logOut = () => {
   width: 20%;
   text-align: center;
   cursor: pointer;
+  width: 100%;
 }
 
 .button-rewards:hover{
   background-color: rgba(225, 10, 10, 0.8);
+}
+
+.error{
+  color: red;
+}
+
+.success{
+  color: green;
 }
 </style>
   

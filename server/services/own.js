@@ -22,18 +22,20 @@ module.exports = function OwnService() {
                     const diffHours = Math.ceil(diffTime / (1000 * 60 * 60));
                     return diffHours >= 24;
                 }
-                if (!user.lastDailyRewardDate || isTwentyFourHours(user.lastDailyRewardDate, date)) {
-                    own.amount += 100;
-                    await own.save();
-                    user.lastDailyRewardDate = date;
-                    await user.save();
-                } else {
-                    throw new ValidationError({ dailyReward: 'You have already claimed your daily reward' });
+                try {
+                    if (!user.lastDailyRewardDate || isTwentyFourHours(user.lastDailyRewardDate, date)) {
+                        own.amount += 100;
+                        await own.save();
+                        user.lastDailyRewardDate = date;
+                        await user.save();
+                    } else if (!isTwentyFourHours(user.lastDailyRewardDate, date)){
+                        throw new ValidationError({ dailyReward: 'You have already claimed your daily reward' });
+                    }
+                } catch (error) {
+                    throw error;
                 }
-            } catch (e) {
-                if (e instanceof Sequelize.ValidationError) {
-                    throw ValidationError.fromSequelizeValidationError(e);
-                }
+            } catch (error) {
+                throw error;
             }
         },
 

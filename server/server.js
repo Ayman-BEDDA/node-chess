@@ -24,7 +24,6 @@ app.use(cors());
 
 app.use(checkFormat);
 
-
 app.use(express.json());
 app.use("/", SecurityRouter);
 //app.use(checkAuth); protect all routes below

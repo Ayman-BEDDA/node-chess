@@ -3,8 +3,8 @@ module.exports = function OwnController(OwnService) {
         dailyRewards: async (req, res, next) => {
             const id_user = req.user.id;
             try {
-                await OwnService.dailyRewards(id_user);
-                res.sendStatus(201);
+                const result = await OwnService.dailyRewards(id_user);
+                res.sendStatus(201).json(result);
             } catch (err) {
                 next(err);
             }
