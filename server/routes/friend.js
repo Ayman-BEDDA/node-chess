@@ -11,8 +11,8 @@ router.use("/", new genericRouter(new genericController(new FriendService())));
 router.get("/:id/friends_list", Controller.friends_list);
 router.get("/:id/pending", Controller.pending);
 router.post("/:id/send/:id_receiver", Controller.send);
-router.post("/:id/send/:id_receiver", Controller.send);
 router.patch("/:id/deny/:id_receiver", Controller.deny);
 router.patch("/:id/accept/:id_receiver", Controller.accept);
+router.delete("/:id/delete/:id_receiver", Controller.delete);
 
 module.exports = router;
