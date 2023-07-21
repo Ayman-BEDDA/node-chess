@@ -28,7 +28,7 @@ jobs:
 
     # Install dependencies
     - name: Install Node.js dependencies
-      run: docker exec -T server npm install
+      run: docker exec server npm install
 
     # Run your database migration
     - name: Run database migration
