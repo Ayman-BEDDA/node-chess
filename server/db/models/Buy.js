@@ -10,6 +10,12 @@ module.exports = function (connection) {
         }, date: {
             type: DataTypes.DATE, allowNull: false, defaultValue: DataTypes.NOW
         },
+        id_article: {
+            type: DataTypes.INTEGER, allowNull: false
+        },
+        id_user: {
+            type: DataTypes.INTEGER, allowNull: false
+        },
     }, {
         sequelize: connection, tableName: "buys",
     });

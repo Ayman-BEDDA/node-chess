@@ -322,10 +322,6 @@ module.exports = function UserService() {
               model: Article,
               as: 'article',
             },
-            {
-              model: User,
-              as: 'user',
-            },
           ],
         }); 
 
