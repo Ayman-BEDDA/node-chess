@@ -28,14 +28,14 @@ app.use(checkFormat);
 app.use(express.json());
 app.use("/", SecurityRouter);
 //app.use(checkAuth); protect all routes below
-app.use("/users", UserRouter); // protect only this route
+app.use("/users", checkAuth, UserRouter); // protect only this route
 app.use("/reports", checkAuth, ReportRouter); // protect only this route
 app.use("/roles", checkAuth, checkAdmin, RoleRouter); // protect only this route
 app.use("/articles", checkAuth, checkValidation, checkNotBan, ArticleRouter);
 app.use("/moneys", checkAuth, checkAdmin, MoneyRouter);
 app.use("/owns", checkAuth, OwnRouter);
 app.use("/games", checkAuth, GameRouter); // protect only this route
-app.use("/buys", checkAuth, BuyRouter); 
+app.use("/buys", checkAuth, BuyRouter);
 app.use("/friends", FriendRouter); //Friend
 
 app.get("/", (req, res) => {

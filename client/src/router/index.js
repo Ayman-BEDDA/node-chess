@@ -16,6 +16,7 @@ import Register from '../views/security/Register.vue';
 import Verify from '../views/security/Verify.vue';
 import Shop from '../views/Shop.vue'
 import Game from '../views/Game.vue';
+import Profile from '../views/Profile.vue';
 
 const routes = [
   {
@@ -47,6 +48,12 @@ const routes = [
     name: 'Verify',
     component: Verify,
     meta: { requiresAuth: false },
+  },
+  {
+    path: '/me',
+    name: 'Profile',
+    component: Profile,
+    meta: { requiresAuth: true },
   },
   {
     path: '/',

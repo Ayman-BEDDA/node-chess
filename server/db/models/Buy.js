@@ -13,6 +13,7 @@ module.exports = function (connection) {
         },
         id_article: {
             type: DataTypes.INTEGER,
+            allowNull: false,
             references: {
               model: 'articles', 
               key: 'id', 
@@ -21,6 +22,7 @@ module.exports = function (connection) {
         },
         id_user: {
             type: DataTypes.INTEGER,
+            allowNull: false,
             references: {
               model: 'users', 
               key: 'id', 

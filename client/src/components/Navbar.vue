@@ -133,7 +133,7 @@ const logOut = () => {
   justify-content: space-between;
   align-items: center;
   height: 50px;
-  margin: 0 20px;
+  margin-right: 10px;
 }
 
 .navbar a {

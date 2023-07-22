@@ -4,7 +4,7 @@ module.exports = function OwnController(OwnService) {
             const id_user = req.user.id;
             try {
                 const result = await OwnService.dailyRewards(id_user);
-                res.sendStatus(201).json(result);
+                res.status(201).json(result);
             } catch (err) {
                 next(err);
             }
