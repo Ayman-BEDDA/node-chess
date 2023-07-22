@@ -86,7 +86,4 @@ describe("SecurityController", () => {
       expect(next).toHaveBeenCalledWith(error);
     });
   });
-
-  // Add tests for other functions like 'logout', 'register', 'verify', 'forgotPassword', 'resetPassword' in a similar manner.
-
 });

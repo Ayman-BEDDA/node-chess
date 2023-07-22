@@ -22,17 +22,17 @@ module.exports = function (connection) {
         type: DataTypes.STRING(64),
         allowNull: false
       },
-        euros: {
-            type: DataTypes.INTEGER,
-            allowNull: true
-        },
-        id_money: {
-            type: DataTypes.INTEGER,
-            references: {
-                model: 'moneys',
-                key: 'id',
-            }
-        },
+      euros: {
+          type: DataTypes.INTEGER,
+          allowNull: true
+      },
+      id_money: {
+          type: DataTypes.INTEGER,
+          references: {
+              model: 'moneys',
+              key: 'id',
+          }
+      },
     },
     {
       sequelize: connection,
