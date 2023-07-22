@@ -53,3 +53,11 @@ jobs:
     # Run your tests
     - name: Run tests
       run: docker-compose exec -T server npm test
+
+    # Install artillery
+    - name: Install artillery
+      run: docker-compose exec -T server npm install -g artillery
+
+    # Run your load test
+    - name: Run load test
+      run: docker-compose exec -T server artillery run test/loadtest.yml

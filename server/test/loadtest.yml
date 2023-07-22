@@ -1,0 +1,19 @@
+config:
+  target: 'http://localhost:3000'
+  phases:
+    - duration: 60
+      arrivalRate: 100
+  payload:
+    fields:
+      - "login"
+      - "email"
+      - "password"
+    path: "data.csv"
+scenarios:
+  - flow:
+    - post:
+        url: "/register"
+        json:
+          login: "{{ login }}"
+          email: "{{ email }}"
+          password: "{{ password }}"
