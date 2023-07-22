@@ -38,10 +38,6 @@ jobs:
     - name: Auth Snyk
       run: docker-compose exec -T server snyk auth ${{ secrets.SNYK_TOKEN }}
 
-    # Ignore specific vulnerability in artillery until 1st August
-    - name: Ignore specific vulnerability
-      run: docker-compose exec -T server snyk ignore --id=SNYK-JS-ANSIREGEX-1583908 --expiry=2023-08-01 --reason="Cannot update artillery right now"
-
     # Run security checks with Snyk
     - name: Run Snyk to check for vulnerabilities
       run: docker-compose exec -T server snyk test --all-projects --severity-threshold=high
@@ -57,6 +53,10 @@ jobs:
     # Run your tests
     - name: Run tests
       run: docker-compose exec -T server npm test
+
+    # Install artillery
+    - name: Install artillery
+      run: docker-compose exec -T server npm install -g artillery
 
     # Run your load test
     - name: Run load test
