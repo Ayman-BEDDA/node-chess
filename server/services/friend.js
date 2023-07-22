@@ -4,7 +4,7 @@ const ValidationError = require("../errors/ValidationError");
 
 module.exports = function FriendService() {
   return {
-    findAll: async function (filters, options) {
+    findAll: async function (filters, options = {}) {
         let dbOptions = {
           where: filters,
         };

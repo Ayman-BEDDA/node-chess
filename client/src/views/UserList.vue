@@ -1,23 +1,112 @@
 <template>
   <div class="user-list">
-    <input type="text" v-model="searchQuery" placeholder="Search users" class="search-input">
-    <ul v-if="!isLoading" class="user-list__list">
-      <li v-if="filteredUsers.length" v-for="user in paginatedUsers" :key="user.id" class="user-list__item">
-        {{ user.id }} {{ user.email }}
-        <button @click="confirmDeleteUser(user.id)" class="action-button">Supprimer</button>
-        <button @click="editUser(user.id)" class="action-button">Modifier</button>
-      </li>
-      <li v-if="filteredUsers.length === 0" class="user-list__item user-list__item--empty">No users</li>
-    </ul>
+    <button @click="showCreateModal = true" class="create-button">Créer un utilisateur</button>
+    <input type="text" v-model="searchQuery" placeholder="Rechercher des utilisateurs" class="search-input">
+    <table v-if="!isLoading" class="user-list__table responsive-table">
+      <thead>
+        <tr>
+          <th>Login</th>
+          <th>Email</th>
+          <th>Elo</th>
+          <th>Banni</th>
+          <th>Valide</th>
+          <th>Rôle</th>
+          <th>Crée à</th>
+          <th>Modifié à</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr v-if="filteredUsers.length" v-for="user in paginatedUsers" :key="user.id" class="user-list__item">
+          <td>{{ user.login }}</td>
+          <td>{{ user.email }}</td>
+          <td>{{ user.elo }}</td>
+          <td>{{ user.isBanned ? 'Oui' : 'Non' }}</td>
+          <td>{{ user.isValid ? 'Oui' : 'Non' }}</td>
+          <td>{{ user.role.libelle }}</td>
+          <td>{{ formatDate(user.createdAt) }}</td>
+          <td>{{ formatDate(user.updatedAt) }}</td>
+          <td>
+            <button @click="editUser(user.id)" class="update-button">Modifier</button>
+            <button @click="confirmDeleteUser(user.id)" class="delete-button">Supprimer</button>
+          </td>
+        </tr>
+        <tr v-if="filteredUsers.length === 0" class="user-list__item user-list__item--empty">
+          <td colspan="7">Pas d'utilisateurs</td>
+        </tr>
+      </tbody>
+    </table>
     <h2 v-if="isLoading" class="loading-text">Loading ...</h2>
     <div class="pagination">
-      <button @click="previousPage" :disabled="currentPage === 1" class="pagination__button">Previous</button>
-      <button @click="nextPage" :disabled="currentPage === totalPages" class="pagination__button">Next</button>
+      <button @click="previousPage" :disabled="currentPage === 1" class="pagination__button">Précédent</button>
+      <button @click="nextPage" :disabled="currentPage === totalPages" class="pagination__button">Suivant</button>
     </div>
   </div>
+
+  <!-- Create Modal -->
+  <div v-if="showCreateModal" class="modal">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h3 class="modal-title">Créer un utilisateur</h3>
+          <button type="button" class="modal-close" @click="cancelCreate">&times;</button>
+        </div>
+        <div class="modal-body">
+          <form @submit="createUser">
+            <div class="form-group">
+              <label for="newLogin">Login</label>
+              <input type="text" v-model="newUserForm.login" id="newLogin" class="input-field" required>
+            </div>
+            <div class="form-group">
+              <label for="newEmail">Email</label>
+              <input type="email" v-model="newUserForm.email" id="newEmail" class="input-field" required>
+            </div>
+            <div class="form-group">
+              <label for="newPassword">Mot de passe</label>
+              <input type="password" v-model="newUserForm.password" id="newPassword" class="input-field" required>
+            </div>
+            <div class="form-group">
+              <label for="newElo">Elo</label>
+              <input type="number" v-model="newUserForm.elo" id="newElo" class="input-field" required>
+            </div>
+            <div class="form-group">
+              <label for="newIsBanned">Bannir</label>
+              <select v-model="newUserForm.isBanned" class="select-field" required>
+                <option disabled value="">En choisir un</option>
+                <option value="true">Oui</option>
+                <option value="false">Non</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="newIsValid">Valide</label>
+              <select v-model="newUserForm.isValid" class="select-field" required>
+                <option disabled value="">En choisir un</option>
+                <option value="true">Oui</option>
+                <option value="false">Non</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="newRole">Rôle</label>
+              <select v-model="newUserForm.id_role" class="select-field" required>
+                <option disabled value="">En choisir un</option>
+                <!-- Utilisez v-for pour itérer sur la liste des rôles -->
+                <option v-for="role in roles" :key="role.id" :value="role.id">{{ role.libelle }}</option>
+              </select>
+            </div>
+
+            <div class="modal-footer">
+              <button type="submit" class="button primary">Créer</button>
+              <button type="button" class="button" @click="cancelCreate">Annuler</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- ... -->
   
 
-  <!-- ... -->
+  <!-- Update Modal -->
   <div v-if="showEditModal" class="modal">
     <div class="modal-dialog">
       <div class="modal-content">
@@ -41,32 +130,29 @@
             </div>
             <div class="form-group">
               <label for="isBanned">Bannir:</label>
-
-              <select v-model="editUserForm.isBanned">
+              <select v-model="editUserForm.isBanned" class="select-field">
                 <option disabled value="">En choisir un</option>
-                <option value="1">Oui</option>
-                <option value="2">Non</option>
+                <option :value="true">Oui</option>
+                <option :value="false">Non</option>
               </select>
             </div>
             <div class="form-group">
-              <label for="isValid">Validité:</label>
-
-              <select v-model="editUserForm.isValid">
+              <label for="isValid">Valide:</label>
+              <select v-model="editUserForm.isValid" class="select-field">
                 <option disabled value="">En choisir un</option>
-                <option value="1">Oui</option>
-                <option value="2">Non</option>
+                <option :value="true">Oui</option>
+                <option :value="false">Non</option>
               </select>
             </div>
             <div class="form-group">
-              <label for="role">Rôle:</label>
-
-              <select v-model="editUserForm.id_role">
+              <label for="id_role">Rôle:</label>
+              <select v-model="editUserForm.id_role" class="select-field">
                 <option disabled value="">En choisir un</option>
-                <option value="1">Utilisateur</option>
-                <option value="2">Modérateur</option>
-                <option value="3">Administrateur</option>
+                <!-- Utilisez v-for pour itérer sur la liste des rôles -->
+                <option v-for="role in roles" :key="role.id" :value="role.id">{{ role.libelle }}</option>
               </select>
             </div>
+
             <div class="modal-footer">
               <button type="submit" class="button primary">Confirmer</button>
               <button type="button" class="button" @click="cancelEdit">Annuler</button>
@@ -79,6 +165,21 @@
   <!-- ... -->
 </template>
 
+<script>
+  import dayjs from 'dayjs';
+  import 'dayjs/locale/fr';
+
+  dayjs.locale('fr');
+  export default {
+    methods: {
+      formatDate(dateString) {
+        const date = dayjs(dateString);
+        return date.format('dddd D MMMM, YYYY');
+      }
+    }
+  }
+</script>
+
 <script setup>
 import { reactive, onMounted, ref, computed, watch } from 'vue';
 
@@ -89,10 +190,22 @@ const pageSize = 10;
 const searchQuery = ref('');
 const filteredQuery = ref('');
 const showEditModal = ref(false);
+const showCreateModal = ref(false);
 const selectedUserId = ref(null);
+const roles = ref([]);
 const editUserForm = reactive({
   login: '',
   email: '',
+  elo: '',
+  isBanned: '',
+  isValid: '',
+  id_role: ''
+});
+
+const newUserForm = reactive({
+  login: '',
+  email: '',
+  password: '',
   elo: '',
   isBanned: '',
   isValid: '',
@@ -113,12 +226,38 @@ onMounted(async () => {
   }
 });
 
+onMounted(async () => {
+  // Récupérer les rôles depuis l'API lors du chargement du composant
+  roles.value = await fetchRoles();
+});
+
+async function fetchRoles() {
+  try {
+    const response = await fetch(`http://localhost:3000/roles`, {
+      headers: {
+        Authorization: 'Bearer ' + localStorage.getItem('token')
+      }
+    });
+
+    if (response.ok) {
+      const roles = await response.json();
+      return roles;
+    } else {
+      throw new Error('Error while fetching roles');
+    }
+  } catch (error) {
+    console.error(error);
+    alert('Error while fetching roles');
+    return [];
+  }
+}
+
 const filteredUsers = computed(() => {
   if (filteredQuery.value === '') {
     return users;
   } else {
     const query = filteredQuery.value.toLowerCase();
-    return users.filter(user => user.email.toLowerCase().includes(query) || user.id.toString().includes(query));
+    return users.filter(user => user.email.toLowerCase().includes(query) || user.login.toLowerCase().includes(query) || user.role.libelle.toLowerCase().includes(query));
   }
 });
 
@@ -182,21 +321,88 @@ function deleteUser(userId) {
     });
 }
 
+async function createUser() {
+  event.preventDefault();
+
+  const newUser = {
+    login: newUserForm.login,
+    email: newUserForm.email,
+    password: newUserForm.password,
+    elo: newUserForm.elo,
+    isBanned: newUserForm.isBanned,
+    isValid: newUserForm.isValid,
+    id_role: newUserForm.id_role
+  };
+
+  const response = await fetch(`http://localhost:3000/users`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: 'Bearer ' + localStorage.getItem('token')
+    },
+    body: JSON.stringify(newUser)
+  });
+
+  if (response.ok) {
+    // Création réussie, récupérer le nouvel utilisateur avec les informations de rôle
+    const createdUser = await response.json();
+
+    // Récupérer les informations de rôle pour le nouvel utilisateur
+    const roleResponse = await fetch(`http://localhost:3000/roles/${createdUser.id_role}`, {
+      headers: {
+        Authorization: 'Bearer ' + localStorage.getItem('token')
+      }
+    });
+
+    if (roleResponse.ok) {
+      const role = await roleResponse.json();
+      createdUser.role = role;
+
+      // Ajouter le nouvel utilisateur à la liste des utilisateurs
+      users.push(createdUser);
+
+      // Mettre à jour la liste filtrée pour inclure le nouvel utilisateur
+      filteredQuery.value = searchQuery.value;
+
+      showCreateModal.value = false; // Fermer le modal de création
+    } else {
+      // Gérer les erreurs de récupération du rôle
+      alert('Error while fetching role for the new user');
+    }
+  } else {
+    // Gérer les erreurs de création
+    alert('Error while creating user');
+  }
+}
+
+
+function cancelCreate() {
+  showCreateModal.value = false; // Fermer le modal de création
+}
+
+
 function editUser(userId) {
   const user = users.find(user => user.id === userId);
   selectedUserId.value = userId;
 
-  // Afficher le modal de modification avec les données de l'utilisateur
-  showEditModal.value = true;
+  // Récupérer le rôle de l'utilisateur à partir des informations de l'utilisateur
+  const userRole = roles.value.find(role => role.id === user.id_role);
+  
+  // Pré-sélectionner le rôle de l'utilisateur dans le formulaire de mise à jour
   editUserForm.login = user.login;
   editUserForm.email = user.email;
   editUserForm.elo = user.elo;
   editUserForm.isBanned = user.isBanned;
   editUserForm.isValid = user.isValid;
-  editUserForm.id_role = user.id_role;
+  editUserForm.id_role = userRole ? userRole.id : ''; // Pré-sélectionner le rôle de l'utilisateur s'il existe
+
+  // Afficher le modal de modification avec les données de l'utilisateur
+  showEditModal.value = true;
 }
 
-function updateUser() {
+
+async function updateUser() {
+  event.preventDefault();
   const userId = selectedUserId.value;
 
   // Envoyer les nouvelles données de l'utilisateur au serveur
@@ -206,34 +412,47 @@ function updateUser() {
     elo: editUserForm.elo,
     isBanned: editUserForm.isBanned,
     isValid: editUserForm.isValid,
-    id_role: editUserForm.id_role
+    id_role: editUserForm.id_role,
+    updatedAt: new Date().toISOString()
   };
 
   // Envoyer les nouvelles données de l'utilisateur au serveur
-  fetch(`http://localhost:3000/users/${userId}`, {
+  const response = await fetch(`http://localhost:3000/users/${userId}`, {
     method: 'PATCH',
     headers: {
       'Content-Type': 'application/json',
       Authorization: 'Bearer ' + localStorage.getItem('token')
     },
     body: JSON.stringify(updatedUser)
-  })
-    .then(response => {
-      if (response.ok) {
-        // Modification réussie, mettre à jour les données de l'utilisateur dans la liste
-        const index = users.findIndex(user => user.id === userId);
-        users[index] = { ...users[index], ...updatedUser };
-        showEditModal.value = false; // Fermer le modal de modification
-      } else {
-        // Gérer les erreurs de modification
-        alert('Error while editing user');
+  });
+
+  if (response.ok) {
+    // Modification réussie, mettre à jour les données de l'utilisateur dans la liste
+    const index = users.findIndex(user => user.id === userId);
+    users[index] = { ...users[index], ...updatedUser };
+
+    // Récupérer les informations de rôle pour l'utilisateur mis à jour
+    const roleResponse = await fetch(`http://localhost:3000/roles/${updatedUser.id_role}`, {
+      headers: {
+        Authorization: 'Bearer ' + localStorage.getItem('token')
       }
-    })
-    .catch(error => {
-      // Gérer les erreurs de connexion ou de requête
-      console.error(error);
     });
+
+    if (roleResponse.ok) {
+      const role = await roleResponse.json();
+      users[index].role = role;
+    } else {
+      // Gérer les erreurs de récupération du rôle
+      alert('Error while fetching role for the updated user');
+    }
+
+    showEditModal.value = false; // Fermer le modal de modification
+  } else {
+    // Gérer les erreurs de modification
+    alert('Error while editing user');
+  }
 }
+
 
 function cancelEdit() {
   showEditModal.value = false; // Fermer le modal de modification
@@ -305,20 +524,47 @@ function cancelEdit() {
   border-radius: 5px;
 }
 
-.checkbox {
-  display: flex;
-  align-items: center;
+.create-button {
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
 }
 
-.checkbox input[type="checkbox"] {
-  margin-right: 5px;
+.create-button:hover {
+  background-color: #0056b3;
+}
+
+.user-list__table {
+  width: 100%;
+  margin-bottom: 20px;
+  border-collapse: collapse;
+}
+
+.user-list__table td {
+  padding: 10px;
+  border: 1px solid #ccc;
+  text-align: left;
+  color: black;
+}
+
+.user-list__table th {
+  padding: 10px;
+  border: 1px solid #ccc;
+  text-align: left;
+  color: black;
+  background-color: #28a745;
 }
 
 .modal-footer {
   padding: 10px 20px;
   background-color: #f2f2f2;
   display: flex;
-  justify-content: flex-end;
+  align-items: center;
+  justify-content: center;
 }
 
 .button {
@@ -339,6 +585,37 @@ function cancelEdit() {
   color: #000;
   border: none;
 }
+
+.select-field {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  background-color: #fff;
+  color: #000;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+/* Pour masquer la flèche par défaut des champs select dans certains navigateurs */
+.select-field::-ms-expand {
+  display: none;
+}
+
+/* Pour personnaliser l'apparence de la flèche dans les autres navigateurs */
+.select-field::after {
+  content: "";
+  position: absolute;
+  top: calc(50% - 2px);
+  right: 10px;
+  width: 0;
+  height: 0;
+  border-style: solid;
+  border-width: 4px 4px 0 4px;
+  border-color: #888 transparent transparent transparent;
+  pointer-events: none;
+}
+
 .user-list {
   width: 100%;
   margin: 0 auto;
@@ -349,6 +626,7 @@ function cancelEdit() {
   width: 100%;
   padding: 10px;
   margin-bottom: 20px;
+  margin-top: 20px;
 }
 
 .user-list__list {
@@ -393,7 +671,7 @@ function cancelEdit() {
   cursor: not-allowed;
 }
 
-.action-button {
+.update-button {
   margin-left: 10px;
   padding: 5px 10px;
   background-color: #28a745;
@@ -402,4 +680,50 @@ function cancelEdit() {
   border-radius: 5px;
   cursor: pointer;
 }
+
+.delete-button {
+  margin-left: 10px;
+  padding: 5px 10px;
+  background-color: #d3190b;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.responsive-table {
+  width: 100%;
+  margin-bottom: 20px;
+  border-collapse: collapse;
+}
+
+.responsive-table th,
+.responsive-table td {
+  padding: 10px;
+  border: 1px solid #ccc;
+  text-align: left;
+  color: black;
+}
+
+@media (max-width: 600px) {
+  .responsive-table td {
+    display: block;
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  /* Ajoutez ces styles pour afficher les en-têtes uniquement pour les écrans plus larges */
+  .responsive-table th {
+    display: none;
+  }
+
+  .responsive-table td:before {
+    content: attr(data-label);
+    font-weight: bold;
+    margin-bottom: 5px;
+    display: block;
+  }
+}
+
+
 </style>

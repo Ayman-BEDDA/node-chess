@@ -1,4 +1,4 @@
-const { User, Game, Friend, Article, Buy, Own} = require("../db");
+const { User, Game, Friend, Article, Buy, Own, Role} = require("../db");
 const Sequelize = require("sequelize");
 const ValidationError = require("../errors/ValidationError");
 
@@ -7,8 +7,11 @@ module.exports = function UserService() {
     findAll: async function (filters, options) {
       let dbOptions = {
         where: filters,
+        include: [
+          { model: Role, as: 'role' },
+        ],
       };
-      // options.order = {name: "ASC", dob: "DESC"}
+      options.order = {createdAt: "ASC"}
       if (options.order) {
         // => [["name", "ASC"], ["dob", "DESC"]]
         dbOptions.order = Object.entries(options.order);
@@ -143,75 +146,6 @@ module.exports = function UserService() {
         throw new Error('Failed to retrieve the last 10 games for the user.');
       }
     },
-    // getNbGames: async (userId) => {
-    //   try {
-    //     const nbGames = await Game.count({
-    //       where: {
-    //         [Sequelize.Op.or]: [
-    //           { WhiteUserID: userId },
-    //           { BlackUserID: userId },
-    //         ],
-    //         "GameStatus": "end",
-    //       },
-    //     });
-    //     return nbGames;
-    //   } catch (e) {
-    //     throw new Error('Failed to retrieve the number of games for the user.');
-    //   }
-    // },
-    // getNbWins: async (userId) => {
-    //   try {
-    //     const nbWins = await Game.count({
-    //       where: {
-    //         [Sequelize.Op.or]: [
-    //           { WhiteUserID: userId },
-    //           { BlackUserID: userId },
-    //         ],
-    //         "GameStatus": "end",
-    //         "Winner": userId,
-    //       },
-    //     });
-    //     return nbWins;
-    //   } catch (e) {
-    //     throw new Error('Failed to retrieve the number of wins for the user.');
-    //   }
-    // },
-    // getNbLosses: async (userId) => {
-    //   try {
-    //     const nbLosses = await Game.count({
-    //       where: {
-    //         [Sequelize.Op.or]: [
-    //           { WhiteUserID: userId },
-    //           { BlackUserID: userId },
-    //         ],
-    //         "GameStatus": "end",
-    //         "Winner": {
-    //           [Sequelize.Op.not]: userId,
-    //         },
-    //       },
-    //     });
-    //     return nbLosses;
-    //   } catch (e) {
-    //     throw new Error('Failed to retrieve the number of losses for the user.');
-    //   }
-    // },
-    // getNbDraws: async (userId) => {
-    //   try {
-    //     const nbDraws = await Game.count({
-    //       where: {
-    //         [Sequelize.Op.or]: [
-    //           { WhiteUserID: userId },
-    //           { BlackUserID: userId },
-    //         ],
-    //         "GameStatus": "end",
-    //         "Winner": null,
-    //       },
-    //     });
-    //     return nbDraws;
-    //   } catch (e) {
-    //     throw new Error('Failed to retrieve the number of draws for the user.');
-    //   }
-    // },
     getGameStats: async (userId) => {
       try {
         const games = await Game.findAll({

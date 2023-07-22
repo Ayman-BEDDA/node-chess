@@ -6,6 +6,8 @@ const articles  = reactive([]);
 const isLoading = ref(true);
 const errors = ref({});
 const success = ref(false);
+const errorsMoney = ref({});
+const successMoney = ref();
 const selectedCategory = ref("all");
 
 onMounted(async () => {
@@ -66,6 +68,50 @@ function handleBuy() {
     }, 2000);
   });
 }
+async function buyMoney(articleId) {
+  try {
+    const response = await fetch(`http://localhost:3000/owns/${articleId}/buy-money`, {
+      method: 'POST',
+      headers: {
+        Authorization: 'Bearer ' + localStorage.getItem('token'),
+        'Content-type': 'application/json'
+      },
+      body: JSON.stringify({
+        id_money: articleId
+      })
+    });
+    if (response.status === 422) {
+      throw await response.json();
+    } else if (response.ok) {
+      successMoney.value = "Monnaie achetée avec succès"
+    } else {
+      throw new Error('Fetch failed');
+    }
+
+  } catch (error) {
+    errorsMoney.value = error;
+    setTimeout(() => {
+      errorsMoney.value = {};
+    }, 2000);
+    throw error; // Ajout de cette ligne pour rejeter la promesse avec l'erreur
+  }
+}
+
+function handleBuyMoney() {
+  const moneyId = selectedArticle.value ? selectedArticle.value.id : null;
+  buyMoney(moneyId).then(() => {
+    successMoney.value = "Monnaie achetée avec succès"
+    setTimeout(() => {
+      successMoney.value = null;
+      closePopUp();
+    }, 2000);
+  }).catch((error) => {
+    errorsMoney.value = error;
+    setTimeout(() => {
+      errorsMoney.value = {};
+    }, 2000);
+  });
+}
 
 const filteredArticles = computed(() => {
   if (selectedCategory.value === "all") {
@@ -94,12 +140,15 @@ function filterCategory(category) {
       <p class="error">{{ errors.buy }}</p>
       <p class="error">{{ errors.money }}</p>
       <p class="success" v-if="success">Article acheté avec succès</p>
+      <p class="success" v-if="successMoney">Monnaie achetée avec succès</p>
       <img src="../assets/echiquier-bois.jpg" class="image">
       <h2>{{ selectedArticle.libelle }}</h2>
       <p class="price-pop" v-if="selectedArticle.id_money === 1">{{ selectedArticle.price }}<img class="img-coin" src="../assets/premium-coin.svg"></p>
       <p class="price-pop" v-if="selectedArticle.id_money === 2">{{ selectedArticle.price }}<img class="img-coin" src="../assets/free-coins.svg"></p>
-      <p class="price-pop" v-if="selectedArticle.id_money === 3">{{ selectedArticle.price }} €</p>
-      <button @click="handleBuy()" class="buy">Acheter</button>
+      <p class="price-pop" v-if="selectedArticle.id_money === 3">{{ selectedArticle.euros }} €</p>
+      <button v-if="selectedArticle.id_money === 1" @click="handleBuy()" class="buy">Acheter</button>
+      <button v-if="selectedArticle.id_money === 2" @click="handleBuy()" class="buy">Acheter</button>
+      <button v-if="selectedArticle.id_money === 3" @click="handleBuyMoney()" class="buy-money">Acheter</button>
     </div>
   </div>
   <div class="shop">
@@ -118,7 +167,9 @@ function filterCategory(category) {
               <img src="../assets/echiquier-bois.jpg" class="image">
               <p class="libelle">{{ article.libelle }}</p>
               <div class="price">
-                <p>{{ article.price }}</p>
+                <p v-if="article.id_money === 1">{{ article.price }}</p>
+                <p v-if="article.id_money === 2">{{ article.price }}</p>
+                <p v-if="article.id_money === 3">{{ article.euros }}</p>
                 <img class="img-coin" v-if="article.id_money === 1" src="../assets/premium-coin.svg">
                 <img class="img-coin" v-if="article.id_money === 2" src="../assets/free-coins.svg">
                 <p class="price" v-if="article.id_money === 3"> €</p>
@@ -221,6 +272,17 @@ function filterCategory(category) {
     text-decoration: none;
     font-size: 16px;
     cursor: pointer;
+  }
+
+  .buy-money{
+    border: none;
+    color: white;
+    padding: 15px 32px;
+    text-align: center;
+    text-decoration: none;
+    font-size: 16px;
+    cursor: pointer;
+    background-color: #0056b3;
   }
 
   .price-pop{

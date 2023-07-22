@@ -1,10 +1,17 @@
-###  Users
-#PATCH http://localhost:3000/users/1
+##  Users
+#POST http://localhost:3000/users
 #Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwibG9naW4iOiJhZG1pbiIsImlkX3JvbGUiOm51bGwsImlzVmFsaWQiOnRydWUsImlzQmFubmVkIjpmYWxzZSwiaWF0IjoxNjg5MjQ3OTE5LCJleHAiOjE2ODkyNTg3MTl9.4UWnlHYLuIdKfINa2cPe2tGLo4h1zP_1BvhERgkFEko
 #Content-Type: application/json
 #
 #{
-#  "login": "admin.test"
+#  "login": "bbbew",
+###  "email": "test@v.fr",
+#    "password": "test",
+#  "elo": 10,
+#  "media": "default.png",
+#  "isBanned": false,
+#  "isValid": true,
+#  "id_role": 3
 #}
 
 ### Articles
@@ -20,14 +27,14 @@
 #}
 
 ### Daily rewards
-#PATCH http://localhost:3000/owns
-#Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwibG9naW4iOiJhZG1pbiIsImlkX3JvbGUiOjEsImlzVmFsaWQiOnRydWUsImlzQmFubmVkIjpmYWxzZSwiaWF0IjoxNjg5MjYzNDMxLCJleHAiOjE2ODkyNzQyMzF9.bmtTeGqKEWXCuAg_xrqwGTwMv35uYM5vSRNDe0ut5LM
+#POST http://localhost:3000/owns
+#Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwibG9naW4iOiJhZG1pbiIsImlkX3JvbGUiOjEsImlzVmFsaWQiOnRydWUsImlzQmFubmVkIjpmYWxzZSwibGFzdERhaWx5UmV3YXJkRGF0ZSI6bnVsbCwiaWF0IjoxNjg5ODY0OTk3LCJleHAiOjE2ODk4NzU3OTd9.0Q-04BUXA0PTZUwGL8TR1qW-74uEtkZet197nQUDxGQ
 #Content-Type: application/json
 
 ### Buy Article money premium
-#PATCH http://localhost:3000/owns/11/buy-money
-#Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwibG9naW4iOiJhZG1pbiIsImlkX3JvbGUiOjEsImlzVmFsaWQiOnRydWUsImlzQmFubmVkIjpmYWxzZSwiaWF0IjoxNjg5MjYzNDMxLCJleHAiOjE2ODkyNzQyMzF9.bmtTeGqKEWXCuAg_xrqwGTwMv35uYM5vSRNDe0ut5LM
-#Content-Type: application/json
+PATCH http://localhost:3000/owns/11/buy-money
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwibG9naW4iOiJhZG1pbiIsImlkX3JvbGUiOjEsImlzVmFsaWQiOnRydWUsImlzQmFubmVkIjpmYWxzZSwibGFzdERhaWx5UmV3YXJkRGF0ZSI6IjIwMjMtMDctMjBUMTY6MzU6MDcuMzA4WiIsImlhdCI6MTY4OTk0NTM1NSwiZXhwIjoxNjg5OTU2MTU1fQ.xoPws5kE2uYTAgkqb74EYLnjRaoidRNb8vNjittxIio
+Content-Type: application/json
 
 #GET http://localhost:3000/owns
 #Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwibG9naW4iOiJhZG1pbiIsImlkX3JvbGUiOjEsImlzVmFsaWQiOnRydWUsImlzQmFubmVkIjpmYWxzZSwiaWF0IjoxNjg5NTI1Mjc4LCJleHAiOjE2ODk1MzYwNzh9.HTk0nJoPrnmJzpNOqym54h8BYsktbrQTZYpZ_6Xt2LQ
@@ -43,9 +50,9 @@
 
 
 #### Buy article
-POST http://localhost:3000/articles/24/buy
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwibG9naW4iOiJhZG1pbiIsImlkX3JvbGUiOjEsImlzVmFsaWQiOnRydWUsImlzQmFubmVkIjpmYWxzZSwiaWF0IjoxNjg5NjA5MTEwLCJleHAiOjE2ODk2MTk5MTB9.s7W202jXlI41LC5x6dlJp77t9QDFz6R1pHxDNfUScNw
-Content-Type: application/json
+#POST http://localhost:3000/articles/24/buy
+#Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwibG9naW4iOiJhZG1pbiIsImlkX3JvbGUiOjEsImlzVmFsaWQiOnRydWUsImlzQmFubmVkIjpmYWxzZSwiaWF0IjoxNjg5NjA5MTEwLCJleHAiOjE2ODk2MTk5MTB9.s7W202jXlI41LC5x6dlJp77t9QDFz6R1pHxDNfUScNw
+#Content-Type: application/json
 
 ###
 #GET http://localhost:3000/roles

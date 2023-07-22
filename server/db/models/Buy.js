@@ -7,14 +7,27 @@ module.exports = function (connection) {
     Buy.init({
         id: {
             type: DataTypes.INTEGER, autoIncrement: true, primaryKey: true
-        }, date: {
+        },
+        date: {
             type: DataTypes.DATE, allowNull: false, defaultValue: DataTypes.NOW
         },
         id_article: {
-            type: DataTypes.INTEGER, allowNull: false
+            type: DataTypes.INTEGER,
+            allowNull: false,
+            references: {
+              model: 'articles', 
+              key: 'id', 
+            },
+            onDelete: 'CASCADE'
         },
         id_user: {
-            type: DataTypes.INTEGER, allowNull: false
+            type: DataTypes.INTEGER,
+            allowNull: false,
+            references: {
+              model: 'users', 
+              key: 'id', 
+            },
+            onDelete: 'CASCADE'
         },
     }, {
         sequelize: connection, tableName: "buys",

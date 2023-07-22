@@ -10,6 +10,7 @@ const ArticleRouter = require("./routes/article");
 const MoneyRouter = require("./routes/money");
 const FriendRouter = require("./routes/friend");
 const OwnRouter = require("./routes/own");
+const BuyRouter = require("./routes/buy");
 const ValidationError = require("./errors/ValidationError");
 const cors = require("cors");
 const checkFormat = require("./middlewares/check-format");
@@ -18,11 +19,11 @@ const checkAuth = require("./middlewares/check-auth");
 const checkAdmin  = require("./middlewares/check-role");
 const checkValidation = require("./middlewares/check-validation");
 const checkNotBan = require("./middlewares/check-not-banned");
+const port = process.env.NODE_ENV === 'test' ? 3005 : 3000;
 
 app.use(cors());
 
 app.use(checkFormat);
-
 
 app.use(express.json());
 app.use("/", SecurityRouter);
@@ -34,6 +35,7 @@ app.use("/articles", checkAuth, checkValidation, checkNotBan, ArticleRouter);
 app.use("/moneys", checkAuth, checkAdmin, MoneyRouter);
 app.use("/owns", checkAuth, OwnRouter);
 app.use("/games", checkAuth, GameRouter); // protect only this route
+app.use("/buys", checkAuth, BuyRouter);
 app.use("/friends", FriendRouter); //Friend
 
 app.get("/", (req, res) => {
@@ -46,6 +48,8 @@ app.post("/", (req, res) => {
 
 app.use(errorHandler);
 
-app.listen(3000, () => {
-  console.log("Server running on port 3001");
+const server = app.listen(port, () => {
+  console.log("Server running on port " + port);
 });
+
+module.exports = server;

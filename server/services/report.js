@@ -1,4 +1,4 @@
-const { Report } = require("../db");
+const { Report, User } = require("../db");
 const Sequelize = require("sequelize");
 const ValidationError = require("../errors/ValidationError");
 
@@ -7,8 +7,12 @@ module.exports = function ReportService() {
     findAll: async function (filters, options) {
       let dbOptions = {
         where: filters,
+        include: [
+          { model: User, as: 'user' },
+          { model: User, as: 'user_reported' },
+        ],
       };
-      // options.order = {name: "ASC", dob: "DESC"}
+      options.order = {createdAt: "ASC"}
       if (options.order) {
         // => [["name", "ASC"], ["dob", "DESC"]]
         dbOptions.order = Object.entries(options.order);
