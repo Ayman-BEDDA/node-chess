@@ -53,3 +53,7 @@ jobs:
     # Run your tests
     - name: Run tests
       run: docker-compose exec -T server npm test
+
+    # Run your load test
+    - name: Run load test
+      run: docker-compose exec -T server artillery run test/loadtest.yml
