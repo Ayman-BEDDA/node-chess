@@ -187,7 +187,7 @@ describe("ArticleController", () => {
       const res = httpMocks.createResponse();
 
       const ArticleService = require("../services/article");
-      ArticleService.delete.mockResolvedValue(1); // 1 indicates successful deletion
+      ArticleService.delete.mockResolvedValue(1);
 
       const Controller = ArticleController(ArticleService);
 
@@ -201,7 +201,7 @@ describe("ArticleController", () => {
       const res = httpMocks.createResponse();
 
       const ArticleService = require("../services/article");
-      ArticleService.delete.mockResolvedValue(0); // 0 indicates no article was deleted
+      ArticleService.delete.mockResolvedValue(0);
 
       const Controller = ArticleController(ArticleService);
 
@@ -240,7 +240,6 @@ describe("ArticleController", () => {
     
         await Controller.buyArticle(req, res);
     
-        // Convert the Date object to a string to ensure correct comparison
         mockBuyResult.createdAt = mockBuyResult.createdAt.toISOString();
     
         expect(res.statusCode).toBe(201);
