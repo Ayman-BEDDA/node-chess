@@ -55,7 +55,7 @@ module.exports = function SecurityController(UserService) {
 
         sendVerificationEmail(email, token);
 
-        res.status(201).send("Votre compte a été créé avec succès. Veuillez vérifier votre boîte de réception pour activer votre compte.");
+        return res.status(201).json({ message: "Votre compte a été créé avec succès. Veuillez vérifier votre boîte de réception pour activer votre compte." });
       }
       catch (err) {
         next(err);
@@ -70,18 +70,18 @@ module.exports = function SecurityController(UserService) {
         try {
           decoded = jwt.verify(token, process.env.JWT_SECRET);
         } catch (err) {
-          return res.status(400).send("Token invalide.");
+          return res.status(400).json({ error: "Token invalide." });
         }
     
         // Vérifier si l'utilisateur existe
         const user = await UserService.findOne({ email: decoded.email });
         if (!user) {
-          return res.status(404).send("Utilisateur non trouvé.");
+          return res.status(404).json({ error: "Utilisateur non trouvé." });
         }
     
         // Vérifier si le compte a déjà été vérifié
         if (user.isValid) {
-          return res.status(400).send("Votre compte a déjà été vérifié.");
+          return res.status(400).json({ error: "Votre compte a déjà été vérifié." });
         }
     
         // Marquer le compte comme vérifié et supprimer le token
@@ -89,7 +89,7 @@ module.exports = function SecurityController(UserService) {
         user.token = null;
         await user.save();
     
-        return res.status(200).send("Votre compte a été vérifié avec succès!");
+        return res.status(200).json({ message: "Votre compte a été activé avec succès." });
       } catch (err) {
         next(err);
       }
@@ -100,7 +100,7 @@ module.exports = function SecurityController(UserService) {
 
         const user = await UserService.findOne({ email });
         if (!user) {
-          return res.status(404).send("Utilisateur non trouvé.");
+          return res.status(404).json({ error: "Utilisateur non trouvé." });
         }
 
         const token = jwt.sign(
@@ -116,7 +116,7 @@ module.exports = function SecurityController(UserService) {
 
         sendForgotPasswordEmail(email, token);
 
-        return res.status(200).send("Veuillez vérifier votre boîte de réception pour réinitialiser votre mot de passe.");
+        return res.status(200).json({ message: "Veuillez vérifier votre boîte de réception pour réinitialiser votre mot de passe." });
       } catch (err) {
         next(err);
       }
@@ -130,13 +130,13 @@ module.exports = function SecurityController(UserService) {
         try {
           decoded = jwt.verify(token, process.env.JWT_SECRET);
         } catch (err) {
-          return res.status(400).send("Token invalide.");
+          return res.status(400).json({ error: "Token invalide." });
         }
     
         // Vérifier si l'utilisateur existe
         const user = await UserService.findOne({ token: token });
         if (!user) {
-          return res.status(404).send("Utilisateur non trouvé.");
+          return res.status(404).json({ error: "Utilisateur non trouvé." });
         }
     
         // Réinitialiser le mot de passe et supprimer le token
@@ -144,7 +144,7 @@ module.exports = function SecurityController(UserService) {
         user.token = null;
         await user.save();
     
-        return res.status(200).send("Votre mot de passe a été réinitialisé avec succès!");
+        return res.status(200).json({ message: "Votre mot de passe a été réinitialisé avec succès!" });
       } catch (err) {
         next(err);
       }

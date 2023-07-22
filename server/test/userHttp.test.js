@@ -107,14 +107,34 @@ describe('User API', () => {
         expect(Array.isArray(response.body)).toBe(true);
     });
 
+    it('should fetch the game statistics for a user', async () => {
+        const response = await request(app).get(`/users/${user1.id}/gamestats`);
+        expect(response.statusCode).toBe(200);
+        expect(response.body).toEqual({
+            nbGames: 5,
+            nbWins: 2,
+            nbLosses: 2,
+            nbDraws: 1,
+            winRate: 40
+        });
+    });
+
+    it('should fetch the friends for a user', async () => {
+        const response = await request(app).get(`/users/${user1.id}/friends`);
+        expect(response.statusCode).toBe(200);
+        expect(Array.isArray(response.body)).toBe(true);
+    });
+
+    it('should fetch the buys for a user', async () => {
+        const response = await request(app).get(`/users/${user1.id}/buys`);
+        expect(response.statusCode).toBe(200);
+        expect(Array.isArray(response.body)).toBe(true);
+    });
+
     afterAll(async () => {
-        // Delete the games first
         await Game.destroy({ where: { id: [game1.id, game2.id, game3.id, game4.id, game5.id] } });
-    
-        // Then delete the users
         await User.destroy({ where: { id: [user1.id, user2.id, user3.id, user4.id, user5.id] } });
     
-        // Close the app (if needed, though in this case it's not necessary)
         app.close();
     });
 });
