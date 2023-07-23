@@ -61,6 +61,7 @@ const handleDailyRewards = () => {
     success.value = "You got your daily rewards ! (100 credits)";
     setTimeout(() => {
       success.value = null;
+      window.location.reload();
     }, 3000);
   }).catch((error) => {
     errors.value = error;

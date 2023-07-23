@@ -1,6 +1,6 @@
 <script setup>
 
-import {computed, onMounted, reactive, ref} from "vue";
+import {computed, inject, onMounted, reactive, ref, watch} from "vue";
 
 const articles  = reactive([]);
 const isLoading = ref(true);
@@ -9,6 +9,9 @@ const success = ref(false);
 const errorsMoney = ref({});
 const successMoney = ref();
 const selectedCategory = ref("all");
+const buys = reactive([]);
+
+const user = inject('user');
 
 onMounted(async () => {
   const articlesResponses = await fetch(`http://localhost:3000/articles`, {
@@ -60,6 +63,7 @@ function handleBuy() {
     setTimeout(() => {
       success.value = false;
       closePopUp();
+      window.location.reload();
     }, 2000);
   }).catch((error) => {
     errors.value = error;
@@ -104,6 +108,7 @@ function handleBuyMoney() {
     setTimeout(() => {
       successMoney.value = null;
       closePopUp();
+      window.location.reload();
     }, 2000);
   }).catch((error) => {
     errorsMoney.value = error;
@@ -113,18 +118,34 @@ function handleBuyMoney() {
   });
 }
 
-const filteredArticles = computed(() => {
-  if (selectedCategory.value === "all") {
-    return articles;
-  } else if (selectedCategory.value === "free") {
-    return articles.filter(article => article.id_money === 2);
-  } else if (selectedCategory.value === "premium") {
-    return articles.filter(article => article.id_money === 1);
-  } else if (selectedCategory.value === "euro") {
-    return articles.filter(article => article.id_money === 3);
+onMounted( async () => {
+  const buysResponses = await fetch(`http://localhost:3000/buys`, {
+    headers: {
+      Authorization: 'Bearer ' + localStorage.getItem('token')
+    }
+  });
+
+  if (buysResponses.ok){
+    buys.push(...(await buysResponses.json()));
   }
-  // Default return statement
-  return [];
+});
+
+const purchasedArticles = computed(() => buys.filter(item => item.id_user === user.value.id ));
+
+const filteredArticles = computed(() => {
+  const purchasedArticleIds = purchasedArticles.value.map(purchased => purchased.id_article);
+
+  if (selectedCategory.value === "all") {
+    return articles.filter(article => !purchasedArticleIds.includes(article.id));
+  } else if (selectedCategory.value === "free") {
+    return articles.filter(article => !purchasedArticleIds.includes(article.id) && article.id_money === 2);
+  } else if (selectedCategory.value === "premium") {
+    return articles.filter(article => !purchasedArticleIds.includes(article.id) && article.id_money === 1);
+  } else if (selectedCategory.value === "euro") {
+    return articles.filter(article => !purchasedArticleIds.includes(article.id) && article.id_money === 3);
+  } else if (selectedCategory.value === "purchased") {
+    return articles.filter(article => purchasedArticleIds.includes(article.id));
+  }
 });
 
 function filterCategory(category) {
@@ -159,6 +180,7 @@ function filterCategory(category) {
         <button @click="filterCategory('free')">Articles gratuits</button>
         <button @click="filterCategory('premium')">Articles premium</button>
         <button @click="filterCategory('euro')">Monnaies</button>
+        <button @click="filterCategory('purchased')">Articles achetées</button>
       </div>
       <div v-if="!isLoading">
         <div class="all-articles">
