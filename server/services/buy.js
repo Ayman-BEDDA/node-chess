@@ -23,5 +23,8 @@ module.exports = function BuyService() {
             }
             return Buy.findAll(dbOptions);
         },
+        findOne: async function (filters) {
+            return Buy.findOne({ where: filters });
+        }
     };
 };
