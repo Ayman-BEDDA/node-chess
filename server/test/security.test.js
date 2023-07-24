@@ -211,7 +211,7 @@ describe("SecurityController", () => {
       expect(mockUser.token).toBeNull();
       expect(mockUser.save).toHaveBeenCalled();
       expect(res.statusCode).toBe(200);
-      expect(res._getData()).toBe("Votre compte a été vérifié avec succès!");
+      expect(res._getData()).toBe("{\"message\":\"Votre compte a été activé avec succès.\"}");
     });
 
     it("should return 404 if user is not found", async () => {
@@ -226,7 +226,7 @@ describe("SecurityController", () => {
       await controller.verify(req, res, next);
 
       expect(res.statusCode).toBe(404);
-      expect(res._getData()).toBe("Utilisateur non trouvé.");
+      expect(res._getData()).toBe("{\"error\":\"Utilisateur non trouvé.\"}");
     });
 
     it("should return 400 if token is invalid", async () => {
@@ -241,7 +241,7 @@ describe("SecurityController", () => {
       await controller.verify(req, res, next);
 
       expect(res.statusCode).toBe(400);
-      expect(res._getData()).toBe("Token invalide.");
+      expect(res._getData()).toBe("{\"error\":\"Token invalide.\"}");
     });
 
     it("should return 400 if account is already verified", async () => {
@@ -260,7 +260,7 @@ describe("SecurityController", () => {
       await controller.verify(req, res, next);
 
       expect(res.statusCode).toBe(400);
-      expect(res._getData()).toBe("Votre compte a déjà été vérifié.");
+      expect(res._getData()).toBe("{\"error\":\"Votre compte a déjà été vérifié.\"}");
     });
   });
 
@@ -288,9 +288,8 @@ describe("SecurityController", () => {
         mockUser.token
       );
       expect(res.statusCode).toBe(200);
-      expect(res._getData()).toBe(
-        "Veuillez vérifier votre boîte de réception pour réinitialiser votre mot de passe."
-      );
+      expect(res._getData()).toBe("{\"message\":\"Veuillez vérifier votre boîte de réception pour réinitialiser votre mot de passe.\"}");
+
     });
 
     it("should return 404 if user is not found", async () => {
@@ -303,7 +302,7 @@ describe("SecurityController", () => {
       await controller.forgotPassword(req, res, next);
 
       expect(res.statusCode).toBe(404);
-      expect(res._getData()).toBe("Utilisateur non trouvé.");
+      expect(res._getData()).toBe("{\"error\":\"Utilisateur non trouvé.\"}");
     });
   });
 
@@ -337,7 +336,7 @@ describe("SecurityController", () => {
       expect(mockUser.token).toBeNull();
       expect(mockUser.save).toHaveBeenCalled();
       expect(res.statusCode).toBe(200);
-      expect(res._getData()).toBe("Votre mot de passe a été réinitialisé avec succès!");
+      expect(res._getData()).toBe("{\"message\":\"Votre mot de passe a été réinitialisé avec succès!\"}");
     });
 
     it("should return 404 if user is not found", async () => {
@@ -354,7 +353,7 @@ describe("SecurityController", () => {
       await controller.resetPassword(req, res, next);
 
       expect(res.statusCode).toBe(404);
-      expect(res._getData()).toBe("Utilisateur non trouvé.");
+      expect(res._getData()).toBe("{\"error\":\"Utilisateur non trouvé.\"}");
     });
 
     it("should return 400 if token is invalid", async () => {
@@ -372,7 +371,7 @@ describe("SecurityController", () => {
       await controller.resetPassword(req, res, next);
 
       expect(res.statusCode).toBe(400);
-      expect(res._getData()).toBe("Token invalide.");
+      expect(res._getData()).toBe("{\"error\":\"Token invalide.\"}");
     });
   });
   
