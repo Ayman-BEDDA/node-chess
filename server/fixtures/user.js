@@ -17,7 +17,7 @@ async function generateTestData() {
     id_role: 1,
   });
 
-  for (let i = 0; i < 10; i++) {
+  for (let i = 0; i < 50; i++) {
     await User.create({
       login: faker.internet.userName(),
       email: faker.internet.email(),
@@ -27,19 +27,6 @@ async function generateTestData() {
       isBanned: false,
       isValid: false,
       id_role: 2,
-    });
-  }
-
-  for (let i = 0; i < 50; i++) {
-    await User.create({
-      login: faker.internet.userName(),
-      email: faker.internet.email(),
-      password: 'password123',
-      elo: Math.floor(Math.random() * 1000) + 500,
-      media: "default.png",
-      isBanned: false,
-      isValid: true,
-      id_role: 3,
     });
   }
 }
