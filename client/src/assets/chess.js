@@ -1640,3 +1640,4 @@ var Chess = function(fen) {
   /* export Chess object for any RequireJS compatible environment */
   if (typeof define !== 'undefined') define( function () { return Chess;  });
   
+  export default Chess; // Pour ES6
