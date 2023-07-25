@@ -1,29 +1,45 @@
 <template>
-    <div class="buy-list">
-      <input type="text" v-model="searchQuery" placeholder="Rechercher des achats" class="search-input">
-      <table v-if="!isLoading" class="buy-list__table responsive-table">
-        <thead>
-          <tr>
-            <th>Utilisateur</th>
-            <th>Article</th>
-            <th>Date d'achat</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr v-if="filteredBuys.length" v-for="buy in paginatedBuys" :key="buy.id" class="buy-list__item">
-            <td>{{ buy.user.login }}</td>
-            <td>{{ buy.article.libelle }}</td>
-            <td>{{ formatDate(buy.date) }}</td>
-          </tr>
-          <tr v-if="filteredBuys.length === 0" class="buy-list__item buy-list__item--empty">
-            <td colspan="4">Pas d'achats</td>
-          </tr>
-        </tbody>
-      </table>
-      <h2 v-if="isLoading" class="loading-text">Loading ...</h2>
-      <div class="pagination">
-        <button @click="previousPage" :disabled="currentPage === 1" class="pagination__button">Précédent</button>
-        <button @click="nextPage" :disabled="currentPage === totalPages" class="pagination__button">Suivant</button>
+    <div class="recent-grid">
+      <div class="projects">
+        <div class="card">
+          <div class="card-header">
+            <h2>Achats</h2>
+          </div>
+          <div class="card-body">
+            <div class="table-responsive">
+              <div class="search-wrapper">
+                <span> </span>
+                <input type="search" v-model="searchQuery" placeholder="Chercher un achat..." />
+
+              </div>
+              <table width="100%" v-if="!isLoading">
+              <thead>
+                <tr>
+                  <td>Utilisateur</td>
+                  <td>Article</td>
+                  <td>Date d'achat</td>
+                </tr>
+              </thead>
+              <tbody>
+                <tr v-if="filteredBuys.length" v-for="buy in paginatedBuys" :key="buy.id">
+                  <td>{{ buy.user.login }}</td>
+                  <td>{{ buy.article.libelle }}</td>
+                  <td>{{ formatDate(buy.date) }}</td>
+                </tr>
+                <tr v-if="filteredBuys.length === 0">
+                  <td colspan="4">Pas d'achats</td>
+                </tr>
+              </tbody>
+
+            </table>
+            <h2 v-if="isLoading" class="loading-text">Loading ...</h2>
+            <div class="pagination">
+                <button @click="previousPage" :disabled="currentPage === 1" class="pagination__button">Précédent</button>
+                <button @click="nextPage" :disabled="currentPage === totalPages" class="pagination__button">Suivant</button>
+            </div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </template>
@@ -37,7 +53,6 @@
           methods: {
               formatDate(dateString) {
                   const date = dayjs(dateString);
-                      // Then specify how you want your dates to be formatted
                   return date.format('dddd D MMMM, YYYY');
               }
           }
@@ -111,54 +126,106 @@
   
   
   <style scoped>
-  .buy-list__table {
+
+.search-wrapper {
+    border: solid 1px #ccc;
+    border-radius: 30px;
+    height: 50px;
+    display: flex;
+    align-items: center;
+    overflow-x: hidden;
     width: 100%;
+    padding: 10px;
     margin-bottom: 20px;
+    margin-top: 20px;
+  }
+  .search-wrapper span{
+    display: inline-block;
+    padding: 0rem 1rem;
+    font-size: 1.5rem;
+  }
+  .search-wrapper input{
+    width: 100%;
+    height: 100%;
+    padding: .5rem;
+    border: none;
+    outline: none;
+
+  }
+  .recent-grid{
+    margin-top: 3.5rem;
+    display: grid;
+    grid-gap: 2rem;
+    grid-template-columns: 100% auto;
+  
+  }
+  .card{
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 5px 10px rgba(154,160,185,.05), 0 15px 40px rgba(166,173,201,.2);
+    padding: 1rem;
+  }
+  .card-header
+  {
+    padding: 1rem;
+  }
+  .card-header{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #f0f0f0;
+    color: black;
+  }
+  .card-header button{
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  table{
     border-collapse: collapse;
   }
-  
-  .buy-list__table td {
-    padding: 10px;
-    border: 1px solid #ccc;
-    text-align: left;
-    color: black;
+  thead tr{
+    border-top: 1px solid #f0f0f0;
+    border-bottom:2px solid #f0f0f0;
+
   }
-  
-  .buy-list__table th {
-    padding: 10px;
-    border: 1px solid #ccc;
-    text-align: left;
-    color: black;
-    background-color: #28a745;
+  thead td{
+    font-weight: 700;
   }
-  
-  .buy-list {
+  td{
+    padding: .5rem 1rem ;
+    font-size: .9rem ;
+    color: #222;
+    
+  }
+
+  tr td:last-child{
+    display: flex;
+    align-items: center;
+
+
+  }
+  td .status{
+    display: inline-block;
+    height: 10px;
+    width: 10px;
+    border-radius: 50%;
+    margin-right: 1rem; 
+  }
+
+  .table-responsive{
     width: 100%;
-    margin: 0 auto;
-    padding: 20px;
+    overflow-x: auto;
   }
-  
+
   .search-input {
     width: 100%;
     padding: 10px;
     margin-bottom: 20px;
-  }
-  
-  .buy-list__list {
-    list-style: none;
-    padding: 0;
-  }
-  
-  .buy-list__item {
-    margin-bottom: 10px;
-    padding: 10px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    color: black;
-  }
-  
-  .buy-list__item--empty {
-    color: #888;
   }
   
   .loading-text {
@@ -168,6 +235,7 @@
   
   .pagination {
     margin-top: 20px;
+    margin-bottom: 20px;
     text-align: center;
   }
   
@@ -207,7 +275,6 @@
       box-sizing: border-box;
     }
   
-    /* Ajoutez ces styles pour afficher les en-têtes uniquement pour les écrans plus larges */
     .responsive-table th {
       display: none;
     }

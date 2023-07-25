@@ -1,44 +1,63 @@
 <template>
-    <div class="article-list">
-        <button @click="showCreateModal = true" class="create-button">Créer un article</button>
-        <input type="text" v-model="searchQuery" placeholder="Rechercher des articles" class="search-input">
-        <table v-if="!isLoading" class="article-list__table responsive-table">
-            <thead>
+    <div class="recent-grid">
+      <div class="projects">
+        <div class="card">
+          <div class="card-header">
+            <h2>Articles</h2>
+            <button @click="showCreateModal = true" class="create-button">Créer un article</button>
+          </div>
+          <div class="card-body">
+            <div class="table-responsive">
+              <div class="search-wrapper">
+                <span> </span>
+                <input type="search" v-model="searchQuery" placeholder="Chercher un article..." />
+
+              </div>
+              <table width="100%" v-if="!isLoading">
+              <thead>
                 <tr>
-                    <th>Libelle</th>
-                    <th>Prix</th>
-                    <th>Image</th>
-                    <th>Euros</th>
-                    <th>Type d'argent</th>
-                    <th>Crée à</th>
-                    <th>Modifié à</th>
-                    <th>Actions</th>
+                  <td>Libellé</td>
+                  <td>Prix</td>
+                  <td>image</td>
+                  <td>Euros</td>
+                  <td>Type de monnaie</td>
+                  <td>Crée à</td>
+                  <td>Modifié à</td>
+                  <td>Actions</td>
                 </tr>
-            </thead>
-            <tbody>
-                <tr v-if="filteredArticles.length" v-for="article in paginatedArticles" :key="article.id" class="article-list__item">
-                    <td>{{ article.libelle }}</td>
-                    <td>{{ article.price }}</td>
-                    <td>{{ article.media }}</td>
-                    <td>{{ article.euros }}</td>
-                    <td>{{ article.money.type }}</td>
-                    <td>{{ formatDate(article.createdAt) }}</td>
-                    <td>{{ formatDate(article.updatedAt) }}</td>
-                    <td>
-                        <button @click="editArticle(article.id)" class="update-button">Modifier</button>
-                        <button @click="confirmDeleteArticle(article.id)" class="delete-button">Supprimer</button>
-                    </td>
+              </thead>
+              <tbody>
+                <tr v-if="filteredArticles.length" v-for="article in paginatedArticles" :key="article.id">
+                  <td>{{ article.libelle }}</td>
+                  <td>{{ article.price }}</td>
+                  <td>{{ article.media }}</td>
+                  <td>{{ article.euros }}</td>
+                  <td>
+                    <span class="status purple"></span>
+                    {{ article.money.type }}
+                  </td>
+                  <td>{{ article.createdAt }}</td>
+                  <td>{{ article.updatedAt }}</td>
+                  <td>
+                    <button @click="editArticle(article.id)" class="update-button">Modifier</button>
+                    <button @click="confirmDeleteArticle(article.id)" class="delete-button">Supprimer</button>
+                  </td>
                 </tr>
-                <tr v-if="filteredArticles.length === 0" class="article-list__item article-list__item--empty">
-                    <td colspan="7">Pas d'articles</td>
+                <tr v-if="filteredArticles.length === 0">
+                  <td colspan="4">Pas d'articles</td>
                 </tr>
-            </tbody>
-        </table>
-        <h2 v-if="isLoading" class="loading-text">Loading ...</h2>
-        <div class="pagination">
-            <button @click="previousPage" :disabled="currentPage === 1" class="pagination__button">Précédent</button>
-            <button @click="nextPage" :disabled="currentPage === totalPages" class="pagination__button">Suivant</button>
+              </tbody>
+
+            </table>
+            <h2 v-if="isLoading" class="loading-text">Loading ...</h2>
+            <div class="pagination">
+                <button @click="previousPage" :disabled="currentPage === 1" class="pagination__button">Précédent</button>
+                <button @click="nextPage" :disabled="currentPage === totalPages" class="pagination__button">Suivant</button>
+            </div>
+            </div>
+          </div>
         </div>
+      </div>
     </div>
   
     <!-- Create Modal -->
@@ -67,7 +86,6 @@
                           <label for="newMoney">Type de monnaie</label>
                           <select v-model="newArticleForm.id_money" class="select-field" required>
                             <option disabled value="">En choisir un</option>
-                            <!-- Utilisez v-for pour itérer sur la liste des rôles -->
                             <option v-for="money in moneys" :key="money.id" :value="money.id">{{ money.type }}</option>
                           </select>
                         </div>
@@ -110,16 +128,6 @@
                 <label for="id_money">Type de monnaie:</label>
                 <select v-model="editArticleForm.id_money" class="select-field">
                   <option disabled value="">En choisir un</option>
-                  <option :value="1">Premium</option>
-                  <option :value="2">Free</option>
-                  <option :value="3">Euros</option>
-                </select>
-              </div>
-              <div class="form-group">
-                <label for="id_money">Type de monnaie:</label>
-                <select v-model="editArticleForm.id_money" class="select-field">
-                  <option disabled value="">En choisir un</option>
-                  <!-- Utilisez v-for pour itérer sur la liste des rôles -->
                   <option v-for="money in moneys" :key="money.id" :value="money.id">{{ money.type }}</option>
                 </select>
               </div>
@@ -193,7 +201,6 @@
   });
 
   onMounted(async () => {
-    // Récupérer les rôles depuis l'API lors du chargement du composant
     moneys.value = await fetchMoneys();
   });
     
@@ -253,15 +260,12 @@
     })
       .then(response => {
         if (response.ok) {
-          // Suppression réussie, mettre à jour la liste des utilisateurs
           articles.splice(articles.findIndex(article => article.id === articleId), 1);
         } else {
-          // Gérer les erreurs de suppression
           alert('Error while deleting article');
         }
       })
       .catch(error => {
-        // Gérer les erreurs de connexion ou de requête
         console.error(error);
       });
   }
@@ -308,10 +312,8 @@
     });
 
     if (response.ok) {
-      // Création réussie, récupérer le nouvel article avec les informations de type d'argent
       const createdArticle = await response.json();
 
-      // Récupérer les informations de type d'argent pour le nouvel article
       const moneyTypeResponse = await fetch(`http://localhost:3000/moneys/${createdArticle.id_money}`, {
         headers: {
           Authorization: 'Bearer ' + localStorage.getItem('token')
@@ -322,26 +324,26 @@
         const moneyType = await moneyTypeResponse.json();
         createdArticle.money = { type: moneyType.type };
 
-        // Ajouter le nouvel article à la liste des articles
-        articles.push(createdArticle);
+        articles.unshift(createdArticle);
 
-        // Mettre à jour la liste filtrée pour inclure le nouvel article
         filteredQuery.value = searchQuery.value;
 
-        showCreateModal.value = false; // Fermer le modal de création
+        showCreateModal.value = false;
+        newArticleForm.libelle = '';
+        newArticleForm.price = '';
+        newArticleForm.euros = '';
+        newArticleForm.id_money = '';
       } else {
-        // Gérer les erreurs de récupération du type d'argent
         alert('Error while fetching money type for the new article');
       }
     } else {
-      // Gérer les erreurs de création
       alert('Error while creating article');
     }
   }
 
 
   function cancelCreate() {
-      showCreateModal.value = false; // Fermer le modal de création
+      showCreateModal.value = false;
   }
 
   
@@ -351,7 +353,6 @@
 
     const articleMoney = moneys.value.find(money => money.id === article.id_money);
   
-    // Afficher le modal de modification avec les données de l'utilisateur
     showEditModal.value = true;
     editArticleForm.libelle = article.libelle;
     editArticleForm.price = article.price;
@@ -363,7 +364,6 @@
     event.preventDefault();
     const articleId = selectedArticleId.value;
 
-    // Envoyer les nouvelles données de l'article au serveur
     const updatedArticle = {
       libelle: editArticleForm.libelle,
       price: editArticleForm.price,
@@ -372,7 +372,6 @@
       updatedAt: new Date().toISOString()
     };
 
-    // Envoyer les nouvelles données de l'article au serveur
     const response = await fetch(`http://localhost:3000/articles/${articleId}`, {
       method: 'PATCH',
       headers: {
@@ -383,10 +382,8 @@
     });
 
     if (response.ok) {
-      // Modification réussie, récupérer l'article mis à jour avec les informations de type d'argent
       const updatedArticleData = await response.json();
 
-      // Récupérer les informations de type d'argent pour l'article mis à jour
       const moneyTypeResponse = await fetch(`http://localhost:3000/moneys/${updatedArticleData.id_money}`, {
         headers: {
           Authorization: 'Bearer ' + localStorage.getItem('token')
@@ -397,27 +394,147 @@
         const moneyType = await moneyTypeResponse.json();
         updatedArticleData.money = { type: moneyType.type };
 
-        // Mettre à jour les données de l'article dans la liste
         const index = articles.findIndex(article => article.id === articleId);
         articles[index] = updatedArticleData;
-        showEditModal.value = false; // Fermer le modal de modification
+        showEditModal.value = false;
       } else {
-        // Gérer les erreurs de récupération du type d'argent pour l'article mis à jour
         alert('Error while fetching money type for the updated article');
       }
     } else {
-      // Gérer les erreurs de modification
       alert('Error while editing article');
     }
   }
 
   
   function cancelEdit() {
-    showEditModal.value = false; // Fermer le modal de modification
+    showEditModal.value = false;
   }
   </script>
   
 <style scoped>
+
+.title{
+  margin-right: 1rem;
+}
+
+.status{
+  display: inline-block;
+  height: 10px;
+  width: 10px;
+  border-radius: 50%;
+  margin-right: 1rem; 
+}
+.status.purple {
+  background: rebeccapurple;
+}
+.status.red {
+  background: rgb(177, 8, 8);
+}
+
+.status.green {
+  background: rgb(19, 187, 41);
+}
+.status.pink{
+  background: deeppink;
+}
+.status.orange{
+  background: orangered;
+}
+  .search-wrapper {
+    border: solid 1px #ccc;
+    border-radius: 30px;
+    height: 50px;
+    display: flex;
+    align-items: center;
+    overflow-x: hidden;
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 20px;
+    margin-top: 20px;
+  }
+  .search-wrapper span{
+    display: inline-block;
+    padding: 0rem 1rem;
+    font-size: 1.5rem;
+  }
+  .search-wrapper input{
+    width: 100%;
+    height: 100%;
+    padding: .5rem;
+    border: none;
+    outline: none;
+
+  }
+  .recent-grid{
+    margin-top: 3.5rem;
+    display: grid;
+    grid-gap: 2rem;
+    grid-template-columns: 100% auto;
+  
+  }
+  .card{
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 5px 10px rgba(154,160,185,.05), 0 15px 40px rgba(166,173,201,.2);
+    padding: 1rem;
+  }
+  .card-header
+  {
+    padding: 1rem;
+  }
+  .card-header{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #f0f0f0;
+    color: black;
+  }
+  .card-header button{
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  table{
+    border-collapse: collapse;
+  }
+  thead tr{
+    border-top: 1px solid #f0f0f0;
+    border-bottom:2px solid #f0f0f0;
+
+  }
+  thead td{
+    font-weight: 700;
+  }
+  td{
+    padding: .5rem 1rem ;
+    font-size: .9rem ;
+    color: #222;
+    
+  }
+
+  tr td:last-child{
+    display: flex;
+    align-items: center;
+
+
+  }
+  td .status{
+    display: inline-block;
+    height: 10px;
+    width: 10px;
+    border-radius: 50%;
+    margin-right: 1rem; 
+  }
+
+  .table-responsive{
+    width: 100%;
+    overflow-x: auto;
+  }
+
   .create-button {
     background-color: #007bff;
     color: #fff;
@@ -494,28 +611,7 @@
     border: 1px solid #ccc;
     border-radius: 5px;
   }
-  
-  .article-list__table {
-    width: 100%;
-    margin-bottom: 20px;
-    border-collapse: collapse;
-  }
-  
-  .article-list__table td {
-    padding: 10px;
-    border: 1px solid #ccc;
-    text-align: left;
-    color: black;
-  }
-  
-  .article-list__table th {
-    padding: 10px;
-    border: 1px solid #ccc;
-    text-align: left;
-    color: black;
-    background-color: #28a745;
-  }
-  
+
   .modal-footer {
     padding: 10px 20px;
     background-color: #f2f2f2;
@@ -554,12 +650,10 @@
     cursor: pointer;
   }
   
-  /* Pour masquer la flèche par défaut des champs select dans certains navigateurs */
   .select-field::-ms-expand {
     display: none;
   }
   
-  /* Pour personnaliser l'apparence de la flèche dans les autres navigateurs */
   .select-field::after {
     content: "";
     position: absolute;
@@ -573,36 +667,6 @@
     pointer-events: none;
   }
   
-  .article-list {
-    width: 100%;
-    margin: 0 auto;
-    padding: 20px;
-  }
-  
-  .search-input {
-    width: 100%;
-    padding: 10px;
-    margin-bottom: 20px;
-    margin-top: 20px;
-  }
-  
-  .article-list__list {
-    list-style: none;
-    padding: 0;
-  }
-  
-  .article-list__item {
-    margin-bottom: 10px;
-    padding: 10px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    color: black;
-  }
-  
-  .article-list__item--empty {
-    color: #888;
-  }
-  
   .loading-text {
     text-align: center;
     margin-top: 20px;
@@ -610,6 +674,7 @@
   
   .pagination {
     margin-top: 20px;
+    margin-bottom: 20px;
     text-align: center;
   }
   
@@ -669,7 +734,6 @@
       box-sizing: border-box;
     }
   
-    /* Ajoutez ces styles pour afficher les en-têtes uniquement pour les écrans plus larges */
     .responsive-table th {
       display: none;
     }
@@ -679,6 +743,10 @@
       font-weight: bold;
       margin-bottom: 5px;
       display: block;
+    }
+
+    .card-header button{
+      padding: 5px 10px;
     }
   }
   </style>

@@ -1,19 +1,30 @@
 <template>
-    <div class="money-list">
-        <button @click="showCreateModal = true" class="create-button">Créer une monnaie</button>
-        <input type="text" v-model="searchQuery" placeholder="Rechercher des monnaies" class="search-input">
-        <table v-if="!isLoading" class="money-list__table responsive-table">
-            <thead>
+    <div class="recent-grid">
+      <div class="projects">
+        <div class="card">
+          <div class="card-header">
+            <h2>Monnaies</h2>
+            <button @click="showCreateModal = true" class="create-button">Créer une monnaie</button>
+          </div>
+          <div class="card-body">
+            <div class="table-responsive">
+              <div class="search-wrapper">
+                <span> </span>
+                <input type="search" v-model="searchQuery" placeholder="Chercher une monnaie..." />
+
+              </div>
+              <table width="100%" v-if="!isLoading">
+              <thead>
                 <tr>
-                    <th>Type</th>
-                    <th>Crée à</th>
-                    <th>Modifié à</th>
-                    <th>Actions</th>
+                  <td>Type</td>
+                  <td>Crée à</td>
+                  <td>Modifié </td>
+                  <td>Actions</td>
                 </tr>
-            </thead>
-            <tbody>
-                <tr v-if="filteredMoneys.length" v-for="money in paginatedMoneys" :key="money.id" class="money-list__item">
-                    <td>{{ money.type }}</td>
+              </thead>
+              <tbody>
+                <tr v-if="filteredMoneys.length" v-for="money in paginatedMoneys" :key="money.id">
+                  <td>{{ money.type }}</td>
                     <td>{{ formatDate(money.createdAt) }}</td>
                     <td>{{ formatDate(money.updatedAt) }}</td>
                     <td>
@@ -21,16 +32,21 @@
                         <button @click="confirmDeleteMoney(money.id)" class="delete-button">Supprimer</button>
                     </td>
                 </tr>
-                <tr v-if="filteredMoneys.length === 0" class="money-list__item money-list__item--empty">
-                    <td colspan="7">Pas de monnaies</td>
+                <tr v-if="filteredMoneys.length === 0">
+                  <td colspan="4">Pas d'Utilisateurs</td>
                 </tr>
-            </tbody>
-        </table>
-        <h2 v-if="isLoading" class="loading-text">Loading ...</h2>
-        <div class="pagination">
-            <button @click="previousPage" :disabled="currentPage === 1" class="pagination__button">Précédent</button>
-            <button @click="nextPage" :disabled="currentPage === totalPages" class="pagination__button">Suivant</button>
+              </tbody>
+
+            </table>
+            <h2 v-if="isLoading" class="loading-text">Loading ...</h2>
+            <div class="pagination">
+                <button @click="previousPage" :disabled="currentPage === 1" class="pagination__button">Précédent</button>
+                <button @click="nextPage" :disabled="currentPage === totalPages" class="pagination__button">Suivant</button>
+            </div>
+            </div>
+          </div>
         </div>
+      </div>
     </div>
   
     <!-- Create Modal -->
@@ -191,15 +207,12 @@ const totalPages = computed(() => Math.ceil(filteredMoneys.value.length / pageSi
     })
       .then(response => {
         if (response.ok) {
-          // Suppression réussie, mettre à jour la liste des utilisateurs
           moneys.splice(moneys.findIndex(money => money.id === moneyId), 1);
         } else {
-          // Gérer les erreurs de suppression
           alert('Error while deleting money');
         }
       })
       .catch(error => {
-        // Gérer les erreurs de connexion ou de requête
         console.error(error);
       });
   }
@@ -221,18 +234,18 @@ const totalPages = computed(() => Math.ceil(filteredMoneys.value.length / pageSi
     });
 
     if (response.ok) {
-        const createdMoney = await response.json(); // Get the actual data from the API
-        moneys.push(createdMoney); // Push the new currency returned by the API to the moneys array
+        const createdMoney = await response.json();
+        moneys.unshift(createdMoney);
         showCreateModal.value = false;
+        newMoneyForm.type = '';
     } else {
-        // Gérer les erreurs de création
         alert('Error while creating money');
     }
   }
 
 
   function cancelCreate() {
-      showCreateModal.value = false; // Fermer le modal de création
+      showCreateModal.value = false;
   }
 
   
@@ -240,7 +253,6 @@ const totalPages = computed(() => Math.ceil(filteredMoneys.value.length / pageSi
     const money = moneys.find(money => money.id === moneyId);
     selectedMoneyId.value = moneyId;
   
-    // Afficher le modal de modification avec les données de l'utilisateur
     showEditModal.value = true;
     editMoneyForm.type = money.type;
   }
@@ -249,13 +261,11 @@ const totalPages = computed(() => Math.ceil(filteredMoneys.value.length / pageSi
     event.preventDefault();
     const moneyId = selectedMoneyId.value;
 
-    // Envoyer les nouvelles données de la monnaie au serveur
     const updatedMoney = {
         type: editMoneyForm.type,
         updatedAt: new Date().toISOString()
     };
 
-    // Envoyer les nouvelles données de la monnaie au serveur
     const response = await fetch(`http://localhost:3000/moneys/${moneyId}`, {
       method: 'PATCH',
       headers: {
@@ -266,23 +276,116 @@ const totalPages = computed(() => Math.ceil(filteredMoneys.value.length / pageSi
     });
 
     if (response.ok) {
-      // Modification réussie, mettre à jour les données de la monnaie dans la liste
       const index = moneys.findIndex(money => money.id === moneyId);
       moneys[index] = { ...moneys[index], ...updatedMoney };
-      showEditModal.value = false; // Fermer le modal de modification
+      showEditModal.value = false;
     } else {
-      // Gérer les erreurs de modification
       alert('Error while editing money');
     }
   }
 
   
   function cancelEdit() {
-    showEditModal.value = false; // Fermer le modal de modification
+    showEditModal.value = false;
   }
 </script>
   
 <style scoped>
+
+.search-wrapper {
+    border: solid 1px #ccc;
+    border-radius: 30px;
+    height: 50px;
+    display: flex;
+    align-items: center;
+    overflow-x: hidden;
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 20px;
+    margin-top: 20px;
+  }
+  .search-wrapper span{
+    display: inline-block;
+    padding: 0rem 1rem;
+    font-size: 1.5rem;
+  }
+  .search-wrapper input{
+    width: 100%;
+    height: 100%;
+    padding: .5rem;
+    border: none;
+    outline: none;
+
+  }
+  .recent-grid{
+    margin-top: 3.5rem;
+    display: grid;
+    grid-gap: 2rem;
+    grid-template-columns: 100% auto;
+  
+  }
+  .card{
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 5px 10px rgba(154,160,185,.05), 0 15px 40px rgba(166,173,201,.2);
+    padding: 1rem;
+  }
+  .card-header
+  {
+    padding: 1rem;
+  }
+  .card-header{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #f0f0f0;
+    color: black;
+  }
+  .card-header button{
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  table{
+    border-collapse: collapse;
+  }
+  thead tr{
+    border-top: 1px solid #f0f0f0;
+    border-bottom:2px solid #f0f0f0;
+
+  }
+  thead td{
+    font-weight: 700;
+  }
+  td{
+    padding: .5rem 1rem ;
+    font-size: .9rem ;
+    color: #222;
+    
+  }
+
+  tr td:last-child{
+    display: flex;
+    align-items: center;
+
+
+  }
+  td .status{
+    display: inline-block;
+    height: 10px;
+    width: 10px;
+    border-radius: 50%;
+    margin-right: 1rem; 
+  }
+
+  .table-responsive{
+    width: 100%;
+    overflow-x: auto;
+  }
   .create-button {
     background-color: #007bff;
     color: #fff;
@@ -360,27 +463,6 @@ const totalPages = computed(() => Math.ceil(filteredMoneys.value.length / pageSi
     border-radius: 5px;
   }
   
-  .money-list__table {
-    width: 100%;
-    margin-bottom: 20px;
-    border-collapse: collapse;
-  }
-  
-  .money-list__table td {
-    padding: 10px;
-    border: 1px solid #ccc;
-    text-align: left;
-    color: black;
-  }
-  
-  .money-list__table th {
-    padding: 10px;
-    border: 1px solid #ccc;
-    text-align: left;
-    color: black;
-    background-color: #28a745;
-  }
-  
   .modal-footer {
     padding: 10px 20px;
     background-color: #f2f2f2;
@@ -419,12 +501,10 @@ const totalPages = computed(() => Math.ceil(filteredMoneys.value.length / pageSi
     cursor: pointer;
   }
   
-  /* Pour masquer la flèche par défaut des champs select dans certains navigateurs */
   .select-field::-ms-expand {
     display: none;
   }
-  
-  /* Pour personnaliser l'apparence de la flèche dans les autres navigateurs */
+
   .select-field::after {
     content: "";
     position: absolute;
@@ -438,34 +518,11 @@ const totalPages = computed(() => Math.ceil(filteredMoneys.value.length / pageSi
     pointer-events: none;
   }
   
-  .money-list {
-    width: 100%;
-    margin: 0 auto;
-    padding: 20px;
-  }
-  
   .search-input {
     width: 100%;
     padding: 10px;
     margin-bottom: 20px;
     margin-top: 20px;
-  }
-  
-  .money-list__list {
-    list-style: none;
-    padding: 0;
-  }
-  
-  .money-list__item {
-    margin-bottom: 10px;
-    padding: 10px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    color: black;
-  }
-  
-  .money-list__item--empty {
-    color: #888;
   }
   
   .loading-text {
@@ -475,6 +532,7 @@ const totalPages = computed(() => Math.ceil(filteredMoneys.value.length / pageSi
   
   .pagination {
     margin-top: 20px;
+    margin-bottom: 20px;
     text-align: center;
   }
   
@@ -534,7 +592,6 @@ const totalPages = computed(() => Math.ceil(filteredMoneys.value.length / pageSi
       box-sizing: border-box;
     }
   
-    /* Ajoutez ces styles pour afficher les en-têtes uniquement pour les écrans plus larges */
     .responsive-table th {
       display: none;
     }
@@ -544,6 +601,10 @@ const totalPages = computed(() => Math.ceil(filteredMoneys.value.length / pageSi
       font-weight: bold;
       margin-bottom: 5px;
       display: block;
+    }
+
+    .card-header button{
+      padding: 5px 10px;
     }
   }
   </style>
