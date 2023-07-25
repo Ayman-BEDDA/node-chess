@@ -8,9 +8,7 @@ module.exports = function GameService() {
       let dbOptions = {
         where: filters,
       };
-      // options.order = {name: "ASC", dob: "DESC"}
       if (options.order) {
-        // => [["name", "ASC"], ["dob", "DESC"]]
         dbOptions.order = Object.entries(options.order);
       }
       if (options.limit) {

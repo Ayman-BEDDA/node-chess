@@ -11,7 +11,7 @@ module.exports = function (connection) {
         autoIncrement: true,
         primaryKey: true
       },
-      game_id: {
+      session: {
         type: DataTypes.UUID,
         defaultValue: DataTypes.UUIDV4,
         allowNull: false,

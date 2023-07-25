@@ -31,7 +31,7 @@ async function generateGameData() {
     const winnerId = Math.random() > 0.5 ? whiteUserId : blackUserId;
 
     const game = {
-      game_id : uuidv4(),
+      session : uuidv4(),
       WhiteUserID: users[whiteUserId].id,
       BlackUserID: users[blackUserId].id,
       GameStatus: status,

@@ -9,5 +9,6 @@ const Controller = new GameController(new GameService());
 
 router.use("/", new genericRouter(new genericController(new GameService())));
 router.post("/new", Controller.new);
+router.get("/exist", Controller.exist);
 
 module.exports = router;
