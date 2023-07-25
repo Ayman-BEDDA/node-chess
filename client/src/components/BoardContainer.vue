@@ -4,36 +4,16 @@ import { onMounted, ref } from 'vue';
 import '../assets/chessboard-1.0.0.min.css'
 import Chess from '../assets/chess'
 import Chessboard from '../assets/chessboard-1.0.0.js'
+import { io } from "socket.io-client";
 
 //window.$ = window.jQuery = $;
 
-let timeWhite = ref(600);
-let timeBlack = ref(600);
 let intervalId = ref(null);
 let gameIsActive = ref(true);
+let socket = ref(null);
+let timeBlack = ref(600); 
+let timeWhite = ref(600);
 
-const startTimer = () => {
-    if (intervalId) {
-        clearInterval(intervalId);
-    }
-    intervalId = setInterval(() => {
-        if(gameIsActive){
-            if (game.value.turn() === 'b') {
-                timeBlack.value--;
-                if (timeBlack.value <= 0) {
-                    gameOver('Noir');
-                }
-                document.getElementById('time_black').textContent = formatTime(timeBlack.value);
-            } else {
-                timeWhite.value--;
-                if (timeWhite.value <= 0) {
-                    gameOver('Blanc');
-                }
-                document.getElementById('time_white').textContent = formatTime(timeWhite.value);
-            }
-        }
-    }, 1000);
-}
 
 const formatTime = (seconds) => {
     let minutes = Math.floor(seconds / 60);
@@ -97,6 +77,9 @@ const onDrop = (source, target) => {
         board.value.position($.extend(true, {}, board.value.position(), finalConfig), false);
     }
 
+    socket.value.emit('move', move);
+    socket.value.emit('turn', { turn: game.value.turn() });
+
     if(move.captured){
         var color = move.color === 'w' ? 'b' : 'w';
         var pieceElement = document.createElement('img');
@@ -109,7 +92,6 @@ const onDrop = (source, target) => {
     }
 
     updateStatus();
-    startTimer();
 }
 
 const onSnapEnd = () => {
@@ -127,8 +109,31 @@ const config = {
 let board = ref(null);
 
 onMounted(() => {
-    startTimer();
     board.value = Chessboard('board', config);
+
+    socket.value = io("http://localhost:3000");
+
+    socket.value.on('move', function (msg) {
+        let move = game.value.move(msg);
+
+        if (move === null) {
+            return 'snapback';
+        }
+
+        board.value.position(game.value.fen());
+
+        updateStatus();
+    });
+
+    socket.value.on('time', function (msg) {
+        if (msg.type === 'black') {
+            timeBlack.value = msg.time;
+            document.getElementById('time_black').textContent = formatTime(timeBlack.value);
+        } else {
+            timeWhite.value = msg.time;
+            document.getElementById('time_white').textContent = formatTime(timeWhite.value);
+        }
+    });
     $(window).resize(function () {
         board.value.resize();
     }).resize();
