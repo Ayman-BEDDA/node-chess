@@ -7,15 +7,9 @@ module.exports = function (connection) {
   Game.init(
     {
       id: {
-        type: DataTypes.INTEGER,
-        autoIncrement: true,
-        primaryKey: true
-      },
-      session: {
         type: DataTypes.UUID,
         defaultValue: DataTypes.UUIDV4,
-        allowNull: false,
-        unique: true
+        primaryKey: true
       },
       WhiteUserID: {
         type: DataTypes.INTEGER,

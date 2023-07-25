@@ -8,7 +8,6 @@ const router = new Router();
 const Controller = new GameController(new GameService());
 
 router.use("/", new genericRouter(new genericController(new GameService())));
-router.post("/new", Controller.new);
-router.get("/:session", Controller.exist);
+router.get("/:id/authorized", Controller.authorized);
 
 module.exports = router;

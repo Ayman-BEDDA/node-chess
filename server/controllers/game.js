@@ -6,37 +6,25 @@ module.exports = function GameController(Service, options = {}) {
 
   return {
     ...GenericController,
-    new: async (req, res) => {
+    authorized: async (req, res) => {
       try {
-        const session = uuidv4();
-
-        const game = await Service.create({
-          session: session,
-          WhiteUserID: 1,
-          BlackUserID: 2,
-          GameStatus: 'InProgress',
-        });
-
-        res.json({ game });
-      } catch (error) {
-        res.status(500).json({ error: error.toString() });
-      }
-    },
-    exist: async (req, res) => {
-      try {
-        const { session } = req.params;
+        const { id } = req.params;
+        const { user_id } = req.body;
     
-        const game = await Service.findOne({ session: session });
-    
+        const game = await Service.findOne({ id: id });
+
         if (game) {
-          res.json({ game });
+          if (game.WhiteUserID === user_id || game.BlackUserID === user_id && game.GameStatus === 'playing') {
+            res.json({ "authorized": true });
+          } else {
+            res.json({ "authorized": false });
+          }
         } else {
           res.json({ "error": "Game not found" });
         }
       } catch (error) {
         res.status(500).json({ "error": error.toString() });
       }
-    },
-
+    }
   };
 };

@@ -1,6 +1,8 @@
 const { Game } = require("../db");
 const Sequelize = require("sequelize");
 const ValidationError = require("../errors/ValidationError");
+const { v4: uuidv4 } = require("uuid");
+const { isUUID } = require("validator");
 
 module.exports = function GameService() {
   return {
@@ -18,6 +20,11 @@ module.exports = function GameService() {
       return Game.findAll(dbOptions);
     },
     findOne: async function (filters) {
+      if (filters.id) {
+        if (!isUUID(filters.id)) {
+          return null;
+        }
+      }
       return Game.findOne({ where: filters });
     },
     create: async function (data) {
