@@ -36,7 +36,7 @@ app.use("/roles", checkAuth, checkAdmin, RoleRouter); // protect only this route
 app.use("/articles", checkAuth, checkValidation, checkNotBan, ArticleRouter);
 app.use("/moneys", checkAuth, checkAdmin, MoneyRouter);
 app.use("/owns", checkAuth, OwnRouter);
-app.use("/games", checkAuth, GameRouter); // protect only this route
+app.use("/games",  GameRouter); // protect only this route
 app.use("/buys", checkAuth, BuyRouter);
 app.use("/friends", FriendRouter); //Friend
 

@@ -1,5 +1,13 @@
+const { Router } = require("express");
 const genericRouter = require("./generic");
 const genericController = require("../controllers/generic");
+const GameController = require("../controllers/game");
 const GameService = require("../services/game");
 
-module.exports = new genericRouter(new genericController(new GameService()));
+const router = new Router();
+const Controller = new GameController(new GameService());
+
+router.use("/", new genericRouter(new genericController(new GameService())));
+router.post("/new", Controller.new);
+
+module.exports = router;

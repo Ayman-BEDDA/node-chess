@@ -1,4 +1,5 @@
 const { Model, DataTypes } = require("sequelize");
+const { v4: uuidv4 } = require('uuid');
 
 module.exports = function (connection) {
   class Game extends Model {}
@@ -9,6 +10,12 @@ module.exports = function (connection) {
         type: DataTypes.INTEGER,
         autoIncrement: true,
         primaryKey: true
+      },
+      game_id: {
+        type: DataTypes.UUID,
+        defaultValue: DataTypes.UUIDV4,
+        allowNull: false,
+        unique: true
       },
       WhiteUserID: {
         type: DataTypes.INTEGER,
