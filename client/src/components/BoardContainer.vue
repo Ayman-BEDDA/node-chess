@@ -5,6 +5,7 @@ import '../assets/chessboard-1.0.0.min.css'
 import Chess from '../assets/chess'
 import Chessboard from '../assets/chessboard-1.0.0.js'
 import { io } from "socket.io-client";
+import { useRoute } from 'vue-router';
 
 //window.$ = window.jQuery = $;
 
@@ -13,7 +14,6 @@ let gameIsActive = ref(true);
 let socket = ref(null);
 let timeBlack = ref(600); 
 let timeWhite = ref(600);
-
 
 const formatTime = (seconds) => {
     let minutes = Math.floor(seconds / 60);
@@ -83,7 +83,7 @@ const onDrop = (source, target) => {
     if(move.captured){
         var color = move.color === 'w' ? 'b' : 'w';
         var pieceElement = document.createElement('img');
-        pieceElement.src = './src/assets/chesspieces/wikipedia/' + color + '' + move.captured.toUpperCase() + '.png';
+        pieceElement.src = '/src/assets/chesspieces/wikipedia/' + color + '' + move.captured.toUpperCase() + '.png';
         let id = "black_piece";
         if(color == "b"){
             id = "white_piece";
@@ -101,17 +101,22 @@ const onSnapEnd = () => {
 const config = {
     draggable: true,
     position: 'start',
-    pieceTheme: './src/assets/chesspieces/wikipedia/{piece}.png',
+    pieceTheme: '/src/assets/chesspieces/wikipedia/{piece}.png',
     onDrop: onDrop,
     onSnapEnd: onSnapEnd
 }
 
 let board = ref(null);
 
+
 onMounted(() => {
     board.value = Chessboard('board', config);
 
     socket.value = io("http://localhost:3000");
+
+    let route = useRoute(); 
+    let gameId = route.params.gameId;
+    socket.value.emit('joinGame', gameId);
 
     socket.value.on('move', function (msg) {
         let move = game.value.move(msg);

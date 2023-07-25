@@ -1,12 +1,18 @@
-<script setup>
-import BoardContainer from "../components/BoardContainer.vue";
+    <script setup>
+        import { onMounted } from 'vue';
+        import { useRoute, useRouter } from 'vue-router';
+        import BoardContainer from "../components/BoardContainer.vue";
 
-</script>
+        const route = useRoute();
+        const router = useRouter();
+        let gameId = route.params.gameId;
 
-<template>
-    <BoardContainer />
-</template>
+    </script>
 
-<style scoped>
-  
-</style>
+    <template>
+        <BoardContainer />
+    </template>
+
+    <style scoped>
+    
+    </style>
