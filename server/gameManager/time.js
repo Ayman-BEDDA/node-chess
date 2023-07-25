@@ -1,46 +1,42 @@
-let intervalId = null;
-let activePlayer = 'w';
+let games = {}; // new object to store state for each game
 
-let timeWhite = 600;
-let timeBlack = 600;
-let gameIsActive = true;
-
-const gameOver = (io, player) => {
-  if (intervalId) {
-      clearInterval(intervalId);
+const gameOver = (io, player, gameId) => {
+  if (games[gameId].intervalId) {
+    clearInterval(games[gameId].intervalId);
   }
-  gameIsActive = false;
-  io.emit('gameOver', player);
+  games[gameId].gameIsActive = false;
+  io.to(gameId).emit('gameOver', player);
 }
 
-const startTimer = (io) => {
-  if (intervalId) {
-      clearInterval(intervalId);
+const startTimer = (io, gameId) => {
+  if (games[gameId].intervalId) {
+    clearInterval(games[gameId].intervalId);
   }
-  intervalId = setInterval(() => {
-      if(gameIsActive){
-          if (activePlayer === 'b') {
-              timeBlack--;
-              if (timeBlack <= 0) {
-                  gameOver(io, 'Noir');
-              }
-              io.emit('time', { type: 'black', time: timeBlack }); 
-          } else {
-              timeWhite--;
-              if (timeWhite <= 0) {
-                  gameOver(io, 'Blanc');
-              }
-              io.emit('time', { type: 'white', time: timeWhite }); 
-          }
+  games[gameId].intervalId = setInterval(() => {
+    if(games[gameId].gameIsActive){
+      if (games[gameId].activePlayer === 'b') {
+        games[gameId].timeBlack--;
+        if (games[gameId].timeBlack <= 0) {
+          gameOver(io, 'Noir', gameId);
+        }
+        io.to(gameId).emit('time', { type: 'black', time: games[gameId].timeBlack }); 
+      } else {
+        games[gameId].timeWhite--;
+        if (games[gameId].timeWhite <= 0) {
+          gameOver(io, 'Blanc', gameId);
+        }
+        io.to(gameId).emit('time', { type: 'white', time: games[gameId].timeWhite }); 
       }
+    }
   }, 1000);
 }
 
-const setPlayerTurn = (turn) => {
-  activePlayer = turn;
+const setPlayerTurn = (turn, gameId) => {
+  games[gameId].activePlayer = turn;
 }
 
 module.exports = {
   startTimer,
   setPlayerTurn,
+  games // export games so it can be used in index.js
 };
