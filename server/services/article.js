@@ -21,7 +21,7 @@ module.exports = function ArticleService() {
                     { model: Money, as: 'money', attributes: ['type'] }
                 ],
             };
-            options.order = {createdAt: "ASC"}
+            options.order = {createdAt: "DESC"}
             if (options.order) {
                 // => [["name", "ASC"], ["dob", "DESC"]]
                 dbOptions.order = Object.entries(options.order);

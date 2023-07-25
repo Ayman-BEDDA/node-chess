@@ -1,226 +1,192 @@
 <script setup>
-import { ref, reactive } from 'vue';
-import jwtDecode from 'jwt-decode'
+import { ref, reactive, inject, onMounted } from 'vue';
+import { useRoute } from 'vue-router';
 
-const token = localStorage.getItem('token');
-const user = ref(token ? jwtDecode(token) : null);
+const user = inject('user');
+const route = useRoute();
 
-document.addEventListener('DOMContentLoaded', function() {
-  const menuIconEl = document.querySelector('.menu-icon');
-  const sidenavEl = document.querySelector('.sidenav');
-  const sidenavCloseEl = document.querySelector('.sidenav__close-icon');
+const isLinkActive = (path) => {
+  return route.path === path;
+};
 
-  function toggleClassName(el, className) {
-    if (el.classList.contains(className)) {
-      el.classList.remove(className);
-    } else {
-      el.classList.add(className);
-    }
-  }
-
-  // Open the side nav on click
-  menuIconEl.addEventListener('click', function() {
-    toggleClassName(sidenavEl, 'active');
-  });
-
-  // Close the side nav on click
-  sidenavCloseEl.addEventListener('click', function() {
-    toggleClassName(sidenavEl, 'active');
-  });
-});
+const homeLink = "/";
+const dashboardLink = "/admin/home";
+const usersLink = "/admin/users";
+const reportsLink = "/admin/reports";
+const articlesLink = "/admin/articles";
+const buysLink = "/admin/buys";
+const moneysLink = "/admin/moneys";
 </script>
 
 <template>
-<div class="grid-container">
-  <div class="menu-icon">
-    <i class="fas fa-bars header__menu"></i>
-  </div>
-  
-  <!-- Begin Header-->
-  <header class="header">
-    <div class="header__search"> </div>
-    <div class="dropdown">
-        {{ user.login }}
-        <img :src="user.media" class="avatar" />
-        <div class="dropdown-content">
-          <router-link to="/me"><i class="fas fa-user"></i> Mon profil</router-link>
-          <button><i class="fas fa-sign-out-alt"></i> Se déconnecter</button>
+
+<input type="checkbox" id="nav-toggle">
+    <div class="sidebar">
+        <div class="logo-container">
+          <router-link to="/"><img src="../assets/logo.png" alt="logo" class="sidebar-brand"/></router-link>
         </div>
-      </div>
-  </header>
- <!--End Header-->
-  
-  
- <!--Begin Sidenav-->
-  <aside class="sidenav">
-    <div class="sidenav__close-icon">
-      <i class="fas fa-times sidenav__brand-close"></i>
+        
+        <div class="sidebar-menu">
+          <ul>
+            <li>
+              <router-link to="/home">
+                <span class="fas fa-home"></span>
+                <span>Page d'accueil</span>
+              </router-link>
+            </li>
+            <li>
+              <router-link :to="dashboardLink" :class="{ 'active': isLinkActive(dashboardLink) }">
+                <span class="fas fa-tachometer-alt"></span>
+                <span>Dashboard</span>
+              </router-link>
+            </li>
+            <li>
+              <router-link :to="usersLink" :class="{ 'active': isLinkActive(usersLink) }">
+                <span class="fas fa-users" ></span>
+                <span>Utilisateurs</span>
+              </router-link>
+            </li>
+            <li>
+              <router-link :to="reportsLink" :class="{ 'active': isLinkActive(reportsLink) }">
+                <span class="fas fa-tasks"></span>
+                <span>Sanctions</span>
+              </router-link>
+            </li>
+            <li>
+              <router-link :to="articlesLink" :class="{ 'active': isLinkActive(articlesLink) }">
+                <span class="fas fa-clipboard-list"></span>
+                <span>Articles</span>
+              </router-link>
+            </li>
+            <li>
+              <router-link :to="buysLink" :class="{ 'active': isLinkActive(buysLink) }">
+                <span class="fas fa-shopping-cart"></span>
+                <span>Achats</span>
+              </router-link>
+            </li>
+            <li>
+              <router-link :to="moneysLink" :class="{ 'active': isLinkActive(moneysLink) }">
+                <span class="fas fa-wallet"></span>
+                <span>Monnaies</span>
+              </router-link>
+            </li>
+          </ul>
+        </div>
+    </div>    
+
+    <div class="main-content">
+      <header>
+        <h2>
+          <label for="nav-toggle">
+            <span class="fas fa-bars"></span>
+          </label>
+          Dashboard
+        </h2>
+
+        <div class="user-wrapper dropdown">
+          <img :src="user.media" class="avatar" />
+          <div class="user-info">
+            <h4>{{ user.login }}</h4>
+            <small>Admin</small>
+          </div>
+          <div class="dropdown-content">
+            <router-link to="/me"><i class="fas fa-user"></i> Mon profil</router-link>
+          </div>
+        </div>
+      </header>
+
+      <main>
+        <slot></slot>
+
+        <footer class="footer">
+          <div class="footer__content">
+            <div class="footer__copyright">
+              &copy; 2023 Node Chess | Groupe 3
+            </div>
+          </div>
+        </footer>
+      </main>
+
     </div>
-    <ul class="sidenav__list">
-      <li class="sidenav__list-item"><router-link to="/admin/" class="nav-link">Dashboard</router-link></li>
-      <li class="sidenav__list-item"><router-link to="/admin/users" class="nav-link">Utilisateurs</router-link></li>
-      <li class="sidenav__list-item"><router-link to="/admin/reports" class="nav-link">Sanctions</router-link></li>
-      <li class="sidenav__list-item"><router-link to="/admin/articles" class="nav-link">Articles</router-link></li>
-      <li class="sidenav__list-item"><router-link to="/admin/buys" class="nav-link">Achats</router-link></li>
-      <li class="sidenav__list-item"><router-link to="/admin/moneys" class="nav-link">Monnaies</router-link></li>
-      <li class="sidenav__list-item"><router-link to="/" class="nav-link">Page d'accueil</router-link></li>
-    </ul>
-  </aside>
-  <!--End Sidenav--> 
-  
-  <!-- Begin Main-->
-  <main>
-    <div class="main__col--1">
-      <h2><slot name="title"></slot></h2>
-    </div>
-
-    <slot></slot>
-  </main>
-<!-- End Main -->
- <!--Begin Footer--> 
-  <footer class="footer">
-    <div class="footer__copyright">&copy; 2023 Node Chess</div>
-    <div class="footer__signature">Groupe 3</div>
-  </footer>
-<!--End Footer-->  
-</div>
-
-
 </template>
 
 <script>
-  export default {
-    name: 'Admin_users',
-  }
+export default {
+  name: 'Admin_users',
+};
 </script>
 
 <style scoped>
-/* Styles spécifiques à Admin.vue */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@200;300;400;500&display=swap');
 
-* {
-  /*
-  outline: 1px solid black; */
-  box-sizing: border-box;
+:root{
+  --main-color: #11101d;
+  --color-dark: #1D2231;
+  --text-grey:  #8390A2;
 }
 
-main {
-  display: grid;
-  grid-template-rows: 100px max-content max-content 1fr;
-  background-color: #fff;
-  padding: 0 20px;
-}
-
-/* Main col 1 */
-.main__col--1 {
-  align-self: center;
-  color: black;
-}
-
-body {
+*{
+  padding: 0;
   margin: 0;
-  padding: 0;
-  color: #fff;
   box-sizing: border-box;
-  font-family: 'Open Sans', Helvetica, sans-serif;
-}
-
-/* Mobile First Format--Assign grid instructions to our parent grid container; hide the sidenav */
-
-.grid-container {
-  display: grid;
-  grid-template-columns: 1fr; /*Side Nav hidden */
-  grid-template-rows: 50px 1fr 50px;
-  grid-template-areas:
-    'header'
-    'main'
-    'footer';
-  height: 100vh; 
-  overflow-y: scroll
-}
-
-.nav-link {
-  color: white;
+  list-style: none;
   text-decoration: none;
+  font-family: 'Poppins' ,sans-serif;
 }
 
-.menu-icon {
-  position: fixed; /*Needs to stay visible for all mobile scrolling */
+.logo-container {
   display: flex;
-  top: 5px;
-  left: 10px;
-  align-items: center;
   justify-content: center;
-  background-color: #DADAE3;
-  border-radius: 50%;
-  z-index: 1;
-  cursor: pointer;
-  padding: 12px;
+  align-items: center;
+  padding: 1rem 0;
 }
 
-/*Give every child element its grid name*/
-.header {
-  grid-area: header;
+.sidebar{
+  width: 345px;
+  position: fixed;
+  left: 0;
+  top: 0;
+  height: 100%;
+  z-index: 100; 
+  background: var(--main-color);
+  transition: width 300ms;
+  background-color: #11101d;
+
+}
+.sidebar-brand{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 1rem 0;
+}
+
+.sidebar-brand:hover {
+  filter: drop-shadow(0px 0px 10px rgba(255, 255, 255, 0.9));
+}
+
+.sidebar-brand span{
+  display: inline-block;
+  padding-right: 1rem;
+}
+.sidebar-menu li{
+  width: 100%;
+  margin-bottom: 1.7rem;
+  padding-left: 1rem;
+
+}
+.sidebar-menu{
+  margin-top: 1rem;
+}
+.sidebar-menu a {
+  padding-left: 2rem;
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  padding: 0 16px;
-  background-color: #252849;
+  color: #fff;
+  font-size: 1.1rem;
 }
 
-/* Make room for the menu icon on mobile */
-.header__search {
-  margin-left: 42px;
-}
-
-.sidenav {
-  grid-area: sidenav;
-  display: flex;
-  flex-direction: column;
-  height: 100%;
-  width: 240px;
-  position: fixed;
-  overflow-y: auto;
-  transform: translateX(-245px);
-  transition: all .6s ease-in-out;
-  box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.16), 0 0 0 1px rgba(0, 0, 0, 0.08);
-  z-index: 2;
-  /*Needs to sit above the hamburger menu icon */
-  background-color: #202443;
-}
-
-.sidenav.active {
-  transform: translateX(0);
-}
-
-.sidenav__close-icon {
-  position: absolute;
-  visibility: visible;
-  top: 8px;
-  right: 12px;
-  cursor: pointer;
-  font-size: 20px;
-  color: #ddd;
-}
-
-.sidenav__list {
-  padding: 0;
-  margin-top: 85px;
-  list-style-type: none;
-}
-
-.sidenav__list-item {
-  padding: 20px 20px 20px 40px;
-  color: #ddd;
-}
-
-.sidenav__list-item:hover {
-  background-color: rgba(255, 255, 255, 0.2);
-  cursor: pointer;
-}
-
-.main {
-  grid-area: main;
-  background-color: #fff;
+.sidebar-menu a svg {
+  margin-right: 0.5rem;
 }
 
 .dropdown {
@@ -228,11 +194,8 @@ body {
   display: inline-block;
 }
 
-.dropbtn {
-  text-decoration: none;
-  color: inherit;
-  padding: 0;
-  cursor: pointer;
+.dropdown span {
+  color: black;
 }
 
 .dropdown-content {
@@ -240,10 +203,11 @@ body {
   position: absolute;
   background-color: #f9f9f9;
   min-width: 160px;
-  box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+  box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
   z-index: 1;
   right: 0;
   border-radius: 5px;
+  top: 100%; 
 }
 
 .dropdown-content a {
@@ -280,33 +244,318 @@ body {
   margin-left: 10px;
 }
 
-.footer {
-  grid-area: footer;
+#nav-toggle:checked + .sidebar {
+  width: 70px ;
+}
+#nav-toggle:checked + .sidebar .sidebar-brand,
+#nav-toggle:checked + .sidebar li 
+{
+  padding-left: 1rem;
+  text-align: center;
+}
+#nav-toggle:checked + .sidebar li a
+{
+  padding-left: 0rem;
+}
+#nav-toggle:checked + .sidebar .sidebar-brand h1 span:last-child,
+#nav-toggle:checked + .sidebar li a span:last-child{
+  display: none;
+}
+.sidebar-menu a span:first-child{
+  font-size: 1.5rem;
+  padding-right: 1rem;
+}
+.sidebar-menu a.active{
+  background: #fff;
+  padding-top: 1rem;
+  padding-bottom: 1rem;
+  color: black;
+  border-radius: 30px 0px 0px 30px;
+
+}
+#nav-toggle:checked ~ .main-content {
+  margin-left: 70px;
+
+}
+#nav-toggle:checked ~ .main-content  header{
+  width: calc(100% - 70px);
+  left:70px;
+
+}
+.main-content{
+  transition: margin-left 300ms;
+  margin-left: 345px;
+}
+header{
+  background: #fff;
   display: flex;
-  align-items: center;
   justify-content: space-between;
-  padding: 0 16px;
-  background-color: #252849;
+  padding: 1rem 1.5rem;
+  box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
+  position: fixed;
+  left: 345px;
+  top:0;
+  z-index: 100; 
+  width: calc(100% - 345px);
+  transition: left 300ms;
+  }
+
+#nav-toggle{
+  display: none;
+}
+header h2{
+  color: #222;
+}
+header label span{
+  font-size: 1.7rem;
+  padding-right: 1rem;
 }
 
-/* Non-mobile styles, 750px breakpoint */
-@media only screen and (min-width: 46.875em) {
-  /*Show the sidenav */
-  .grid-container {
-    grid-template-columns: 240px 1fr;
-    grid-template-areas: "sidenav header" 
-      "sidenav main" 
-      "sidenav footer";
+.user-wrapper{
+  display: flex;
+  align-items: center;
+  color: black;
+  position: relative; 
+}
+.user-wrapper img{
+  border-radius: 50%;
+  margin-right: .5rem;
+}
+
+.user-wrapper small{
+  display: inline-block;
+  color: var(--text-grey);
+  margin-top: -1px !important;
+
+}
+main{
+  margin-top: 80px;
+  padding: 2rem 1.5rem;
+  background: #f1f5f9;
+  min-height: calc(100vh - 90px);
+}
+
+.recent-grid{
+  margin-top: 3.5rem;
+  display: grid;
+  grid-gap: 2rem;
+  grid-template-columns: 65% auto;
+ 
+}
+
+table{
+  border-collapse: collapse;
+}
+thead tr{
+  border-top: 1px solid #f0f0f0;
+  border-bottom:2px solid #f0f0f0;
+
+}
+thead td{
+  font-weight: 700;
+}
+td{
+  padding: .5rem 1rem ;
+  font-size: .9rem ;
+  color: #222;
+  
+}
+
+tr td:last-child{
+  display: flex;
+  align-items: center;
+
+
+}
+td .status{
+  display: inline-block;
+  height: 10px;
+  width: 10px;
+  border-radius: 50%;
+  margin-right: 1rem; 
+}
+.status.purple {
+  background: rebeccapurple;
+}
+.status.pink{
+  background: deeppink;
+}
+.status.orange{
+  background: orangered;
+}
+.table-responsive{
+  width: 100%;
+  overflow-x: auto;
+}
+.customer{
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: .5rem .7rem;
+}
+.info{
+  display: flex;
+  align-items: center;
+}
+.info img{
+  border-radius: 50%;
+  margin-right: 1rem;
+}
+.info h4{
+  font-size: .8rem;
+  font-weight: 700;
+  color: #222;
+}
+.info small{
+  font-weight: 600;
+  color: var(--text-grey);
+}
+.contact span{
+  font-size: 1.2rem;
+  display: inline-block;
+  margin-left: .5rem;
+  color:  var(--main-color);
+
+}
+
+.footer {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  background-color: var(--main-color);
+  color: black;
+}
+
+.footer__content {
+  display: flex;
+  justify-content: flex-end; /* Align the content to the right */
+  align-items: center;
+  padding: 1rem;
+}
+
+.footer__copyright {
+  font-size: 1rem;
+}
+
+@media only screen and (max-width: 1200px){
+
+  .sidebar{
+    width: 70px ;
   }
-  .header__search {
-    margin-left: 0;
+  .sidebar .sidebar-brand,
+  .sidebar li 
+  {
+    padding-left: 1rem;
+    text-align: center;
   }
-  .sidenav {
-    position: relative;
-    transform: translateX(0);
+  #nav-toggle:checked + .sidebar li a
+  {
+    padding-left: 0rem;
   }
-  .sidenav__close-icon {
-    visibility: hidden;
+  .sidebar .sidebar-brand h1 span:last-child,
+  .sidebar li a span:last-child{
+    display: none;
+
+  }
+  
+  .main-content {
+  margin-left: 70px;
+
+  }
+  .main-content  header{
+    width: calc(100% - 70px);
+    left:70px;
+
+  }
+}
+
+@media only screen and (max-width: 960px){
+  .cards{
+    grid-template-columns: repeat(3, 1fr);
+  }
+  .recent-grid{
+    grid-template-columns: 60% 40%;
+  }
+}
+
+@media only screen and (max-width: 768px){
+  .cards{
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .recent-grid{
+    grid-template-columns: 100%;
+  }
+  .search-wrapper{
+    display: none;
+  }
+  .sidebar {
+    
+    left: -100% !important;
+  }
+  header h2{
+    display: flex;
+    align-items: center;
+  }
+  header h2 label{
+    display: inline-block;
+    text-align: center;
+    background: var(--main-color);
+    padding-right: 0rem;
+    margin-right: 1rem;
+    height: 40px;
+    width: 40px;
+    border-radius: 50%;
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center !important;
+    background-color: #11101d;
+  }
+  header h2 span{
+    text-align: center;
+    padding-right: 0rem;
+  }
+  header h2{
+    font-size: 1.1rem;
+  }
+  .main-content{
+    width: 100%;
+    margin-left: 0rem;
+  }
+  header{
+    width: 100% !important;
+    left: 0 !important;
+  }
+  #nav-toggle:checked + .sidebar{
+    left: 0 !important;
+    z-index: 100;
+    width: 345px;
+  }
+  
+  #nav-toggle:checked .sidebar .sidebar-brand,
+  #nav-toggle:checked + .sidebar li 
+  {
+    padding-left: 2rem;
+    text-align: left;
+  }
+
+  #nav-toggle:checked + .sidebar li a
+  {
+    padding-left: 1rem;
+  }
+  #nav-toggle:checked  + .sidebar .sidebar-brand h1 span:last-child,
+  #nav-toggle:checked + .sidebar li a span:last-child{
+    display: inline;
+
+  }
+  #nav-toggle:checked ~ .main-content{
+    margin-left: 0rem !important;
+  }
+}
+@media only screen and (max-width: 560px){
+  .cards{
+    grid-template-columns: 100%;
   }
 }
 </style>

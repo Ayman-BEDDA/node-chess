@@ -18,7 +18,7 @@ module.exports = function MoneyService() {
             let dbOptions = {
                 where: filters,
             };
-            options.order = {createdAt: "ASC"}
+            options.order = {createdAt: "DESC"}
             if (options.order) {
                 // => [["name", "ASC"], ["dob", "DESC"]]
                 dbOptions.order = Object.entries(options.order);

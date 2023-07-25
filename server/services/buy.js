@@ -12,7 +12,7 @@ module.exports = function BuyService() {
                 { model: User, as: 'user', attributes: ['login'] },
                 ],
             };
-            options.order = {date: "ASC"}
+            options.order = {date: "DESC"}
             if (options.order) {
                 // => [["name", "ASC"], ["dob", "DESC"]]
                 dbOptions.order = Object.entries(options.order);

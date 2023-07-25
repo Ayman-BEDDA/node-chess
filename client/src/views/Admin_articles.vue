@@ -1,11 +1,9 @@
 <script setup>
 import AdminDashboard from '../components/AdminDashboard.vue';
 import ArticleList from './ArticleList.vue';
-import { ref, reactive } from 'vue';
-import jwtDecode from 'jwt-decode'
+import { ref, reactive, inject } from 'vue';
 
-const token = localStorage.getItem('token');
-const user = ref(token ? jwtDecode(token) : null);
+const user = inject('user');
 </script>
 
 <template>
