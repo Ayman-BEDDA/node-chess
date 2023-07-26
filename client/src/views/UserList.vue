@@ -94,6 +94,10 @@
               <input type="number" v-model="newUserForm.elo" id="newElo" class="input-field" required>
             </div>
             <div class="form-group">
+              <label for="newImage">Image</label>
+              <input type="file" @change="handleImageUpload" id="newImage" class="input-field" accept="image/png, image/jpeg">
+            </div>
+            <div class="form-group">
               <label for="newIsBanned">Bannir</label>
               <select v-model="newUserForm.isBanned" class="select-field" required>
                 <option disabled value="">En choisir un</option>
@@ -204,6 +208,12 @@
 
 <script setup>
 import { reactive, onMounted, ref, computed, watch } from 'vue';
+import dayjs from 'dayjs';
+import 'dayjs/locale/fr';
+import utc from 'dayjs/plugin/utc'; // Import the utc plugin separately
+
+dayjs.locale('fr');
+dayjs.extend(utc); 
 
 const users = reactive([]);
 const isLoading = ref(true);
@@ -231,7 +241,8 @@ const newUserForm = reactive({
   elo: '',
   isBanned: '',
   isValid: '',
-  id_role: ''
+  id_role: '',
+  image: null
 });
 
 onMounted(async () => {
@@ -290,6 +301,20 @@ const paginatedUsers = computed(() => {
 
 const totalPages = computed(() => Math.ceil(filteredUsers.value.length / pageSize));
 
+const handleImageUpload = (event) => {
+  const file = event.target.files[0];
+  if (!file) return;
+
+  const reader = new FileReader();
+  reader.onloadend = () => {
+    newUserForm.image = {
+      data: reader.result,
+      name: file.name
+    };
+  };
+  reader.readAsDataURL(file);
+};
+
 function nextPage() {
   if (currentPage.value < totalPages.value) {
     currentPage.value++;
@@ -339,6 +364,12 @@ function deleteUser(userId) {
     });
 }
 
+function getUserImageName() {
+  const formattedDate = dayjs().utc().format('YYYY-MM-DD_HH:mm'); // Use UTC time zone
+  const filename = newUserForm.image.name;
+  return `${formattedDate}_${filename}`;
+}
+
 async function createUser() {
   event.preventDefault();
 
@@ -349,7 +380,8 @@ async function createUser() {
     elo: newUserForm.elo,
     isBanned: newUserForm.isBanned,
     isValid: newUserForm.isValid,
-    id_role: newUserForm.id_role
+    id_role: newUserForm.id_role,
+    media: newUserForm.image ? getUserImageName() : null
   };
 
   const response = await fetch(`http://localhost:3000/users`, {
@@ -361,33 +393,52 @@ async function createUser() {
     body: JSON.stringify(newUser)
   });
 
-  if (response.ok) {
-    const createdUser = await response.json();
+  if (response.ok && newUserForm.image) {
+    try {
+      const imageResponse = await fetch('http://localhost:3000/upload', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: 'Bearer ' + localStorage.getItem('token')
+        },
+        body: JSON.stringify(newUserForm.image)
+      });
 
-    const roleResponse = await fetch(`http://localhost:3000/roles/${createdUser.id_role}`, {
-      headers: {
-        Authorization: 'Bearer ' + localStorage.getItem('token')
+      if (imageResponse.ok) {
+        const createdUser = await response.json();
+
+        const roleResponse = await fetch(`http://localhost:3000/roles/${createdUser.id_role}`, {
+        headers: {
+            Authorization: 'Bearer ' + localStorage.getItem('token')
+          }
+        });
+
+        if (roleResponse.ok) {
+          const role = await roleResponse.json();
+          createdUser.role = role;
+
+          users.unshift(createdUser);
+
+          filteredQuery.value = searchQuery.value;
+
+          showCreateModal.value = false;
+          newUserForm.login = '';
+          newUserForm.email = '';
+          newUserForm.password = '';
+          newUserForm.elo = '';
+          newUserForm.isBanned = '';
+          newUserForm.isValid = '';
+          newUserForm.id_role = '';
+          newUserForm.media = null;
+        } else {
+          alert('Error while fetching role for the new user');
+        }
+      } else {
+        alert('Error while uploading the image');
       }
-    });
-
-    if (roleResponse.ok) {
-      const role = await roleResponse.json();
-      createdUser.role = role;
-
-      users.unshift(createdUser);
-
-      filteredQuery.value = searchQuery.value;
-
-      showCreateModal.value = false;
-      newUserForm.login = '';
-      newUserForm.email = '';
-      newUserForm.password = '';
-      newUserForm.elo = '';
-      newUserForm.isBanned = '';
-      newUserForm.isValid = '';
-      newUserForm.id_role = '';
-    } else {
-      alert('Error while fetching role for the new user');
+    } catch (error) {
+      console.error(error);
+      alert('Error while uploading the image');
     }
   } else {
     alert('Error while creating user');

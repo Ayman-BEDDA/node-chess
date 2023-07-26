@@ -36,8 +36,8 @@
                     <span class="status purple"></span>
                     {{ article.money.type }}
                   </td>
-                  <td>{{ article.createdAt }}</td>
-                  <td>{{ article.updatedAt }}</td>
+                  <td>{{ formatDate(article.createdAt) }}</td>
+                  <td>{{ formatDate(article.updatedAt) }}</td>
                   <td>
                     <button @click="editArticle(article.id)" class="update-button">Modifier</button>
                     <button @click="confirmDeleteArticle(article.id)" class="delete-button">Supprimer</button>
@@ -77,6 +77,10 @@
                         <div class="form-group">
                             <label for="newPrice">Prix</label>
                             <input type="number" v-model="newArticleForm.price" id="newPrice" class="input-field" required>
+                        </div>
+                        <div class="form-group">
+                          <label for="newImage">Image</label>
+                          <input type="file" @change="handleImageUpload" id="newImage" class="input-field" accept="image/png, image/jpeg">
                         </div>
                         <div class="form-group">
                             <label for="newEuros">Euros</label>
@@ -161,7 +165,13 @@
 
   <script setup>
   import { reactive, onMounted, ref, computed, watch } from 'vue';
-  
+  import dayjs from 'dayjs';
+  import 'dayjs/locale/fr';
+  import utc from 'dayjs/plugin/utc'; // Import the utc plugin separately
+
+  dayjs.locale('fr');
+  dayjs.extend(utc); 
+
   const articles = reactive([]);
   const isLoading = ref(true);
   const currentPage = ref(1);
@@ -183,7 +193,8 @@
     libelle: '',
     price: '',
     euros: '',
-    id_money: ''
+    id_money: '',
+    image: null
   });
   
   onMounted(async () => {
@@ -291,6 +302,26 @@
     }
   }
 
+  const handleImageUpload = (event) => {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      newArticleForm.image = {
+        data: reader.result,
+        name: file.name
+      };
+    };
+    reader.readAsDataURL(file);
+  };
+
+  function getArticleImageName() {
+    const formattedDate = dayjs().utc().format('YYYY-MM-DD_HH:mm'); // Use UTC time zone
+    const filename = newArticleForm.image.name;
+    return `${formattedDate}_${filename}`;
+  }
+
   async function createArticle() {
     event.preventDefault();
 
@@ -299,7 +330,7 @@
       price: newArticleForm.price,
       euros: newArticleForm.euros,
       id_money: newArticleForm.id_money,
-      media: "http://placeimg.com/640/480"
+      media: newArticleForm.image ? getArticleImageName() : null
     };
 
     const response = await fetch(`http://localhost:3000/articles`, {
@@ -310,34 +341,53 @@
       },
       body: JSON.stringify(newArticle)
     });
+    
+    if (response.ok && newArticleForm.image) {
+      try {
+        const imageResponse = await fetch('http://localhost:3000/upload', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: 'Bearer ' + localStorage.getItem('token')
+          },
+          body: JSON.stringify(newArticleForm.image)
+        });
 
-    if (response.ok) {
-      const createdArticle = await response.json();
+        if (imageResponse.ok) {
+          const createdArticle = await response.json();
 
-      const moneyTypeResponse = await fetch(`http://localhost:3000/moneys/${createdArticle.id_money}`, {
-        headers: {
-          Authorization: 'Bearer ' + localStorage.getItem('token')
+          const moneyTypeResponse = await fetch(`http://localhost:3000/moneys/${createdArticle.id_money}`, {
+            headers: {
+              Authorization: 'Bearer ' + localStorage.getItem('token')
+            }
+          });
+
+          if (moneyTypeResponse.ok) {
+            const moneyType = await moneyTypeResponse.json();
+            createdArticle.money = { type: moneyType.type };
+
+            articles.unshift(createdArticle);
+
+            filteredQuery.value = searchQuery.value;
+
+            showCreateModal.value = false;
+            newArticleForm.libelle = '';
+            newArticleForm.price = '';
+            newArticleForm.euros = '';
+            newArticleForm.id_money = '';
+            newArticleForm.media = null;
+          } else {
+            alert('Error while fetching money type for the new article');
+          }
+        } else {
+          alert('Error while uploading the image');
         }
-      });
-
-      if (moneyTypeResponse.ok) {
-        const moneyType = await moneyTypeResponse.json();
-        createdArticle.money = { type: moneyType.type };
-
-        articles.unshift(createdArticle);
-
-        filteredQuery.value = searchQuery.value;
-
-        showCreateModal.value = false;
-        newArticleForm.libelle = '';
-        newArticleForm.price = '';
-        newArticleForm.euros = '';
-        newArticleForm.id_money = '';
-      } else {
-        alert('Error while fetching money type for the new article');
+      } catch (error) {
+        console.error(error);
+        alert('Error while uploading the image');
       }
     } else {
-      alert('Error while creating article');
+      alert('Error while creating user');
     }
   }
 
