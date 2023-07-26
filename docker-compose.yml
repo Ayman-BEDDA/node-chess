@@ -30,6 +30,7 @@ services:
       - 3000:3000
     environment:
       DATABASE_URL: postgres://root:password@db:5432/app
+      MONGO_URI: mongodb://root:password@mongo:27017
       JWT_SECRET: ImAstrongSecret
 
     working_dir: /usr/src/app

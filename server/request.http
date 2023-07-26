@@ -1,11 +1,11 @@
 ##  Users
 #POST http://localhost:3000/users
-#Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwibG9naW4iOiJhZG1pbiIsImlkX3JvbGUiOm51bGwsImlzVmFsaWQiOnRydWUsImlzQmFubmVkIjpmYWxzZSwiaWF0IjoxNjg5MjQ3OTE5LCJleHAiOjE2ODkyNTg3MTl9.4UWnlHYLuIdKfINa2cPe2tGLo4h1zP_1BvhERgkFEko
+#Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MywibG9naW4iOiJhZG1pbiIsImlkX3JvbGUiOjEsImlzVmFsaWQiOnRydWUsImlzQmFubmVkIjpmYWxzZSwibGFzdERhaWx5UmV3YXJkRGF0ZSI6IjIwMjMtMDctMjVUMjA6NTI6MjYuODI0WiIsImVsbyI6MTUwMCwiaWF0IjoxNjkwMzg0OTA5LCJleHAiOjE2OTAzOTU3MDl9.XYKc94hOYCNDLR6R5kQ-8zwVXlhcgKBX3jaYXRFhITY
 #Content-Type: application/json
 #
 #{
-#  "login": "bbbew",
-###  "email": "test@v.fr",
+#  "login": "muthu",
+###  "email": "tmuthuoauais@v.fr",
 #    "password": "test",
 #  "elo": 10,
 #  "media": "default.png",
@@ -54,8 +54,8 @@
 #Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwibG9naW4iOiJhZG1pbiIsImlkX3JvbGUiOjEsImlzVmFsaWQiOnRydWUsImlzQmFubmVkIjpmYWxzZSwiaWF0IjoxNjg5NjA5MTEwLCJleHAiOjE2ODk2MTk5MTB9.s7W202jXlI41LC5x6dlJp77t9QDFz6R1pHxDNfUScNw
 #Content-Type: application/json
 
-GET http://localhost:3000/buys
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MywibG9naW4iOiJhZG1pbiIsImlkX3JvbGUiOjEsImlzVmFsaWQiOnRydWUsImlzQmFubmVkIjpmYWxzZSwibGFzdERhaWx5UmV3YXJkRGF0ZSI6bnVsbCwiaWF0IjoxNjg5OTcyMDE2LCJleHAiOjE2ODk5ODI4MTZ9.wPQ-fUgJkUpKRWiMfspHpf89SCDsbfjgxISrlZnhpmQ
+#GET http://localhost:3000/buys
+#Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MywibG9naW4iOiJhZG1pbiIsImlkX3JvbGUiOjEsImlzVmFsaWQiOnRydWUsImlzQmFubmVkIjpmYWxzZSwibGFzdERhaWx5UmV3YXJkRGF0ZSI6bnVsbCwiaWF0IjoxNjg5OTcyMDE2LCJleHAiOjE2ODk5ODI4MTZ9.wPQ-fUgJkUpKRWiMfspHpf89SCDsbfjgxISrlZnhpmQ
 
 ###
 #GET http://localhost:3000/roles
@@ -82,6 +82,33 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MywibG9naW4iO
 #PATCH http://localhost:3000/owns/5/buy-money
 #Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MywibG9naW4iOiJiZWRkYSIsImlkX3JvbGUiOjEsImlzVmFsaWQiOmZhbHNlLCJpc0Jhbm5lZCI6ZmFsc2UsImlhdCI6MTY4OTE3MzU5OCwiZXhwIjoxNjg5MTg0Mzk4fQ.8XNOaEp4Ql2UMX5QCxZWuXx-uQ5yndWkt3VOixzs3Eo
 #Content-Type: application/json
+
+###Test routes
+
+#POST http://localhost:3000/users
+#Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MywibG9naW4iOiJhZG1pbiIsImlkX3JvbGUiOjEsImlzVmFsaWQiOnRydWUsImlzQmFubmVkIjpmYWxzZSwibGFzdERhaWx5UmV3YXJkRGF0ZSI6IjIwMjMtMDctMjVUMjA6NTI6MjYuODI0WiIsImlhdCI6MTY5MDM2MDQ3NSwiZXhwIjoxNjkwMzcxMjc1fQ.IZV40kuhbhoZRe2IEsyxD162El9cLpng-YwlXKtjYzw
+#Content-Type: application/json
+#
+#{
+#  "login": 1232,
+###  "email": szszs@h.com,
+#  "password": "ccecezrfv1",
+#"elo": 500,
+#"media": "default.png",
+#"isBanned": false,
+#"isValid": false,
+#"id_role": 3
+#}
+
+POST http://localhost:3000/users/matchmaking
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MywibG9naW4iOiJhZG1pbiIsImlkX3JvbGUiOjEsImlzVmFsaWQiOnRydWUsImlzQmFubmVkIjpmYWxzZSwibGFzdERhaWx5UmV3YXJkRGF0ZSI6IjIwMjMtMDctMjdUMDA6MjQ6MjMuNTA3WiIsImVsbyI6MTUwMCwiaWF0IjoxNjkwNDI2NzE0LCJleHAiOjE2OTA0Mzc1MTR9.v7bMvcU80gGS6qU4ZQ6ufjdv-sU8Sa7h7hxG6ouLNLc
+Content-Type: application/json
+
+{
+  "id": 3,
+  "login": "admin"
+}
+
 
 ###
 #POST http://localhost:3000/login

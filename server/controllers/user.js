@@ -70,15 +70,43 @@ module.exports = function UserController(UserService) {
             res.status(500).json({ error: 'Failed to retrieve the friends for the user.' });
           }
         },
-        getBuys: async (req, res) => {
+        getBuys: async (req, res, next) => {
           const userId = req.params.id_user;
           try {
             const buys = await UserService.getBuys(userId);
             res.status(200).json(buys);
-          } catch (error) {
-            console.error(error);
-            res.status(500).json({ error: 'Failed to retrieve the buys for the user.' });
+            if (result) res.json(result);
+            else res.sendStatus(404);
+        } catch (err) {
+            next(err);
           }
+        },
+
+        getUsersFromMongo: async (req, res, next) => {
+            try {
+                const users = await UserService.getUsersFromMongo();
+                res.status(200).json(users);
+            } catch (error) {
+                next(error);
+            }
+        },
+        postUserToMongo: async (req, res, next) => {
+            const { body } = req;
+            try {
+                const result = await UserService.postUserToMongo(body);
+                res.status(201).json(result);
+            } catch (error) {
+                next(error);
+            }
+        },
+        matchmaking: async (req, res, next) => {
+            const { body } = req;
+            try {
+                const users = await UserService.matchmaking(body);
+                res.status(201).json(users);
+            } catch (error) {
+                next(error);
+            }
         }
     };
 };

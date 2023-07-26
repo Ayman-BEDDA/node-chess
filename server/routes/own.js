@@ -5,7 +5,7 @@ const router = new Router();
 const controller = new OwnController(new OwnService());
 
 router.post("/", controller.dailyRewards);
-router.post("/:idArticle/buy-money", controller.buyPremiumMoney);
+router.post("/:idArticle/buy-money", controller.buyPremiumMoney); //buy premium money with €
 router.get("/", controller.getOwns);
 
 module.exports = router;

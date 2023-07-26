@@ -3,6 +3,8 @@ const Sequelize = require("sequelize");
 const ValidationError = require("../errors/ValidationError");
 const MoneyService = require("./money");
 
+const UserMongo = require("../db/models/UserMongo");
+
 module.exports = function UserService() {
   return {
     findAll: async function (filters, options) {
@@ -265,11 +267,100 @@ module.exports = function UserService() {
               as: 'article',
             },
           ],
-        }); 
+        });
 
-        return buys;
+        if (!buys || buys.length === 0) {
+          throw new Error('User not found.');
+        }
+
       } catch (e) {
         throw new Error('Failed to retrieve the buys for the user.');
+      }
+    },
+    getUsersFromMongo: async function () {
+      try {
+        const users = await UserMongo.find();
+        console.log(users)
+
+        if (!users || users.length === 0) {
+          throw new Error('No users found in MongoDB.');
+        }
+
+        return users;
+      } catch (e) {
+        throw new Error('Failed to retrieve users from MongoDB: ' + e.message);
+      }
+    },
+    postUserToMongo: async function (user) {
+      try {
+        const connectedUser = new UserMongo({
+            id_user: user.id_user,
+          login: user.login,
+          elo: user.elo,
+          isBanned: user.isBanned,
+          isValid: user.isValid,
+          lastDailyRewardDate: user.lastDailyRewardDate,
+          id_role: user.id_role,
+          isWaiting: user.isWaiting,
+        });
+
+        await connectedUser.save();
+        return connectedUser;
+      } catch (e) {
+        throw new Error('Failed to post user to MongoDB: ' + e.message);
+      }
+    },
+    matchmaking: async function(user) {
+      try {
+        const eloDifference = 100;
+
+        const users = await UserMongo.aggregate([
+          {
+            $match: {
+              isWaiting: true,
+              login: { $ne: user.login },
+            },
+          },
+          {
+            $addFields: {
+              eloDifference: { $abs: { $subtract: ['$elo', '$elo'] } }, // Calcul de la différence absolue des Elo avec lui-même (toujours 0)
+            },
+          },
+          {
+            $match: {
+              eloDifference: { $lte: eloDifference }, // Filtrer les utilisateurs avec une différence d'Elo inférieure ou égale à 100
+            },
+          },
+        ]);
+
+        if (users.length === 0) {
+          // Aucun utilisateur disponible pour le matchmaking
+          // Vous pouvez gérer cette situation comme vous le souhaitez
+          console.log('Aucun utilisateur disponible pour le matchmaking');
+          return;
+        }
+
+        const matchedUser = users[0];
+
+        // Créer une instance du modèle Game avec les IDs des utilisateurs
+        // Créer une instance du modèle Game avec les IDs des utilisateurs (en convertissant en entier)
+        const game = await Game.create({
+
+          WhiteUserID: user.id,
+          BlackUserID: matchedUser.id_user,
+          GameStatus: "playing",
+        });
+
+
+        console.log(game);
+
+        // Enregistrer la partie dans la base de données
+        await game.save();
+
+
+
+      } catch (error) {
+        throw new Error('Failed to find users with Elo difference: ' + error.message);
       }
     },
   };

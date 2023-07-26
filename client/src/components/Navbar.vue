@@ -24,7 +24,7 @@ onMounted(async () => {
   if (moneysIdResponses.ok){
     moneysId.push(...(await moneysIdResponses.json()));
   }
-  
+
   const moneysResponses = await fetch(`http://localhost:3000/owns`, {
     headers: {
       Authorization: 'Bearer ' + localStorage.getItem('token')

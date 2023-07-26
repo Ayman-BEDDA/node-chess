@@ -8,6 +8,7 @@ module.exports = (connection) => {
   const Own = require("./Own")(connection);
   const Report = require("./Report")(connection);
   const Game = require("./Game")(connection);
+  const UserMongo = require("./UserMongo");
   const Role = require("./Role")(connection);
 
   class User extends Model {
@@ -85,6 +86,10 @@ module.exports = (connection) => {
         type: DataTypes.STRING(256),
         allowNull: true,
       },
+      isWaiting: {
+        type: DataTypes.BOOLEAN,
+        allowNull: true,
+      }
     },
     {
       sequelize: connection,
@@ -131,6 +136,28 @@ User.associate = (models) => {
     }
     return updatePassword(user);
   });
+
+
+  User.addHook("afterCreate", async (user) => {
+    const userMongo = new UserMongo({
+        id_user: user.id,
+      login: user.login,
+      elo: user.elo,
+      isBanned: user.isBanned,
+      isValid: user.isValid,
+      lastDailyRewardDate: user.lastDailyRewardDate,
+      id_role: user.id_role,
+      isWaiting: user.isWaiting,
+      });
+    if (userMongo) {
+      await userMongo.save();
+    } else {
+      console.log("Erreur lors de la création du userMongo")
+    }
+
+    }
+    );
+
 
   User.addHook("beforeUpdate", async (user, options) => {
     if (options.fields.includes("password")) {
@@ -185,6 +212,5 @@ User.associate = (models) => {
       }
     });
   });
-
   return User;
 };
