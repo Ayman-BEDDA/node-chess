@@ -1,12 +1,16 @@
 <script setup>
     import { useRoute, useRouter } from 'vue-router';
     import BoardContainer from "../components/BoardContainer.vue";
-    import { inject, onMounted, ref } from 'vue';
+    import { inject, onMounted, ref, provide } from 'vue';
 
     const gameId = ref(useRoute().params.gameId);
     const router = useRouter();
 
     const user = inject('user');
+
+    const userColor = ref(null);
+
+    provide('userColor', userColor);
 
     onMounted(async () => {
         try {
@@ -16,6 +20,11 @@
             if (!gameExists) {
                 router.push({ name: 'Home' });
             } else {
+                if (gameExists.WhiteUserID === user.value.id) {
+                    userColor.value = 'w';
+                } else if (gameExists.BlackUserID === user.value.id) {
+                    userColor.value = 'b';
+                }
                 const authResponse = await fetch(`http://localhost:3000/games/${gameId.value}/authorized`, {
                     method: 'POST',
                     headers: {

@@ -1,5 +1,5 @@
 <script setup>
-import { onMounted, ref } from 'vue';
+import { onMounted, ref, inject } from 'vue';
 //import $ from "jquery";
 import '../assets/chessboard-1.0.0.min.css'
 import Chess from '../assets/chess'
@@ -14,6 +14,7 @@ let gameIsActive = ref(true);
 let socket = ref(null);
 let timeBlack = ref(600); 
 let timeWhite = ref(600);
+const userColor = inject('userColor');
 
 const formatTime = (seconds) => {
     let minutes = Math.floor(seconds / 60);
@@ -58,6 +59,12 @@ const onDrop = (source, target) => {
     if (!gameIsActive) {
         return 'snapback';
     }
+
+    const piece = game.value.get(source);
+    if (piece && piece.color !== userColor.value) {
+        return 'snapback';
+    }
+
     var move = game.value.move({
         from: source,
         to: target,
@@ -98,8 +105,15 @@ const onSnapEnd = () => {
     board.value.position(game.value.fen());
 }
 
+let orientation = "white";
+
+if(userColor.value == "b"){
+    orientation = "black";
+}
+
 const config = {
     draggable: true,
+    orientation: orientation,
     position: 'start',
     pieceTheme: '/src/assets/chesspieces/wikipedia/{piece}.png',
     onDrop: onDrop,
@@ -107,7 +121,6 @@ const config = {
 }
 
 let board = ref(null);
-
 
 onMounted(() => {
     board.value = Chessboard('board', config);
