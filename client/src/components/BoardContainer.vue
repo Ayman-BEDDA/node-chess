@@ -1,5 +1,5 @@
 <script setup>
-import { onMounted, ref, inject } from 'vue';
+import { onMounted, ref, inject, reactive } from 'vue';
 //import $ from "jquery";
 import '../assets/chessboard-1.0.0.min.css'
 import Chess from '../assets/chess'
@@ -7,7 +7,13 @@ import Chessboard from '../assets/chessboard-1.0.0.js'
 import { io } from "socket.io-client";
 import { useRoute } from 'vue-router';
 
+const user = inject('user');
 //window.$ = window.jQuery = $;
+
+let currentRoute = useRoute(); 
+let currentGameid = currentRoute.params.gameId;
+
+console.log(currentGameid);
 
 let intervalId = ref(null);
 let gameIsActive = ref(true);
@@ -15,11 +21,21 @@ let socket = ref(null);
 let timeBlack = ref(600); 
 let timeWhite = ref(600);
 const userColor = inject('userColor');
+const showReportModal = ref(false);
+const reported = ref(false);
+const newReportForm = reactive({
+  message: ''
+});
+
 
 const formatTime = (seconds) => {
     let minutes = Math.floor(seconds / 60);
     seconds = seconds % 60;
     return minutes + ':' + (seconds < 10 ? '0' : '') + seconds;
+}
+
+function cancelCreate() {
+    showReportModal.value = false;
 }
 
 const gameOver = (player) => {
@@ -53,6 +69,50 @@ const updateStatus = () => {
         gameIsActive = false;
         alert(status);
     }
+}
+
+async function createReport(id_user) {
+  event.preventDefault();
+
+  const gameResponse = await fetch(`http://localhost:3000/games/${currentGameid}`, {
+    headers: {
+        Authorization: 'Bearer ' + localStorage.getItem('token')
+        }
+  });
+
+  if (gameResponse.ok) {
+    const gameInfo = await gameResponse.json();
+    let id_user_reported = gameInfo.WhiteUserID == id_user ? gameInfo.BlackUserID : gameInfo.WhiteUserID;
+
+    const newReport = {
+        message: newReportForm.message,
+        status: 'unread',
+        onCreate: new Date().toISOString(),
+        onUpdate: new Date().toISOString(),
+        id_user: id_user,
+        id_user_reported: id_user_reported
+    };
+
+    const response = await fetch(`http://localhost:3000/reports`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: 'Bearer ' + localStorage.getItem('token')
+      },
+      body: JSON.stringify(newReport)
+    });
+
+    if (response.ok) {
+        showReportModal.value = false;
+        newReportForm.message = '';
+        reported.value = true;
+        localStorage.setItem('reportedStatus', true);
+    } else {
+        alert('Error while creating report');
+    }
+  } else {
+    alert('Error while fetching the current game');
+  }
 }
 
 const onDrop = (source, target) => {
@@ -143,6 +203,11 @@ onMounted(() => {
         updateStatus();
     });
 
+    const localStorageReportedStatus = localStorage.getItem('reportedStatus');
+    if (localStorageReportedStatus) {
+        reported.value = true;
+    }
+
     socket.value.on('time', function (msg) {
         if (msg.type === 'black') {
             timeBlack.value = msg.time;
@@ -184,10 +249,44 @@ onMounted(() => {
     <div id="moves">
         <button>Match nul</button>
         <button>Abandonner</button>
+        <div v-if="!reported">
+            <button @click="showReportModal = true" class="report-button">Signaler</button>
+        </div>
+        <div v-else>
+            <button disabled>Déjà signalé</button>
+        </div>
     </div>
+
+    <div v-if="showReportModal" class="modal">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h3 class="modal-title">Créer un utilisateur</h3>
+          <button type="button" class="modal-close" @click="cancelCreate">&times;</button>
+        </div>
+        <div class="modal-body">
+            <form @submit="() => createReport(user?.id)">
+            <div class="form-group">
+              <label for="newMessage">Message</label>
+              <input type="text" v-model="newReportForm.message" id="newMessage" class="input-field" required>
+            </div>
+
+            <div class="modal-footer">
+              <button type="submit" class="button primary">Créer</button>
+              <button type="button" class="button" @click="cancelCreate">Annuler</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
 </template>
 
 <style scoped>
+    .form-group {
+        margin-bottom: 20px;
+        color: black;
+    }
     .board_container{
         width: 100%;
     }
@@ -237,4 +336,58 @@ onMounted(() => {
         color: white;
         margin-left: 40%;
     }
+
+    .modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  background-color: rgba(0, 0, 0, 0.5);
+}
+
+.modal-dialog {
+  max-width: 400px;
+  background-color: #fff;
+  border-radius: 5px;
+  overflow: hidden;
+}
+
+.modal-header {
+  padding: 10px 20px;
+  background-color: #f2f2f2;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.modal-title {
+  font-size: 1.2rem;
+  font-weight: bold;
+  color: black;
+}
+
+.modal-close {
+  border: none;
+  background-color: transparent;
+  font-size: 1.5rem;
+  cursor: pointer;
+  padding: 0;
+}
+
+.modal-body {
+  padding: 20px;
+}
+
+.modal-footer {
+  padding: 10px 20px;
+  background-color: #f2f2f2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
 </style>
