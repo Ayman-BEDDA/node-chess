@@ -11,7 +11,7 @@ module.exports = function UserService() {
           { model: Role, as: 'role' },
         ],
       };
-      options.order = {createdAt: "ASC"}
+      options.order = {createdAt: "DESC"}
       if (options.order) {
         // => [["name", "ASC"], ["dob", "DESC"]]
         dbOptions.order = Object.entries(options.order);
