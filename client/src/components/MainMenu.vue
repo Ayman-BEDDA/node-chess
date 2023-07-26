@@ -37,6 +37,13 @@ function navigateTo(route) {
           <span></span>
       </span>
     </div>
+    <div class="button v12" @click="navigateTo('friends')">
+      <span class="label">Friends</span>
+      <span class="icon">
+          <span></span>
+      </span>
+    </div>
+
   </div>
 </template>
 

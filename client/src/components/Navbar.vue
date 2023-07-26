@@ -4,6 +4,8 @@ import router from '../router';
 
 const moneys = reactive([]);
 const moneysId = reactive([]);
+const premiumMoney = reactive([]);
+const freeMoney = reactive([]);
 
 const user = inject('user');
 
@@ -20,8 +22,12 @@ onMounted(async () => {
   });
 
   if (moneysResponses.ok){
-    moneys.push(...(await moneysResponses.json()));
-  }
+      const jsonDatas = await moneysResponses.json();
+      const premium = jsonDatas.filter(item => item.id_money === 1);
+      const free = jsonDatas.filter(item => item.id_money === 2);
+      premiumMoney.push(...premium);
+      freeMoney.push(...free);
+   }
 
   const moneysIdResponses = await fetch(`http://localhost:3000/moneys`, {
     headers: {
@@ -33,7 +39,6 @@ onMounted(async () => {
     moneysId.push(...(await moneysIdResponses.json()));
   }
 });
-
 
 const premiumMoney = computed(() => moneys.filter(item => item.id_money === moneysId[0]?.id));
 const freeMoney = computed(() => moneys.filter(item => item.id_money === moneysId[1]?.id));
@@ -56,6 +61,7 @@ async function dailyRwards() {
       throw await response.json();
     } else if (response.ok) {
       success.value = "You got your daily rewards ! (100 credits)";
+      freeMoney[0].amount += 100;
     } else {
       throw new Error('Fetch failed');
     }

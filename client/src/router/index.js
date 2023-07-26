@@ -15,6 +15,7 @@ import Login from '../views/security/Login.vue';
 import Register from '../views/security/Register.vue';
 import Verify from '../views/security/Verify.vue';
 import Shop from '../views/Shop.vue'
+import Friends from '../views/Friends.vue';
 import Game from '../views/Game.vue';
 import Profile from '../views/Profile.vue';
 
@@ -115,8 +116,14 @@ const routes = [
     name: 'Play',
     component: Game,
     meta: { requiresAuth: true },
+  },
+  {
+    path: '/friends',
+    name: 'Friends',
+    component: Friends,
+    meta: { requiresAuth: true },
   }
-];
+  ];
 
 const router = createRouter({
   history: createWebHistory(),
