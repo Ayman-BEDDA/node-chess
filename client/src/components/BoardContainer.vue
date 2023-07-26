@@ -6,9 +6,11 @@ import Chess from '../assets/chess'
 import Chessboard from '../assets/chessboard-1.0.0.js'
 import { io } from "socket.io-client";
 import { useRoute } from 'vue-router';
+import Modal from './Modal.vue';
 
 //window.$ = window.jQuery = $;
 
+const showModal = ref(false);
 let intervalId = ref(null);
 let gameIsActive = ref(true);
 let socket = ref(null);
@@ -17,6 +19,24 @@ let timeWhite = ref(600);
 const userColor = inject('userColor');
 const gameExists = inject('gameExists');
 const gameId = inject('gameId');
+
+const openModal = () => {
+  showModal.value = true
+}
+
+const closeModal = () => {
+  showModal.value = false
+}
+
+const declareDraw = () => {
+  closeModal();
+  socket.value.emit('drawAccepted', { gameId: gameId.value });
+}
+
+const proposeDraw = () => {
+  socket.value.emit('proposeDraw', { gameId: gameId.value });
+}
+
 
 const formatTime = (seconds) => {
     let minutes = Math.floor(seconds / 60);
@@ -31,7 +51,7 @@ const gameOver = (player) => {
     if(player == "w"){
       winner = gameExists.value.BlackUserID;
     }
-    gameIsActive = false;
+    gameIsActive.value = false;
     fetchWinner(winner);
 }
 
@@ -57,17 +77,36 @@ const updateStatus = () => {
     }
 
     if (game.value.game_over()) {
-        gameIsActive = false;
+        gameIsActive.value = false;
 
         // Détermination du gagnant
         let winnerId = null;
         if (game.value.in_checkmate()) {
             winnerId = game.value.turn() === 'b' ? gameExists.value.WhiteUserID : gameExists.value.BlackUserID;
+            socket.value.emit('checkmate', { gameId: gameId.value });
         }
 
         fetchWinner(winnerId);
         
     }
+}
+
+const fetchDraw = () => {
+  fetch(`http://localhost:3000/games/${gameId.value}`, {
+      method: 'PATCH',
+      headers: {
+          'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+          GameStatus: 'draw'
+      })
+  }).then(response => {
+      if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+      }
+  }).catch(e => {
+      console.error('There was a problem with the fetch operation: ' + e.message);
+  });
 }
 
 const fetchWinner = (winner) => {
@@ -198,6 +237,15 @@ onMounted(() => {
     let gameId = route.params.gameId;
     socket.value.emit('joinGame', gameId);
 
+    socket.value.on('capturedPieces', (capturedPieces) => {
+      capturedPieces.w.forEach((piece) => {
+          taken("w" ,piece);
+      });
+      capturedPieces.b.forEach((piece) => {
+          taken("b" ,piece);
+      });
+    });
+
     socket.value.on('updateCapture', function (msg) {
         taken(msg.color, msg.piece);
     });
@@ -219,6 +267,20 @@ onMounted(() => {
       alert("L'autre joueur a abandonné. Vous avez gagné la partie.");
     });
 
+    socket.value.on('drawProposed', function () {
+      openModal();
+    });
+
+    socket.value.on('drawAccepted', function () {
+      fetchDraw();
+      gameIsActive.value = false;
+      alert("La partie est terminée. Match nul.");
+    });
+
+    socket.value.on('drawProposalCooldown', function () {
+      alert("Vous ne pouvez pas proposer un match nul tout de suite. Veuillez attendre 10 secondes.");
+    });
+
     socket.value.on('time', function (msg) {
         if (msg.type === 'black') {
             timeBlack.value = msg.time;
@@ -231,6 +293,10 @@ onMounted(() => {
 
     socket.value.on('gameOver', function (player) {
         gameOver(player);
+    });
+
+    socket.value.on('math', function (msg) {
+        alert(msg);
     });
 
     $(window).resize(function () {
@@ -265,9 +331,22 @@ onMounted(() => {
       </div>
     </div>
     <div id="moves" class="moves_container">
-      <button class="draw_button">Match nul</button>
-      <button class="resign_button" @click="resign">Abandonner</button>
+      <h3 v-if="!gameIsActive">La partie est finie =)</h3>
+      <button class="draw_button" @click="proposeDraw" v-if="gameIsActive">Match nul</button>
+      <button class="resign_button" @click="resign" v-if="gameIsActive">Abandonner</button>
     </div>
+
+    <Modal v-if="showModal" @close="closeModal">
+    <template #header>
+      <div>
+        <h3 style="color: black">Votre adversaire vous propose un match nul</h3>
+      </div>
+    </template>
+    <template #footer>
+      <button @click="closeModal">Non</button>
+      <button @click="declareDraw">Oui</button>
+    </template>
+  </Modal>
   </template>
 
 <style scoped>

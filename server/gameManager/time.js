@@ -4,6 +4,7 @@ const gameOver = (io, player, gameId) => {
   if (games[gameId].intervalId) {
     clearInterval(games[gameId].intervalId);
   }
+  
   games[gameId].gameIsActive = false;
   io.to(gameId).emit('gameOver', player);
 }
