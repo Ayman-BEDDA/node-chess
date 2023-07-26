@@ -9,16 +9,18 @@ const Article = ArticleModel(sequelize);
 const Buy = BuyModel(sequelize);
 
 async function generateBuyData() {
-    const users = await User.findAll();
-    const articles = await Article.findAll();
-    
+    const users = await User.findAll({}, {});
+    const articles = await Article.findAll({}, {});
+    const existingUserIds = users.map((user) => user.id);
+    const existingArticleIds = articles.map((article) => article.id);
+
     const buys = [];
     
     for (let i = 0; i < users.length; i++) {
         const buy = {
-        date: faker.date.past(),
-        id_article: articles[Math.floor(Math.random() * articles.length)].id,
-        id_user: users[Math.floor(Math.random() * users.length)].id,
+            date: faker.date.past(),
+            id_article: existingArticleIds[Math.floor(Math.random() * articles.length)],
+            id_user: existingUserIds[Math.floor(Math.random() * users.length)],
         };
         buys.push(buy);
     }

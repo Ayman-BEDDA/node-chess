@@ -31,7 +31,7 @@ function navigateTo(route) {
           <span></span>
       </span>
     </div>
-    <div v-if="user?.id_role === 1" class="button v12" @click="navigateTo('admin/home')">
+    <div v-if="user?.role_libelle === 'admin'" class="button v12" @click="navigateTo('admin/home')">
       <span class="label">Admin</span>
       <span class="icon">
           <span></span>

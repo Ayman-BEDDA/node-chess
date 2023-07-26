@@ -1,5 +1,7 @@
 const genericController = require("./generic");
-const UserService = require("../services/user")();
+const UserService = require("../services/user");
+const { v4: uuidv4 } = require("uuid");
+const { isUUID } = require("validator");
 
 module.exports = function FriendController(Service, options = {}) {
   const GenericController = genericController(Service, options);
@@ -9,10 +11,10 @@ module.exports = function FriendController(Service, options = {}) {
     send: async (req, res) => {
         const { id, id_receiver } = req.params;
 
-        const userExists = await UserService.findOne({ id: parseInt(id, 10) });
-        const receiverExists = await UserService.findOne({ id: parseInt(id_receiver, 10) });
+        const userExists = await UserService.findOne({ id: id });
+        const receiverExists = await UserService.findOne({ id: id_receiver });
 
-        if (!userExists || !receiverExists) {
+        if (!isUUID(id) || !isUUID(id_receiver)) {
           return res.status(404).json({ message: "User not found" });
         }
 
@@ -77,7 +79,10 @@ module.exports = function FriendController(Service, options = {}) {
     friends_list: async (req, res) => {
         const { id } = req.params;
         try {
-            const friends = await Service.findAll({ id_user: parseInt(id, 10), status: 'accepted' });
+          if (!isUUID(id)) {
+            return res.status(404);
+          }
+            const friends = await Service.findAll({ id_user: id, status: 'accepted' });
             res.json(friends);
         } catch (err) {
             res.status(500).json(err);
@@ -86,8 +91,10 @@ module.exports = function FriendController(Service, options = {}) {
     pending: async (req, res) => {
         const { id } = req.params;
         try {
-            console.log(parseInt(id, 10))
-            const pending = await Service.findAll({ id_user_receiver: parseInt(id, 10), status: 'waiting' });
+            if (!isUUID(id)) {
+              return res.status(404);
+            }
+            const pending = await Service.findAll({ id_user_receiver: id, status: 'waiting' });
             res.json(pending);
         } catch (err) {
             res.status(500).json(err);
@@ -96,6 +103,9 @@ module.exports = function FriendController(Service, options = {}) {
     delete: async (req, res) => {
       const { id, id_receiver } = req.params;
       try {
+        if (!isUUID(id) || !isUUID(id_receiver)) {
+          return res.status(404);
+        }
         const result = await Service.delete({ id_user: id, id_user_receiver: id_receiver });
 
         if (result) res.status(200).json({ message: "Friendship deleted successfully" });

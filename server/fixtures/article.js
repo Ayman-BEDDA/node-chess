@@ -1,10 +1,13 @@
 const faker = require('faker');
 const sequelize = require('../db/db');
 const ArticleModel = require('../db/models/Article');
+const MoneyService = require("../services/money");
 
 const Article = ArticleModel(sequelize);
 
 async function generateArticleData() {
+    const moneys = await MoneyService().findAll({}, {});
+    const existingMoneyIds = moneys.map((money) => money.id);
 
     const articles = [];
 
@@ -13,7 +16,7 @@ async function generateArticleData() {
             libelle: faker.commerce.productName(),
             price: faker.commerce.price(),
             media: "./assets/echiquier-bois.jpg",
-            id_money: faker.datatype.number({ min: 1, max: 2 })
+            id_money: existingMoneyIds[Math.floor(Math.random() * 2)],
         };
         articles.push(article);
     }
@@ -25,7 +28,7 @@ async function generateArticleData() {
         price: 5000,
         media: faker.image.imageUrl(),
         euros: 5,
-        id_money: 3
+        id_money: existingMoneyIds[2],
     })
 }
 

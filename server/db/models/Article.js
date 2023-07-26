@@ -1,4 +1,5 @@
 const { Model, DataTypes } = require("sequelize");
+const { v4: uuidv4 } = require('uuid');
 
 module.exports = function (connection) {
   class Article extends Model {}
@@ -6,8 +7,8 @@ module.exports = function (connection) {
   Article.init(
     {
       id: {
-        type: DataTypes.INTEGER,
-        autoIncrement: true,
+        type: DataTypes.UUID,
+        defaultValue: DataTypes.UUIDV4,
         primaryKey: true
       },
       libelle: {
@@ -27,7 +28,7 @@ module.exports = function (connection) {
           allowNull: true
       },
       id_money: {
-          type: DataTypes.INTEGER,
+          type: DataTypes.UUID,
           references: {
               model: 'moneys',
               key: 'id',

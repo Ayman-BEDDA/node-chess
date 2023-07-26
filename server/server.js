@@ -65,11 +65,11 @@ app.post('/upload', checkAuth, async (req, res, next) => {
 app.use(express.json());
 app.use("/", SecurityRouter);
 //app.use(checkAuth); protect all routes below
-app.use("/users", checkAuth, UserRouter); // protect only this route
+app.use("/users", UserRouter); // protect only this route
 app.use("/reports", checkAuth, ReportRouter); // protect only this route
 app.use("/roles", checkAuth, checkAdmin, RoleRouter); // protect only this route
 app.use("/articles", checkAuth, checkValidation, checkNotBan, ArticleRouter);
-app.use("/moneys", checkAuth, checkAdmin, MoneyRouter);
+app.use("/moneys", checkAuth, MoneyRouter);
 app.use("/owns", checkAuth, OwnRouter);
 app.use("/games",  GameRouter); // protect only this route
 app.use("/buys", checkAuth, BuyRouter);
