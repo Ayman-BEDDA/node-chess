@@ -12,7 +12,7 @@ module.exports = function (connection) {
         primaryKey: true
       },
       WhiteUserID: {
-        type: DataTypes.INTEGER,
+        type: DataTypes.UUID,
         references: {
           model: 'users', 
           key: 'id', 
@@ -20,7 +20,7 @@ module.exports = function (connection) {
         onDelete: 'CASCADE'
       },
       BlackUserID: {
-        type: DataTypes.INTEGER,
+        type: DataTypes.UUID,
         references: {
           model: 'users', 
           key: 'id', 
@@ -31,7 +31,7 @@ module.exports = function (connection) {
         type: DataTypes.STRING(32),
       },
       Winner: {
-        type: DataTypes.INTEGER,
+        type: DataTypes.UUID,
         allowNull: true,
         references: {
           model: 'users', 

@@ -3,6 +3,7 @@ import {computed, onMounted, reactive, ref, inject} from "vue";
 import router from '../router';
 
 const moneys = reactive([]);
+const moneysId = reactive([]);
 
 const user = inject('user');
 
@@ -12,19 +13,30 @@ const shouldShowNavbar = computed(() => {
 });
 
 onMounted(async () => {
-    const moneysResponses = await fetch(`http://localhost:3000/owns`, {
-      headers: {
-        Authorization: 'Bearer ' + localStorage.getItem('token')
-      }
-    });
-
-    if (moneysResponses.ok){
-      moneys.push(...(await moneysResponses.json()));
+  const moneysResponses = await fetch(`http://localhost:3000/owns`, {
+    headers: {
+      Authorization: 'Bearer ' + localStorage.getItem('token')
     }
+  });
+
+  if (moneysResponses.ok){
+    moneys.push(...(await moneysResponses.json()));
+  }
+
+  const moneysIdResponses = await fetch(`http://localhost:3000/moneys`, {
+    headers: {
+      Authorization: 'Bearer ' + localStorage.getItem('token')
+    }
+  });
+
+  if (moneysIdResponses.ok){
+    moneysId.push(...(await moneysIdResponses.json()));
+  }
 });
 
-const premiumMoney = computed(() => moneys.filter(item => item.id_money === 1));
-const freeMoney = computed(() => moneys.filter(item => item.id_money === 2));
+
+const premiumMoney = computed(() => moneys.filter(item => item.id_money === moneysId[0]?.id));
+const freeMoney = computed(() => moneys.filter(item => item.id_money === moneysId[1]?.id));
 
 ///daily rewards
 const errors = ref({});

@@ -10,7 +10,7 @@ const errorsMoney = ref({});
 const successMoney = ref();
 const selectedCategory = ref("all");
 const buys = reactive([]);
-
+const moneysId = reactive([]);
 const user = inject('user');
 
 onMounted(async () => {
@@ -25,6 +25,16 @@ onMounted(async () => {
     isLoading.value = false;
   } else {
     alert('Error while fetching articles');
+  }
+
+  const moneysIdResponses = await fetch(`http://localhost:3000/moneys`, {
+    headers: {
+      Authorization: 'Bearer ' + localStorage.getItem('token')
+    }
+  });
+
+  if (moneysIdResponses.ok){
+    moneysId.push(...(await moneysIdResponses.json()));
   }
 });
 
@@ -138,11 +148,11 @@ const filteredArticles = computed(() => {
   if (selectedCategory.value === "all") {
     return articles.filter(article => !purchasedArticleIds.includes(article.id));
   } else if (selectedCategory.value === "free") {
-    return articles.filter(article => !purchasedArticleIds.includes(article.id) && article.id_money === 2);
+    return articles.filter(article => !purchasedArticleIds.includes(article.id) && article.id_money === moneysId[1]?.id);
   } else if (selectedCategory.value === "premium") {
-    return articles.filter(article => !purchasedArticleIds.includes(article.id) && article.id_money === 1);
+    return articles.filter(article => !purchasedArticleIds.includes(article.id) && article.id_money === moneysId[0]?.id);
   } else if (selectedCategory.value === "euro") {
-    return articles.filter(article => !purchasedArticleIds.includes(article.id) && article.id_money === 3);
+    return articles.filter(article => !purchasedArticleIds.includes(article.id) && article.id_money === moneysId[2]?.id);
   } else if (selectedCategory.value === "purchased") {
     return articles.filter(article => purchasedArticleIds.includes(article.id));
   }
@@ -164,12 +174,12 @@ function filterCategory(category) {
       <p class="success" v-if="successMoney">Monnaie achetée avec succès</p>
       <img src="../assets/echiquier-bois.jpg" class="image">
       <h2>{{ selectedArticle.libelle }}</h2>
-      <p class="price-pop" v-if="selectedArticle.id_money === 1">{{ selectedArticle.price }}<img class="img-coin" src="../assets/premium-coin.svg"></p>
-      <p class="price-pop" v-if="selectedArticle.id_money === 2">{{ selectedArticle.price }}<img class="img-coin" src="../assets/free-coins.svg"></p>
-      <p class="price-pop" v-if="selectedArticle.id_money === 3">{{ selectedArticle.euros }} €</p>
-      <button v-if="selectedArticle.id_money === 1" @click="handleBuy()" class="buy">Acheter</button>
-      <button v-if="selectedArticle.id_money === 2" @click="handleBuy()" class="buy">Acheter</button>
-      <button v-if="selectedArticle.id_money === 3" @click="handleBuyMoney()" class="buy-money">Acheter</button>
+      <p class="price-pop" v-if="selectedArticle.id_money === moneysId[0]?.id">{{ selectedArticle.price }}<img class="img-coin" src="../assets/premium-coin.svg"></p>
+      <p class="price-pop" v-if="selectedArticle.id_money === moneysId[1]?.id">{{ selectedArticle.price }}<img class="img-coin" src="../assets/free-coins.svg"></p>
+      <p class="price-pop" v-if="selectedArticle.id_money === moneysId[2]?.id">{{ selectedArticle.euros }} €</p>
+      <button v-if="selectedArticle.id_money === moneysId[0]?.id" @click="handleBuy()" class="buy">Acheter</button>
+      <button v-if="selectedArticle.id_money === moneysId[1]?.id" @click="handleBuy()" class="buy">Acheter</button>
+      <button v-if="selectedArticle.id_money === moneysId[2]?.id" @click="handleBuyMoney()" class="buy-money">Acheter</button>
     </div>
   </div>
   <div class="shop">
@@ -189,12 +199,12 @@ function filterCategory(category) {
               <img src="../assets/echiquier-bois.jpg" class="image">
               <p class="libelle">{{ article.libelle }}</p>
               <div class="price">
-                <p v-if="article.id_money === 1">{{ article.price }}</p>
-                <p v-if="article.id_money === 2">{{ article.price }}</p>
-                <p v-if="article.id_money === 3">{{ article.euros }}</p>
-                <img class="img-coin" v-if="article.id_money === 1" src="../assets/premium-coin.svg">
-                <img class="img-coin" v-if="article.id_money === 2" src="../assets/free-coins.svg">
-                <p class="price" v-if="article.id_money === 3"> €</p>
+                <p v-if="article.id_money === moneysId[0]?.id">{{ article.price }}</p>
+                <p v-if="article.id_money === moneysId[1]?.id">{{ article.price }}</p>
+                <p v-if="article.id_money === moneysId[2]?.id">{{ article.euros }}</p>
+                <img class="img-coin" v-if="article.id_money === moneysId[0]?.id" src="../assets/premium-coin.svg">
+                <img class="img-coin" v-if="article.id_money === moneysId[1]?.id" src="../assets/free-coins.svg">
+                <p class="price" v-if="article.id_money === moneysId[2]?.id"> €</p>
               </div>
             </div>
           </div>

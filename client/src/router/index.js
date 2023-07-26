@@ -128,7 +128,7 @@ router.beforeEach((to, from, next) => {
   const user = ref(token ? jwtDecode(token) : null);
 
   const isLogged = !!user.value;
-  const isAdmin = user.value?.id_role === 1;
+  const isAdmin = user.value?.role_libelle === 'admin';
 
   if (to.matched.some(record => record.meta.requiresAuth)) {
     if (!isLogged && to.name !== 'Login' && to.name !== 'Register' && to.name !== 'ForgotPassword' && to.name !== 'ResetPassword' && to.name !== 'Verify') {
