@@ -14,7 +14,10 @@ module.exports = function GameController(Service, options = {}) {
         const game = await Service.findOne({ id: id });
 
         if (game) {
-          if (game.WhiteUserID === user_id || game.BlackUserID === user_id && game.GameStatus === 'playing') {
+          if(game.GameStatus != 'playing'){
+            res.json({ "authorized": false });
+          }
+          if (game.WhiteUserID === user_id || game.BlackUserID === user_id) {
             res.json({ "authorized": true });
           } else {
             res.json({ "authorized": false });
