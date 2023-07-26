@@ -15,6 +15,8 @@ let socket = ref(null);
 let timeBlack = ref(600); 
 let timeWhite = ref(600);
 const userColor = inject('userColor');
+const gameExists = inject('gameExists');
+const gameId = inject('gameId');
 
 const formatTime = (seconds) => {
     let minutes = Math.floor(seconds / 60);
@@ -51,7 +53,31 @@ const updateStatus = () => {
 
     if (game.value.game_over()) {
         gameIsActive = false;
-        alert(status);
+
+        // Détermination du gagnant
+        let winnerId = null;
+        if (game.value.in_checkmate()) {
+            winnerId = game.value.turn() === 'b' ? gameExists.value.WhiteUserID : gameExists.value.BlackUserID;
+        }
+
+
+        // Mettre à jour le jeu dans la base de données
+        fetch(`http://localhost:3000/games/${gameId.value}`, {
+            method: 'PATCH',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                GameStatus: 'end',
+                Winner: winnerId
+            })
+        }).then(response => {
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+        }).catch(e => {
+            console.error('There was a problem with the fetch operation: ' + e.message);
+        });
     }
 }
 
@@ -98,11 +124,31 @@ const onDrop = (source, target) => {
         document.getElementById(id).appendChild(pieceElement);
     }
 
+    fetch(`http://localhost:3000/games/${gameId.value}`, {
+        method: 'PATCH',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            "fen": game.value.fen()
+        }),
+    }).then(response => {
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+    }).catch(e => {
+        console.error('There was a problem with the fetch operation: ' + e.message);
+    });
+
     updateStatus();
 }
 
 const onSnapEnd = () => {
     board.value.position(game.value.fen());
+}
+const getChessboard = (board) =>{
+    var fenParts = board.split(' ');
+    return fenParts[0];
 }
 
 let orientation = "white";
@@ -114,7 +160,7 @@ if(userColor.value == "b"){
 const config = {
     draggable: true,
     orientation: orientation,
-    position: 'start',
+    position: getChessboard(gameExists.value.fen),
     pieceTheme: '/src/assets/chesspieces/wikipedia/{piece}.png',
     onDrop: onDrop,
     onSnapEnd: onSnapEnd
@@ -123,6 +169,7 @@ const config = {
 let board = ref(null);
 
 onMounted(() => {
+    game.value.load(gameExists.value.fen);
     board.value = Chessboard('board', config);
 
     socket.value = io("http://localhost:3000");

@@ -9,20 +9,23 @@
     const user = inject('user');
 
     const userColor = ref(null);
-
+    const gameExists = ref(null);
+    const dataReady = ref(false);
+    provide('gameId', gameId);
     provide('userColor', userColor);
+    provide('gameExists', gameExists);
 
     onMounted(async () => {
         try {
             const response = await fetch(`http://localhost:3000/games/${gameId.value}`, {method: 'GET'});
-            const gameExists = await response.json();
+            gameExists.value = await response.json();
 
-            if (!gameExists) {
+            if (!gameExists.value) {
                 router.push({ name: 'Home' });
             } else {
-                if (gameExists.WhiteUserID === user.value.id) {
+                if (gameExists.value.WhiteUserID === user.value.id) {
                     userColor.value = 'w';
-                } else if (gameExists.BlackUserID === user.value.id) {
+                } else if (gameExists.value.BlackUserID === user.value.id) {
                     userColor.value = 'b';
                 }
                 const authResponse = await fetch(`http://localhost:3000/games/${gameId.value}/authorized`, {
@@ -42,11 +45,12 @@
             console.error(error);
             router.push({ name: 'Home' });
         }
+        dataReady.value = true;
     });
 </script>
 
     <template>
-        <BoardContainer />
+        <BoardContainer v-if="dataReady" />
     </template>
 
     <style scoped>

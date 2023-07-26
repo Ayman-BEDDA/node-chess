@@ -39,6 +39,10 @@ module.exports = function (connection) {
         },
         onDelete: 'CASCADE'
       },
+      fen: {
+        type: DataTypes.STRING,
+        defaultValue: 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1'
+      },
     },
     {
       sequelize: connection,
