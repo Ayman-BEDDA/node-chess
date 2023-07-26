@@ -1,6 +1,7 @@
 require("dotenv").config();
 const express = require("express");
 const app = express();
+const http = require('http');
 const UserRouter = require("./routes/user");
 const ReportRouter = require("./routes/report");
 const GameRouter = require("./routes/game");
@@ -19,6 +20,7 @@ const checkAuth = require("./middlewares/check-auth");
 const checkAdmin  = require("./middlewares/check-role");
 const checkValidation = require("./middlewares/check-validation");
 const checkNotBan = require("./middlewares/check-not-banned");
+const setupGame = require('./gameManager');
 const base64Img = require("base64-img");
 const bodyParser = require("body-parser");
 const port = process.env.NODE_ENV === 'test' ? 3005 : 3000;
@@ -69,7 +71,7 @@ app.use("/roles", checkAuth, checkAdmin, RoleRouter); // protect only this route
 app.use("/articles", checkAuth, checkValidation, checkNotBan, ArticleRouter);
 app.use("/moneys", checkAuth, checkAdmin, MoneyRouter);
 app.use("/owns", checkAuth, OwnRouter);
-app.use("/games", checkAuth, GameRouter); // protect only this route
+app.use("/games",  GameRouter); // protect only this route
 app.use("/buys", checkAuth, BuyRouter);
 app.use("/friends", FriendRouter); //Friend
 
@@ -83,7 +85,13 @@ app.post("/", (req, res) => {
 
 app.use(errorHandler);
 
-const server = app.listen(port, () => {
+
+const server = http.createServer(app);
+
+setupGame(server);
+
+
+server.listen(port, () => {
   console.log("Server running on port " + port);
 });
 

@@ -1,4 +1,5 @@
 const { Model, DataTypes } = require("sequelize");
+const { v4: uuidv4 } = require('uuid');
 
 module.exports = function (connection) {
   class Move extends Model {}
@@ -20,7 +21,7 @@ module.exports = function (connection) {
         type: DataTypes.INTEGER,
       },
       id_game: {
-        type: DataTypes.INTEGER,
+        type: DataTypes.UUID,
         references: {
           model: 'games',
           key: 'id',

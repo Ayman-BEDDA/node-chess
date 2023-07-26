@@ -2,6 +2,9 @@ const faker = require('faker');
 const sequelize = require('../db/db');
 const UserModel = require('../db/models/User');
 const GameModel = require('../db/models/Game');
+const { v4: uuidv4 } = require('uuid');
+
+
 
 const User = UserModel(sequelize);
 const Game = GameModel(sequelize);

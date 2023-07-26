@@ -111,7 +111,7 @@ const routes = [
     meta: { requiresAuth: true },
   },
   {
-    path: '/play',
+    path: '/play/:gameId',
     name: 'Play',
     component: Game,
     meta: { requiresAuth: true },
