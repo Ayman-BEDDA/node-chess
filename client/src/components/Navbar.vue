@@ -15,20 +15,6 @@ const shouldShowNavbar = computed(() => {
 });
 
 onMounted(async () => {
-  const moneysResponses = await fetch(`http://localhost:3000/owns`, {
-    headers: {
-      Authorization: 'Bearer ' + localStorage.getItem('token')
-    }
-  });
-
-  if (moneysResponses.ok){
-      const jsonDatas = await moneysResponses.json();
-      const premium = jsonDatas.filter(item => item.id_money === 1);
-      const free = jsonDatas.filter(item => item.id_money === 2);
-      premiumMoney.push(...premium);
-      freeMoney.push(...free);
-   }
-
   const moneysIdResponses = await fetch(`http://localhost:3000/moneys`, {
     headers: {
       Authorization: 'Bearer ' + localStorage.getItem('token')
@@ -38,10 +24,21 @@ onMounted(async () => {
   if (moneysIdResponses.ok){
     moneysId.push(...(await moneysIdResponses.json()));
   }
-});
+  
+  const moneysResponses = await fetch(`http://localhost:3000/owns`, {
+    headers: {
+      Authorization: 'Bearer ' + localStorage.getItem('token')
+    }
+  });
 
-const premiumMoney = computed(() => moneys.filter(item => item.id_money === moneysId[0]?.id));
-const freeMoney = computed(() => moneys.filter(item => item.id_money === moneysId[1]?.id));
+  if (moneysResponses.ok){
+      const jsonDatas = await moneysResponses.json();
+      const premium = jsonDatas.filter(item => item.id_money === moneysId[0]?.id);
+      const free = jsonDatas.filter(item => item.id_money === moneysId[1]?.id);
+      premiumMoney.push(...premium);
+      freeMoney.push(...free);
+   }
+});
 
 ///daily rewards
 const errors = ref({});
