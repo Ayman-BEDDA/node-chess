@@ -41,7 +41,6 @@ function handleSubmit() {
     <router-link to="/register" class="link">Pas encore inscrit ?</router-link>
     <router-link to="/forgot-password" class="link">Mot de passe oublié ?</router-link>
   </form>
-  <pre>{{ formData }}</pre>
 </template>
 
 <style scoped>
