@@ -4,6 +4,7 @@ const gameOver = (io, player, gameId) => {
   if (games[gameId].intervalId) {
     clearInterval(games[gameId].intervalId);
   }
+  
   games[gameId].gameIsActive = false;
   io.to(gameId).emit('gameOver', player);
 }
@@ -17,13 +18,13 @@ const startTimer = (io, gameId) => {
       if (games[gameId].activePlayer === 'b') {
         games[gameId].timeBlack--;
         if (games[gameId].timeBlack <= 0) {
-          gameOver(io, 'Noir', gameId);
+          gameOver(io, 'b', gameId);
         }
         io.to(gameId).emit('time', { type: 'black', time: games[gameId].timeBlack }); 
       } else {
         games[gameId].timeWhite--;
         if (games[gameId].timeWhite <= 0) {
-          gameOver(io, 'Blanc', gameId);
+          gameOver(io, 'w', gameId);
         }
         io.to(gameId).emit('time', { type: 'white', time: games[gameId].timeWhite }); 
       }

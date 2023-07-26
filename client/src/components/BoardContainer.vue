@@ -6,15 +6,15 @@ import Chess from '../assets/chess'
 import Chessboard from '../assets/chessboard-1.0.0.js'
 import { io } from "socket.io-client";
 import { useRoute } from 'vue-router';
+import Modal from './Modal.vue';
 
 const user = inject('user');
 //window.$ = window.jQuery = $;
 
+
 let currentRoute = useRoute(); 
 let currentGameid = currentRoute.params.gameId;
-
-console.log(currentGameid);
-
+const showModal = ref(false);
 let intervalId = ref(null);
 let gameIsActive = ref(true);
 let socket = ref(null);
@@ -26,7 +26,25 @@ const reported = ref(false);
 const newReportForm = reactive({
   message: ''
 });
+const gameExists = inject('gameExists');
+const gameId = inject('gameId');
 
+const openModal = () => {
+  showModal.value = true
+}
+
+const closeModal = () => {
+  showModal.value = false
+}
+
+const declareDraw = () => {
+  closeModal();
+  socket.value.emit('drawAccepted', { gameId: gameId.value });
+}
+
+const proposeDraw = () => {
+  socket.value.emit('proposeDraw', { gameId: gameId.value });
+}
 
 const formatTime = (seconds) => {
     let minutes = Math.floor(seconds / 60);
@@ -41,7 +59,12 @@ function cancelCreate() {
 const gameOver = (player) => {
     clearInterval(intervalId);
     alert('Fin de la partie, ' + player + ' est à court de temps.');
-    gameIsActive = false;
+    let winner = gameExists.value.WhiteUserID;
+    if(player == "w"){
+      winner = gameExists.value.BlackUserID;
+    }
+    gameIsActive.value = false;
+    fetchWinner(winner);
 }
 
 let game = ref(new Chess());
@@ -66,9 +89,65 @@ const updateStatus = () => {
     }
 
     if (game.value.game_over()) {
-        gameIsActive = false;
-        alert(status);
+        gameIsActive.value = false;
+
+        // Détermination du gagnant
+        let winnerId = null;
+        if (game.value.in_checkmate()) {
+            winnerId = game.value.turn() === 'b' ? gameExists.value.WhiteUserID : gameExists.value.BlackUserID;
+            socket.value.emit('checkmate', { gameId: gameId.value });
+        }
+
+        fetchWinner(winnerId);
+        
     }
+}
+
+const fetchDraw = () => {
+  fetch(`http://localhost:3000/games/${gameId.value}`, {
+      method: 'PATCH',
+      headers: {
+          'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+          GameStatus: 'draw'
+      })
+  }).then(response => {
+      if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+      }
+  }).catch(e => {
+      console.error('There was a problem with the fetch operation: ' + e.message);
+  });
+}
+
+const fetchWinner = (winner) => {
+  fetch(`http://localhost:3000/games/${gameId.value}`, {
+      method: 'PATCH',
+      headers: {
+          'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+          GameStatus: 'end',
+          Winner: winner
+      })
+  }).then(response => {
+      if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+      }
+  }).catch(e => {
+      console.error('There was a problem with the fetch operation: ' + e.message);
+  });
+}
+
+const taken = (color, piece) => {
+  var pieceElement = document.createElement('img');
+    pieceElement.src = '/src/assets/chesspieces/wikipedia/' + color + '' + piece + '.png';
+    let id = "black_piece";
+    if(color == "b"){
+        id = "white_piece";
+    }
+    document.getElementById(id).appendChild(pieceElement);
 }
 
 async function createReport(id_user) {
@@ -116,7 +195,7 @@ async function createReport(id_user) {
 }
 
 const onDrop = (source, target) => {
-    if (!gameIsActive) {
+    if (!gameIsActive.value) {
         return 'snapback';
     }
 
@@ -149,20 +228,41 @@ const onDrop = (source, target) => {
 
     if(move.captured){
         var color = move.color === 'w' ? 'b' : 'w';
-        var pieceElement = document.createElement('img');
-        pieceElement.src = '/src/assets/chesspieces/wikipedia/' + color + '' + move.captured.toUpperCase() + '.png';
-        let id = "black_piece";
-        if(color == "b"){
-            id = "white_piece";
-        }
-        document.getElementById(id).appendChild(pieceElement);
+
+        socket.value.emit('capture', { color: color, piece: move.captured.toUpperCase() });
     }
+    fetch(`http://localhost:3000/games/${gameId.value}`, {
+        method: 'PATCH',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            "fen": game.value.fen()
+        }),
+    }).then(response => {
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+    }).catch(e => {
+        console.error('There was a problem with the fetch operation: ' + e.message);
+    });
 
     updateStatus();
 }
 
+const resign = () => {
+  let winner = userColor.value == 'w' ? gameExists.value.BlackUserID : gameExists.value.WhiteUserID;
+  fetchWinner(winner);
+  gameIsActive.value = false;
+  socket.value.emit('resign', { gameId: gameId.value });
+}
+
 const onSnapEnd = () => {
     board.value.position(game.value.fen());
+}
+const getChessboard = (board) =>{
+    var fenParts = board.split(' ');
+    return fenParts[0];
 }
 
 let orientation = "white";
@@ -174,7 +274,7 @@ if(userColor.value == "b"){
 const config = {
     draggable: true,
     orientation: orientation,
-    position: 'start',
+    position: getChessboard(gameExists.value.fen),
     pieceTheme: '/src/assets/chesspieces/wikipedia/{piece}.png',
     onDrop: onDrop,
     onSnapEnd: onSnapEnd
@@ -183,6 +283,7 @@ const config = {
 let board = ref(null);
 
 onMounted(() => {
+    game.value.load(gameExists.value.fen);
     board.value = Chessboard('board', config);
 
     socket.value = io("http://localhost:3000");
@@ -190,6 +291,19 @@ onMounted(() => {
     let route = useRoute(); 
     let gameId = route.params.gameId;
     socket.value.emit('joinGame', gameId);
+
+    socket.value.on('capturedPieces', (capturedPieces) => {
+      capturedPieces.w.forEach((piece) => {
+          taken("w" ,piece);
+      });
+      capturedPieces.b.forEach((piece) => {
+          taken("b" ,piece);
+      });
+    });
+
+    socket.value.on('updateCapture', function (msg) {
+        taken(msg.color, msg.piece);
+    });
 
     socket.value.on('move', function (msg) {
         let move = game.value.move(msg);
@@ -203,10 +317,30 @@ onMounted(() => {
         updateStatus();
     });
 
+
     const localStorageReportedStatus = localStorage.getItem('reportedStatus');
     if (localStorageReportedStatus) {
         reported.value = true;
     }
+    
+    socket.value.on('resign', function () {
+      gameIsActive.value = false;
+      alert("L'autre joueur a abandonné. Vous avez gagné la partie.");
+    });
+
+    socket.value.on('drawProposed', function () {
+      openModal();
+    });
+
+    socket.value.on('drawAccepted', function () {
+      fetchDraw();
+      gameIsActive.value = false;
+      alert("La partie est terminée. Match nul.");
+    });
+
+    socket.value.on('drawProposalCooldown', function () {
+      alert("Vous ne pouvez pas proposer un match nul tout de suite. Veuillez attendre 10 secondes.");
+    });
 
     socket.value.on('time', function (msg) {
         if (msg.type === 'black') {
@@ -217,6 +351,15 @@ onMounted(() => {
             document.getElementById('time_white').textContent = formatTime(timeWhite.value);
         }
     });
+
+    socket.value.on('gameOver', function (player) {
+        gameOver(player);
+    });
+
+    socket.value.on('math', function (msg) {
+        alert(msg);
+    });
+
     $(window).resize(function () {
         board.value.resize();
     }).resize();
@@ -225,39 +368,54 @@ onMounted(() => {
 
 <template>
     <div id="game_container" class="game_container">
-        <div class="player2">
-            <div class="pic-pseudo">
-                <img src="../assets/default_pic.jpg" alt="">
-                <span>Black player (500)</span>
-                <div class="timer" id="time_black">10:00</div>
-            </div>
-            <div class="piece" id="black_piece"></div>
+      <div class="player" id="black_player">
+        <div class="piece" id="black_piece"></div>
+        <div class="pic-pseudo">
+          <img src="../assets/default_pic.jpg" alt="">
+          <span class="player_name">Black player</span>
+          <div class="player_rating">(500)</div>
+          <div class="timer" id="time_black">10:00</div>
         </div>
-        <div class="board_container">
-            <div id="board">
-            </div>
+      </div>
+      <div class="board_container">
+        <div id="board">
         </div>
-        <div class="player">
-            <div class="piece" id="white_piece"></div>
-            <div class="pic-pseudo">
-                <img src="../assets/default_pic.jpg" alt="">
-                <span>White player (500)</span>
-                <div class="timer" id="time_white">10:00</div>
-            </div>
+      </div>
+      <div class="player" id="white_player">
+        <div class="piece" id="white_piece"></div>
+        <div class="pic-pseudo">
+          <img src="../assets/default_pic.jpg" alt="">
+          <span class="player_name">White player</span>
+          <div class="player_rating">(500)</div>
+          <div class="timer" id="time_white">10:00</div>
         </div>
+      </div>
     </div>
-    <div id="moves">
-        <button>Match nul</button>
-        <button>Abandonner</button>
-        <div v-if="!reported">
-            <button @click="showReportModal = true" class="report-button">Signaler</button>
-        </div>
-        <div v-else>
-            <button disabled>Déjà signalé</button>
-        </div>
+    <div id="moves" class="moves_container">
+      <h3 v-if="!gameIsActive">La partie est finie =)</h3>
+      <button class="draw_button" @click="proposeDraw" v-if="gameIsActive">Match nul</button>
+      <button class="resign_button" @click="resign" v-if="gameIsActive">Abandonner</button>
+      <div v-if="!reported">
+          <button @click="showReportModal = true" class="report-button">Signaler</button>
+      </div>
+      <div v-else>
+          <button disabled>Déjà signalé</button>
+      </div>
     </div>
 
-    <div v-if="showReportModal" class="modal">
+    <Modal v-if="showModal" @close="closeModal">
+    <template #header>
+      <div>
+        <h3 style="color: black">Votre adversaire vous propose un match nul</h3>
+      </div>
+    </template>
+    <template #footer>
+      <button @click="closeModal">Non</button>
+      <button @click="declareDraw">Oui</button>
+    </template>
+  </Modal>
+
+<div v-if="showReportModal" class="modal">
     <div class="modal-dialog">
       <div class="modal-content">
         <div class="modal-header">
@@ -280,9 +438,94 @@ onMounted(() => {
       </div>
     </div>
   </div>
-</template>
+  </template>
 
 <style scoped>
+  /* Modern styling for the chess game */
+  .game_container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 20px;
+  }
+
+  .player {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .pic-pseudo {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 5px;
+  }
+
+  .pic-pseudo img {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+  }
+
+  .player_name {
+    font-size: 18px;
+    font-weight: bold;
+    color: #333;
+  }
+
+  .player_rating {
+    font-size: 14px;
+    color: #666;
+  }
+
+  .timer {
+    font-size: 24px;
+    font-weight: bold;
+    color: #fff;
+  }
+
+  .board_container {
+    margin: 0 20px;
+  }
+
+  #board {
+    /* Add your chessboard styling here */
+    width: 600px;
+    height: 600px;
+  }
+
+  .piece {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+
+  }
+
+  .moves_container {
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
+  }
+
+  .moves_container button {
+    padding: 10px 20px;
+    font-size: 16px;
+    color: #fff;
+    background-color: #3f51b5;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    margin: 0 5px;
+    transition: background-color 0.3s ease-in-out;
+  }
+
+  .moves_container button:hover {
+    background-color: #303f9f;
+  }
+  
     .form-group {
         margin-bottom: 20px;
         color: black;
@@ -338,56 +581,56 @@ onMounted(() => {
     }
 
     .modal {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 9999;
-  background-color: rgba(0, 0, 0, 0.5);
-}
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 9999;
+      background-color: rgba(0, 0, 0, 0.5);
+    }
 
-.modal-dialog {
-  max-width: 400px;
-  background-color: #fff;
-  border-radius: 5px;
-  overflow: hidden;
-}
+    .modal-dialog {
+      max-width: 400px;
+      background-color: #fff;
+      border-radius: 5px;
+      overflow: hidden;
+    }
 
-.modal-header {
-  padding: 10px 20px;
-  background-color: #f2f2f2;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
+    .modal-header {
+      padding: 10px 20px;
+      background-color: #f2f2f2;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
 
-.modal-title {
-  font-size: 1.2rem;
-  font-weight: bold;
-  color: black;
-}
+    .modal-title {
+      font-size: 1.2rem;
+      font-weight: bold;
+      color: black;
+    }
 
-.modal-close {
-  border: none;
-  background-color: transparent;
-  font-size: 1.5rem;
-  cursor: pointer;
-  padding: 0;
-}
+    .modal-close {
+      border: none;
+      background-color: transparent;
+      font-size: 1.5rem;
+      cursor: pointer;
+      padding: 0;
+    }
 
-.modal-body {
-  padding: 20px;
-}
+    .modal-body {
+      padding: 20px;
+    }
 
-.modal-footer {
-  padding: 10px 20px;
-  background-color: #f2f2f2;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
+    .modal-footer {
+      padding: 10px 20px;
+      background-color: #f2f2f2;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
 </style>
