@@ -1,6 +1,6 @@
 <script setup>
 
-import { inject } from 'vue';
+import { inject, ref } from 'vue';
 import router from '../router';
 
 const user = inject('user');
@@ -9,209 +9,168 @@ function navigateTo(route) {
     router.push(`/${route}`);
 }
 
+///daily rewards
+const errors = ref({});
+const success = ref();
+
+async function dailyRwards() {
+  try {
+    const response = await fetch(`http://localhost:3000/owns`, {
+      method: 'POST',
+      headers: {
+        Authorization: 'Bearer ' + localStorage.getItem('token'),
+        'Content-type': 'application/json'
+      },
+    });
+
+    if (response.status === 422) {
+      throw await response.json();
+    } else if (response.ok) {
+      success.value = "You got your daily rewards ! (100 credits)";
+    } else {
+      throw new Error('Fetch failed');
+    }
+  } catch (error) {
+    errors.value = error;
+    setTimeout(() => {
+      errors.value = {};
+    }, 3000);
+    throw error; // Ajout de cette ligne pour rejeter la promesse avec l'erreur
+  }
+}
+
+const handleDailyRewards = () => {
+  dailyRwards().then(() => {
+    success.value = "You got your daily rewards ! (100 credits)";
+    setTimeout(() => {
+      success.value = null;
+      window.location.reload();
+    }, 3000);
+  }).catch((error) => {
+    errors.value = error;
+    setTimeout(() => {
+      errors.value = {};
+    }, 3000);
+  });
+};
+
 </script>
 
 <template>
   <div class="main-menu">
-    <div class="button v12" @click="navigateTo('play')">
-      <span class="label">Play</span>
-      <span class="icon">
-          <span></span>
-      </span>
+    <div class="menu">
+      <div class="side-buttons">
+        <div class="button" @click="navigateTo('stats')">
+          
+          <span class="label"><i class="fa-solid fa-chart-pie"></i> Stats</span>
+        </div>
+        <div class="button" @click="navigateTo('shop')">
+          <span class="label"><i class="fa-solid fa-cart-shopping"></i> Shop</span>
+        </div>
+        <div v-if="user?.id_role === 1" class="button" @click="navigateTo('admin')">
+          <span class="label"><i class="fa-solid fa-skull"></i> Admin</span>
+        </div>
+      </div>
+      <div class="title">
+        <h1>NodeChess</h1>
+      </div>
     </div>
-    <div class="button v12" @click="navigateTo('stats')">
-      <span class="label">Stats</span>
-      <span class="icon">
-          <span></span>
-      </span>
-    </div>
-    <div class="button v12" @click="navigateTo('shop')">
-      <span class="label">Shop</span>
-      <span class="icon">
-          <span></span>
-      </span>
-    </div>
-    <div v-if="user?.id_role === 1" class="button v12" @click="navigateTo('admin')">
-      <span class="label">Admin</span>
-      <span class="icon">
-          <span></span>
-      </span>
+    <div class="bottom-buttons">
+      <div class="button" @click="handleDailyRewards()">
+          <p><i class="fa-solid fa-coins"></i> Daily rewards !</p>
+        <p class="error">{{errors.dailyReward}}</p>
+        <p class="success" v-if="success">{{ success }}</p>
+      </div>
+      <div class="button" @click="navigateTo('play')">
+        <span class="label"><i class="fa-solid fa-chess-knight fa-bounce"></i> Play</span>
+      </div>
     </div>
   </div>
 </template>
 
   
 <style scoped>
+@font-face {
+  font-family: The Bomb Sound;
+  src: url('../assets/fonts/The Bomb Sound.ttf');
+}
+
+.daily-rewards {
+  font-size: 1rem;
+}
+
+.menu {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+}
+
+.menu .title {
+  font-family: The Bomb Sound;
+  font-weight: bold;
+  font-size: 3rem;
+  text-align: center;
+  text-shadow: 0 0 10px #fff;
+  margin-right: 15%;
+}
+
 .main-menu {
-    width: 100%;
-    height: 80%;
-    position: relative;
-    overflow: hidden;
     display: flex;
-    justify-content: center;
-    align-items: center;
-    flex-direction: column;
-    }
+    flex-direction: row;
+    justify-content: space-between;
+}
 
-  .main-menu .button {
-  margin: 20px;
-  float: left;
-  position: relative;
-  font-family: arial;
-  text-transform: uppercase;
-  color: #fff;
+.main-menu .button {
+  font-family: The Bomb Sound;
+  font-size: 3rem;
+  text-align: center;
   cursor: pointer;
-  font-size: 35px;
+  padding: 2rem;
+  transition: all 0.2s ease-in-out;
 }
 
-/* Pour les écrans plus petits que 1024px */
-@media (max-width: 1023px) {
-  .main-menu .button {
-    font-size: 40px;
-  }
+.main-menu .button:hover {
+  text-shadow: 0 0 10px #fff;
 }
 
-/* Pour les écrans plus petits que 768px */
-@media (max-width: 767px) {
-  .main-menu .button {
-    font-size: 30px;
-  }
-}
-
-/* Pour les écrans plus petits que 480px */
-@media (max-width: 479px) {
-  .main-menu .button {
-    font-size: 20px;
-  }
-}
 .main-menu .button .label {
-  padding: 10px;
-  display: inline-block;
-  text-shadow: 0px 0px 10px rgba(255, 255, 255, 0.5);
+  gap: 1rem;
 }
-  
-.main-menu .button.v12:hover .icon {
-  transform: scale(0.9) skew(0deg, 0deg);
+
+.side-buttons {
+  margin-top: 5rem;
+  display: flex;
+  flex-direction: column;
+  margin-left: 2rem;
 }
-.main-menu .button.v12:hover .icon:before {
-  width: 0;
+
+.side-buttons .button {
+  text-align: center;
+  cursor: pointer;
+  margin-bottom: 10px;
 }
-.main-menu .button.v12:hover .icon:after {
+
+.bottom-buttons {
   width: 100%;
-}
-.main-menu .button.v12:hover .icon span:before, .main-menu .button.v12:hover .icon span:after {
-  height: 0;
-}
-.main-menu .button.v12 .label {
-  padding: 10px 22px;
-}
-.main-menu .button.v12 .icon {
-  display: block;
+  display: flex;
+  justify-content: space-between;
   position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  transform: skew(-40deg, 0deg);
-  transition: all 0.2s;
-}
-.main-menu .button.v12 .icon:before, .main-menu .button.v12 .icon:after {
-  content: "";
-  height: 1px;
-  width: 30px;
-  position: absolute;
-  display: block;
-  background: #f0202f;
-  transition: width 0.2s;
-  transition-delay: 0.2s;
-}
-.main-menu .button.v12 .icon:before {
-  left: 0;
-  top: 0;
-}
-.main-menu .button.v12 .icon:after {
-  right: 0;
   bottom: 0;
 }
-.main-menu .button.v12 .icon span:before, .main-menu .button.v12 .icon span:after {
-  content: "";
-  background: #f0202f;
-  position: absolute;
-  display: block;
-  width: 2px;
-  height: 30px;
-  transition: height 0.2s;
-  transition-delay: 0.2s;
+.bottom-buttons .button {
+  text-align: center;
+  cursor: pointer;
+  padding: 2rem;
 }
-.main-menu .button.v12 .icon span:before {
-  left: 0;
-  top: 0;
+.error{
+  color: red;
 }
-.main-menu .button.v12 .icon span:after {
-  right: 0;
-  bottom: 0;
+
+.success{
+  color: green;
 }
-.main-menu .button.v12:hover .icon {
-  transform: scale(0.9) skew(0deg, 0deg);
-}
-.main-menu .button.v12:hover .icon:before {
-  width: 0;
-}
-.main-menu .button.v12:hover .icon:after {
-  width: 50%;
-  right: 25%;
-}
-.main-menu .button.v12:hover .icon span:before, .main-menu .button.v12:hover .icon span:after {
-  height: 0;
-}
-.main-menu .button.v12 .label {
-  padding: 10px 50px;
-}
-.main-menu .button.v12 .icon {
-  display: block;
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  transform: skew(-40deg, 0deg);
-  transition: all 0.2s;
-}
-.main-menu .button.v12 .icon:before, .main-menu .button.v12 .icon:after {
-  content: "";
-  height: 1px;
-  width: 30px;
-  position: absolute;
-  display: block;
-  background: #f0202f;
-  transition: all 0.2s;
-  transition-delay: 0.2s;
-}
-.main-menu .button.v12 .icon:before {
-  left: 0;
-  top: 0;
-}
-.main-menu .button.v12 .icon:after {
-  right: 0;
-  bottom: 0;
-}
-.main-menu .button.v12 .icon span:before, .main-menu .button.v12 .icon span:after {
-  content: "";
-  background: #f0202f;
-  position: absolute;
-  display: block;
-  width: 2px;
-  height: 30px;
-  transition: all 0.2s;
-  transition-delay: 0.2s;
-}
-.main-menu .button.v12 .icon span:before {
-  left: 0;
-  top: 0;
-}
-.main-menu .button.v12 .icon span:after {
-  right: 0;
-  bottom: 0;
-}
+
 </style>
   

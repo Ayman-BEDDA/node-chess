@@ -142,81 +142,118 @@ onMounted(() => {
 
 <template>
     <div id="game_container" class="game_container">
-        <div class="player2">
-            <div class="pic-pseudo">
-                <img src="../assets/default_pic.jpg" alt="">
-                <span>Black player (500)</span>
-                <div class="timer" id="time_black">10:00</div>
-            </div>
-            <div class="piece" id="black_piece"></div>
+      <div class="player" id="black_player">
+        <div class="piece" id="black_piece"></div>
+        <div class="pic-pseudo">
+          <img src="../assets/default_pic.jpg" alt="">
+          <span class="player_name">Black player</span>
+          <div class="player_rating">(500)</div>
+          <div class="timer" id="time_black">10:00</div>
         </div>
-        <div class="board_container">
-            <div id="board">
-            </div>
+      </div>
+      <div class="board_container">
+        <div id="board">
         </div>
-        <div class="player">
-            <div class="piece" id="white_piece"></div>
-            <div class="pic-pseudo">
-                <img src="../assets/default_pic.jpg" alt="">
-                <span>White player (500)</span>
-                <div class="timer" id="time_white">10:00</div>
-            </div>
+      </div>
+      <div class="player" id="white_player">
+        <div class="piece" id="white_piece"></div>
+        <div class="pic-pseudo">
+          <img src="../assets/default_pic.jpg" alt="">
+          <span class="player_name">White player</span>
+          <div class="player_rating">(500)</div>
+          <div class="timer" id="time_white">10:00</div>
         </div>
+      </div>
     </div>
-    <div id="moves">
-        <button>Match nul</button>
-        <button>Abandonner</button>
+    <div id="moves" class="moves_container">
+      <button class="draw_button">Match nul</button>
+      <button class="resign_button">Abandonner</button>
     </div>
-</template>
+  </template>
 
 <style scoped>
-    .board_container{
-        width: 100%;
-    }
-    #board{
-        width: 100%;
-    }
-    .game_container{
-        max-width: 600px;
-        width: 100%;
-        display: flex;
-        flex-direction: column;
-    }
-    .pic-pseudo{
-        display: flex;
-        justify-content: start;
-    }
-    .pic-pseudo > img{
-        border: 1px solid #cecece;
-        width: 50px;
-        height: 50px;
-        border-radius: 5px;
-    }
-    .pic-pseudo > span{
-        font-weight: bold;
-        margin-left: 5px;
-        margin-top: 5px;
-    }
-    .piece{
-        height: 30px;
-        width: 100%;
-        display: flex;
-        margin-right: 5px;
-    }
-    .piece > img{
-        width: 30px;
-    }
-    .timer{
-        width: 150px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-weight: bold;
-        font-size: 2em;
-        background: grey;
-        border: 3px solid black;
-        border-radius: 10px;
-        color: white;
-        margin-left: 40%;
-    }
+  /* Modern styling for the chess game */
+  .game_container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 20px;
+  }
+
+  .player {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .pic-pseudo {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 5px;
+  }
+
+  .pic-pseudo img {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+  }
+
+  .player_name {
+    font-size: 18px;
+    font-weight: bold;
+    color: #333;
+  }
+
+  .player_rating {
+    font-size: 14px;
+    color: #666;
+  }
+
+  .timer {
+    font-size: 24px;
+    font-weight: bold;
+    color: #fff;
+  }
+
+  .board_container {
+    margin: 0 20px;
+  }
+
+  #board {
+    /* Add your chessboard styling here */
+    width: 600px;
+    height: 600px;
+  }
+
+  .piece {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+
+  }
+
+  .moves_container {
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
+  }
+
+  .moves_container button {
+    padding: 10px 20px;
+    font-size: 16px;
+    color: #fff;
+    background-color: #3f51b5;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    margin: 0 5px;
+    transition: background-color 0.3s ease-in-out;
+  }
+
+  .moves_container button:hover {
+    background-color: #303f9f;
+  }
 </style>
