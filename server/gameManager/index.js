@@ -1,5 +1,5 @@
 const socketIo = require('socket.io');
-const { startTimer, setPlayerTurn, games } = require('./time.js'); 
+const { startTimer, setPlayerTurn, games } = require('./time.js');
 
 const setupGame = (server) => {
   const io = socketIo(server, {
@@ -22,6 +22,10 @@ const setupGame = (server) => {
           timeWhite: 600,
           timeBlack: 600,
           gameIsActive: true,
+          capturedPieces: {
+            w: [],
+            b: [],
+          },
         };
       }
 
@@ -31,6 +35,17 @@ const setupGame = (server) => {
 
       socket.on('time', (msg) => {
         io.to(gameId).emit('time', msg);
+      });
+      
+
+      socket.on('resign', ({ gameId }) => {
+        games[gameId].gameIsActive = false;
+        io.to(gameId).emit('resign');
+      });
+
+      socket.on('capture', (msg) => {
+        games[gameId].capturedPieces[msg.color].push(msg.piece);
+        io.to(gameId).emit('updateCapture', { color: msg.color, piece: msg.piece });
       });
 
       socket.on('turn', (msg) => {

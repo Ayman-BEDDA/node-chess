@@ -27,7 +27,12 @@ const formatTime = (seconds) => {
 const gameOver = (player) => {
     clearInterval(intervalId);
     alert('Fin de la partie, ' + player + ' est à court de temps.');
+    let winner = gameExists.value.WhiteUserID;
+    if(player == "w"){
+      winner = gameExists.value.BlackUserID;
+    }
     gameIsActive = false;
+    fetchWinner(winner);
 }
 
 let game = ref(new Chess());
@@ -60,29 +65,43 @@ const updateStatus = () => {
             winnerId = game.value.turn() === 'b' ? gameExists.value.WhiteUserID : gameExists.value.BlackUserID;
         }
 
-
-        // Mettre à jour le jeu dans la base de données
-        fetch(`http://localhost:3000/games/${gameId.value}`, {
-            method: 'PATCH',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                GameStatus: 'end',
-                Winner: winnerId
-            })
-        }).then(response => {
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
-            }
-        }).catch(e => {
-            console.error('There was a problem with the fetch operation: ' + e.message);
-        });
+        fetchWinner(winnerId);
+        
     }
 }
 
+const fetchWinner = (winner) => {
+  fetch(`http://localhost:3000/games/${gameId.value}`, {
+      method: 'PATCH',
+      headers: {
+          'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+          GameStatus: 'end',
+          Winner: winner
+      })
+  }).then(response => {
+      if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+      }
+  }).catch(e => {
+      console.error('There was a problem with the fetch operation: ' + e.message);
+  });
+}
+
+const taken = (color, piece) => {
+  var pieceElement = document.createElement('img');
+    pieceElement.src = '/src/assets/chesspieces/wikipedia/' + color + '' + piece + '.png';
+    let id = "black_piece";
+    if(color == "b"){
+        id = "white_piece";
+    }
+    document.getElementById(id).appendChild(pieceElement);
+}
+
+
 const onDrop = (source, target) => {
-    if (!gameIsActive) {
+    if (!gameIsActive.value) {
         return 'snapback';
     }
 
@@ -115,15 +134,9 @@ const onDrop = (source, target) => {
 
     if(move.captured){
         var color = move.color === 'w' ? 'b' : 'w';
-        var pieceElement = document.createElement('img');
-        pieceElement.src = '/src/assets/chesspieces/wikipedia/' + color + '' + move.captured.toUpperCase() + '.png';
-        let id = "black_piece";
-        if(color == "b"){
-            id = "white_piece";
-        }
-        document.getElementById(id).appendChild(pieceElement);
-    }
 
+        socket.value.emit('capture', { color: color, piece: move.captured.toUpperCase() });
+    }
     fetch(`http://localhost:3000/games/${gameId.value}`, {
         method: 'PATCH',
         headers: {
@@ -141,6 +154,13 @@ const onDrop = (source, target) => {
     });
 
     updateStatus();
+}
+
+const resign = () => {
+  let winner = userColor.value == 'w' ? gameExists.value.BlackUserID : gameExists.value.WhiteUserID;
+  fetchWinner(winner);
+  gameIsActive.value = false;
+  socket.value.emit('resign', { gameId: gameId.value });
 }
 
 const onSnapEnd = () => {
@@ -178,6 +198,10 @@ onMounted(() => {
     let gameId = route.params.gameId;
     socket.value.emit('joinGame', gameId);
 
+    socket.value.on('updateCapture', function (msg) {
+        taken(msg.color, msg.piece);
+    });
+
     socket.value.on('move', function (msg) {
         let move = game.value.move(msg);
 
@@ -190,6 +214,11 @@ onMounted(() => {
         updateStatus();
     });
 
+    socket.value.on('resign', function () {
+      gameIsActive.value = false;
+      alert("L'autre joueur a abandonné. Vous avez gagné la partie.");
+    });
+
     socket.value.on('time', function (msg) {
         if (msg.type === 'black') {
             timeBlack.value = msg.time;
@@ -199,6 +228,11 @@ onMounted(() => {
             document.getElementById('time_white').textContent = formatTime(timeWhite.value);
         }
     });
+
+    socket.value.on('gameOver', function (player) {
+        gameOver(player);
+    });
+
     $(window).resize(function () {
         board.value.resize();
     }).resize();
@@ -232,7 +266,7 @@ onMounted(() => {
     </div>
     <div id="moves" class="moves_container">
       <button class="draw_button">Match nul</button>
-      <button class="resign_button">Abandonner</button>
+      <button class="resign_button" @click="resign">Abandonner</button>
     </div>
   </template>
 
