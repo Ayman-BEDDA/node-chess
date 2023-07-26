@@ -85,6 +85,13 @@ const handleDailyRewards = () => {
         <span class="label"><i class="fa-solid fa-chess-knight fa-bounce"></i> Play</span>
       </div>
     </div>
+    <div class="button v12" @click="navigateTo('friends')">
+      <span class="label">Friends</span>
+      <span class="icon">
+          <span></span>
+      </span>
+    </div>
+
   </div>
 </template>
 

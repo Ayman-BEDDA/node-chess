@@ -1,10 +1,13 @@
 const faker = require('faker');
 const sequelize = require('../db/db');
 const UserModel = require('../db/models/User');
+const RoleService = require("../services/role");
 
 const User = UserModel(sequelize);
 
 async function generateTestData() {
+  const roles = await RoleService().findAll({}, {});
+  const existingRoleIds = roles.map((role) => role.id);
 
   await User.create({
     login: 'admin',
@@ -14,7 +17,7 @@ async function generateTestData() {
     media: "default.png",
     isBanned: false,
     isValid: true,
-    id_role: 1,
+    id_role: existingRoleIds[0],
   });
 
   for (let i = 0; i < 50; i++) {
@@ -26,7 +29,7 @@ async function generateTestData() {
       media: "default.png",
       isBanned: false,
       isValid: false,
-      id_role: 2,
+      id_role: existingRoleIds[1],
     });
   }
 }

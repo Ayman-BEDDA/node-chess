@@ -1,3 +1,7 @@
+const { v4: uuidv4 } = require("uuid");
+const { isUUID } = require("validator");
+const MoneyService = require("../services/money");
+
 module.exports = function Controller(Service, options = {}) {
     return {
         getAll: async (req, res, next) => {
@@ -17,7 +21,10 @@ module.exports = function Controller(Service, options = {}) {
         getOne: async (req, res, next) => {
             const { id } = req.params;
             try {
-                const result = await Service.findOne({ id: parseInt(id, 10) });
+                if (!isUUID(id)) {
+                    res.sendStatus(404);
+                }
+                const result = await Service.findOne({ id: id });
                 if (result) res.json(result);
                 else res.sendStatus(404);
             } catch (err) {
@@ -37,9 +44,12 @@ module.exports = function Controller(Service, options = {}) {
             const { id } = req.params;
             const { body } = req;
             try {
+                if (!isUUID(id)) {
+                    res.sendStatus(404);
+                }
                 const [[result, created]] = await Service.replace(
-                    { id: parseInt(id, 10) },
-                    { id: parseInt(id, 10), ...body }
+                    { id: id },
+                    { id: id, ...body }
                 );
                 if (created) res.status(201).json(result);
                 else res.json(result);
@@ -51,7 +61,10 @@ module.exports = function Controller(Service, options = {}) {
             const { id } = req.params;
             const { body } = req;
             try {
-                const [result] = await Service.update({ id: parseInt(id, 10) }, body);
+                if (!isUUID(id)) {
+                    res.sendStatus(404);
+                }
+                const [result] = await Service.update({ id: id }, body);
                 if (result) res.json(result);
                 else res.sendStatus(404);
             } catch (err) {
@@ -61,7 +74,10 @@ module.exports = function Controller(Service, options = {}) {
         delete: async (req, res, next) => {
             const { id } = req.params;
             try {
-                const nbDeleted = await Service.delete({ id: parseInt(id, 10) });
+                if (!isUUID(id)) {
+                    res.sendStatus(404);
+                }
+                const nbDeleted = await Service.delete({ id: id });
                 if (nbDeleted) res.sendStatus(204);
                 else res.sendStatus(404);
             } catch (err) {
@@ -79,7 +95,10 @@ module.exports = function Controller(Service, options = {}) {
             }
         },
         getArticlesMoney: async (req, res, next) => {
-            const id_money = 3;
+            const moneys = await MoneyService().findAll({}, {});
+            const existingMoneyIds = moneys.map((money) => money.id);
+
+            const id_money = existingMoneyIds[2];
             try {
                 const result = await Service.getArticlesMoney(id_money);
                 res.json(result);

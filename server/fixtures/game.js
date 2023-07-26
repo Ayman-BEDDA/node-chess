@@ -10,7 +10,8 @@ const User = UserModel(sequelize);
 const Game = GameModel(sequelize);
 
 async function generateGameData() {
-  const users = await User.findAll();
+  const users = await User.findAll({}, {});
+  const existingUserIds = users.map((user) => user.id);
 
   if(users.length < 2){
     console.log("Pas assez d'utilisateurs pour créer des parties d'échecs");
@@ -22,8 +23,8 @@ async function generateGameData() {
   for (let i = 0; i < 50; i++) {
     let whiteUserId, blackUserId;
     do {
-      whiteUserId = Math.floor(Math.random() * users.length);
-      blackUserId = Math.floor(Math.random() * users.length);
+      whiteUserId = existingUserIds[Math.floor(Math.random() * users.length)];
+      blackUserId = existingUserIds[Math.floor(Math.random() * users.length)];
     } while (whiteUserId == blackUserId);
 
     const status = statuses[Math.floor(Math.random() * statuses.length)];
@@ -31,10 +32,10 @@ async function generateGameData() {
     const winnerId = Math.random() > 0.5 ? whiteUserId : blackUserId;
 
     const game = {
-      WhiteUserID: users[whiteUserId].id,
-      BlackUserID: users[blackUserId].id,
+      WhiteUserID: existingUserIds[whiteUserId],
+      BlackUserID: existingUserIds[blackUserId],
       GameStatus: status,
-      Winner: status == 'end' ? users[winnerId].id : null, 
+      Winner: status == 'end' ? existingUserIds[winnerId] : null, 
     };
 
     await Game.create(game);

@@ -15,6 +15,7 @@ import Login from '../views/security/Login.vue';
 import Register from '../views/security/Register.vue';
 import Verify from '../views/security/Verify.vue';
 import Shop from '../views/Shop.vue'
+import Friends from '../views/Friends.vue';
 import Game from '../views/Game.vue';
 import Profile from '../views/Profile.vue';
 
@@ -115,8 +116,14 @@ const routes = [
     name: 'Play',
     component: Game,
     meta: { requiresAuth: true },
+  },
+  {
+    path: '/friends',
+    name: 'Friends',
+    component: Friends,
+    meta: { requiresAuth: true },
   }
-];
+  ];
 
 const router = createRouter({
   history: createWebHistory(),
@@ -128,7 +135,7 @@ router.beforeEach((to, from, next) => {
   const user = ref(token ? jwtDecode(token) : null);
 
   const isLogged = !!user.value;
-  const isAdmin = user.value?.id_role === 1;
+  const isAdmin = user.value?.role_libelle === 'admin';
 
   if (to.matched.some(record => record.meta.requiresAuth)) {
     if (!isLogged && to.name !== 'Login' && to.name !== 'Register' && to.name !== 'ForgotPassword' && to.name !== 'ResetPassword' && to.name !== 'Verify') {

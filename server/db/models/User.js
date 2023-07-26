@@ -1,5 +1,6 @@
 module.exports = (connection) => {
   const { DataTypes, Model } = require("sequelize");
+  const { v4: uuidv4 } = require('uuid');
   const bcrypt = require("bcryptjs");
   const Friend = require("./Friend")(connection);
   const Buy = require("./Buy")(connection);
@@ -7,6 +8,7 @@ module.exports = (connection) => {
   const Own = require("./Own")(connection);
   const Report = require("./Report")(connection);
   const Game = require("./Game")(connection);
+  const Role = require("./Role")(connection);
 
   class User extends Model {
     isPasswordValid(password) {
@@ -17,8 +19,8 @@ module.exports = (connection) => {
   User.init(
     {
       id: {
-        type: DataTypes.INTEGER,
-        autoIncrement: true,
+        type: DataTypes.UUID,
+        defaultValue: DataTypes.UUIDV4,
         primaryKey: true
       },
       login: {
@@ -72,9 +74,9 @@ module.exports = (connection) => {
             allowNull: true, // ou false si vous souhaitez que la date de dernière connexion soit obligatoire
       },
       id_role: {
-        type: DataTypes.INTEGER,
+        type: DataTypes.UUID,
         allowNull: false,
-        defaultValue: 2,
+        defaultValue: DataTypes.UUIDV4,
         references: {
             model: "roles",
         }
@@ -113,6 +115,20 @@ User.associate = (models) => {
   }
 
   User.addHook("beforeCreate", (user) => {
+    return updatePassword(user);
+  });
+
+  User.addHook("beforeCreate", async (user) => {
+    try {
+      const roles = await Role.findAll({ limit: 2 });
+      if (roles.length >= 2) {
+        user.id_role = roles[1].id;
+      } else {
+        throw new Error("Not enough roles found in the 'roles' table.");
+      }
+    } catch (error) {
+      console.error("Error setting default role:", error);
+    }
     return updatePassword(user);
   });
 

@@ -1,4 +1,5 @@
 const {Model, DataTypes} = require("sequelize");
+const { v4: uuidv4 } = require('uuid');
 
 module.exports = function (connection) {
     class Buy extends Model {
@@ -6,13 +7,13 @@ module.exports = function (connection) {
 
     Buy.init({
         id: {
-            type: DataTypes.INTEGER, autoIncrement: true, primaryKey: true
+          type: DataTypes.UUID, defaultValue: DataTypes.UUIDV4, primaryKey: true
         },
         date: {
             type: DataTypes.DATE, allowNull: false, defaultValue: DataTypes.NOW
         },
         id_article: {
-            type: DataTypes.INTEGER,
+            type: DataTypes.UUID,
             allowNull: false,
             references: {
               model: 'articles', 
@@ -21,7 +22,7 @@ module.exports = function (connection) {
             onDelete: 'CASCADE'
         },
         id_user: {
-            type: DataTypes.INTEGER,
+            type: DataTypes.UUID,
             allowNull: false,
             references: {
               model: 'users', 

@@ -3,15 +3,18 @@ const Sequelize = require('sequelize');
 const ValidationError = require('../errors/ValidationError');
 require('dotenv').config();
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
+const MoneyService = require("./money");
 
 module.exports = function OwnService() {
     return {
         // avant de tester cette fonction, assurez que le user avec lequel vous êtes connecté possède des owns(sinon créer des fixtures). De toute façon à chaque création de compte, le user possédra des owns(0 crédits premium et 0 crédits free)
         async dailyRewards(userId) {
             try {
+                const moneys = await MoneyService().findAll({}, {});
+                const existingMoneyIds = moneys.map((money) => money.id);
 
                 const user = await User.findOne({ where: { id: userId } });
-                const own = await Own.findOne({ where: { id_user: userId, id_money: 2 } });
+                const own = await Own.findOne({ where: { id_user: userId, id_money: existingMoneyIds[1] } });
                 if (!own) {
                     throw new ValidationError({ own: 'You do not have any money' });
                 }
@@ -40,8 +43,10 @@ module.exports = function OwnService() {
         },
 
         async buyPremiumMoney(userId, articleId) {
-            const own = await Own.findOne({ where: { id_user: userId, id_money: 1 } });
-            const article = await Article.findOne({ where: { id: articleId, id_money: 3 } });
+            const moneys = await MoneyService().findAll({}, {});
+            const existingMoneyIds = moneys.map((money) => money.id);
+            const own = await Own.findOne({ where: { id_user: userId, id_money: existingMoneyIds[0] } });
+            const article = await Article.findOne({ where: { id: articleId, id_money: existingMoneyIds[2] } });
             if (!article) {
                 throw new ValidationError({ article: 'Article not found' });
             }

@@ -1,3 +1,6 @@
+const { v4: uuidv4 } = require("uuid");
+const { isUUID } = require("validator");
+
 module.exports = function Controller(Service, options = {}) {
   return {
     getAll: async (req, res, next) => {
@@ -17,6 +20,9 @@ module.exports = function Controller(Service, options = {}) {
     getOne: async (req, res, next) => {
       const { id } = req.params;
       try {
+        if (!isUUID(id)) {
+          res.sendStatus(404);
+        }
         const result = await Service.findOne({ id: id });
         if (result) res.json(result);
         else res.sendStatus(404);
@@ -37,6 +43,9 @@ module.exports = function Controller(Service, options = {}) {
       const { id } = req.params;
       const { body } = req;
       try {
+        if (!isUUID(id)) {
+          res.sendStatus(404);
+        }
         const [[result, created]] = await Service.replace(
           { id: parseInt(id, 10) },
           { id: parseInt(id, 10), ...body }
@@ -51,6 +60,9 @@ module.exports = function Controller(Service, options = {}) {
       const { id } = req.params;
       const { body } = req;
       try {
+        if (!isUUID(id)) {
+          res.sendStatus(404);
+        }
         const [result] = await Service.update({ id: id }, body);
         if (result) res.json(result);
         else res.sendStatus(404);
@@ -61,6 +73,9 @@ module.exports = function Controller(Service, options = {}) {
     delete: async (req, res, next) => {
       const { id } = req.params;
       try {
+        if (!isUUID(id)) {
+          res.sendStatus(404);
+        }
         const nbDeleted = await Service.delete({ id: id });
         if (nbDeleted) res.sendStatus(204);
         else res.sendStatus(404);
