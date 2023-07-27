@@ -434,7 +434,7 @@ onMounted(() => {
       <div class="player" id="black_player">
         <div class="pic-pseudo">
           <img src="../assets/default_pic.jpg" alt="">
-          <span class="player_name">Black player</span>
+          <span class="player_name">{{ user?.id }}</span>
           <div class="player_rating">(500)</div>
           <div class="timer" id="time_black">10:00</div>
         </div>
