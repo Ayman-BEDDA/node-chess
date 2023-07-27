@@ -174,7 +174,7 @@ const fetchWinner = (winner) => {
 }
 
 const fetchElo = () => {
-  fetch(`http://localhost:3000/games/${gameId.value}/elo`, {
+  fetch(`http://149.202.52.182:3000/games/${gameId.value}/elo`, {
       method: 'PATCH',
       headers: {
           'Content-Type': 'application/json',

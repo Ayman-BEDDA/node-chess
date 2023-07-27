@@ -134,7 +134,7 @@ async function payMoney(articleEuros, articleId) {
 
   const stripePromise = loadStripe('pk_test_51NSiaQDP3IyimeBr1KMKlmmg0UqfUKBIwndVIig0aLuMZY5LrIAIwsG5dzVd5YMFj7MlZW35nDXSD7l7EPOQbzOl0084Stjm3s');
   const stripe = await stripePromise;
-  const response = await fetch(`http://localhost:3000/owns/pay`, {
+  const response = await fetch(`http://149.202.52.182:3000/owns/pay`, {
     method: 'POST',
     headers: {
       Authorization: 'Bearer ' + localStorage.getItem('token'),

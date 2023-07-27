@@ -47,7 +47,7 @@ async function updateProfile() {
       media: updatedProfileForm.value.avatar ? getAvatarUrl() : null,
     };
 
-    const response = await fetch(`http://localhost:3000/users/${user.value.id}`, {
+    const response = await fetch(`http://149.202.52.182:3000/users/${user.value.id}`, {
       method: 'PATCH',
       headers: {
         'Content-Type': 'application/json',
@@ -61,7 +61,7 @@ async function updateProfile() {
     }
 
     if (updatedProfileForm.value.avatar) {
-      const imageResponse = await fetch('http://localhost:3000/upload', {
+      const imageResponse = await fetch('http://149.202.52.182:3000/upload', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -150,7 +150,7 @@ onMounted(async () => {
 });
 
 const imagePath = computed(() => {
-    return userData.value.media ? `http://localhost:3000/${userData.value.media}` : '';
+    return userData.value.media ? `http://149.202.52.182:3000/${userData.value.media}` : '';
 });
 
 </script>

@@ -40,7 +40,7 @@ onMounted(async () => {
       freeMoney.push(...free);
    }
 
-    const avatarResponse = await fetch(`http://localhost:3000/users/${user.value.id}/avatar`, {
+    const avatarResponse = await fetch(`http://149.202.52.182:3000/users/${user.value.id}/avatar`, {
       headers: {
         Authorization: 'Bearer ' + localStorage.getItem('token')
       }
@@ -120,9 +120,9 @@ const logOut = () => {
 
 const imagePath = computed(() => {
   if (avatar.value) {
-    return `http://localhost:3000/${avatar.value}`;
+    return `http://149.202.52.182:3000/${avatar.value}`;
   } else {
-    return `http://localhost:3000/default.png`;
+    return `http://149.202.52.182:3000/default.png`;
   }
 });
 

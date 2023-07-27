@@ -10,7 +10,7 @@ function navigateTo(route) {
 }
 
 async function postUserMongo() {
-  const response = await fetch(`http://localhost:3000/users/mongo`, {
+  const response = await fetch(`http://149.202.52.182:3000/users/mongo`, {
     method: 'POST',
     headers: {
       'Content-type': 'application/json',

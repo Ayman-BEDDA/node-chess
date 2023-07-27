@@ -34,7 +34,7 @@ matchmaking();
 
 
 onMounted(() => {
-  socket.value = io("http://localhost:3000");
+  socket.value = io("http://149.202.52.182:3000");
   socket.value.on('matchFound', (data) => {
     let game = data;
     //isLoading.value = false;
