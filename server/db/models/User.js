@@ -79,7 +79,7 @@ module.exports = (connection) => {
         defaultValue: DataTypes.UUIDV4,
         references: {
             model: "roles",
-            key: 'id',
+            key: 'id', 
         }
       },
       token: {
@@ -120,15 +120,16 @@ User.associate = (models) => {
   });
 
   User.addHook("beforeCreate", async (user) => {
-    if (!user.id_role) {
-      try {
-        const userRole = await Role.find({ libelle: 'user' });
-        user.id_role = userRole.id;
-      } catch (error) {
-        console.error("Error setting default role:", error);
+    try {
+      const roles = await Role.findAll({ limit: 2 });
+      if (roles.length >= 2) {
+        user.id_role = roles[1].id;
+      } else {
+        throw new Error("Not enough roles found in the 'roles' table.");
       }
+    } catch (error) {
+      console.error("Error setting default role:", error);
     }
-    
     return updatePassword(user);
   });
 
