@@ -2,7 +2,6 @@
 
 import {computed, inject, onMounted, reactive, ref, watch} from "vue";
 import { loadStripe } from '@stripe/stripe-js';
-import Cookies from 'js-cookie';
 
 const articles  = reactive([]);
 const isLoading = ref(true);
