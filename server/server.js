@@ -28,6 +28,7 @@ const path = require("path");
 const fs = require("fs");
 const dayjs = require("dayjs");
 const mongoose = require("mongoose");
+const UserMongo = require("./db/models/UserMongo");
 
 async function connectToMongoDB() {
   try {
@@ -92,6 +93,17 @@ app.use("/owns", checkAuth, OwnRouter);
 app.use("/games",  GameRouter); // protect only this route
 app.use("/buys", checkAuth, BuyRouter);
 app.use("/friends", FriendRouter); //Friend
+
+app.delete("/deletemongouser", async (req, res) => {
+  try {
+    const result = await UserMongo.collection.drop();
+    console.log("Delete collection success");
+    res.json({ message: "Delete collection success" });
+  } catch (error) {
+    console.log("Error delete collection:", error.message);
+    res.status(500).json({ error: "Failed to delete collection" });
+  }
+});
 
 app.get("/", (req, res) => {
   res.send("Hello World!");
