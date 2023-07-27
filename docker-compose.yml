@@ -38,16 +38,15 @@ services:
     working_dir: /usr/src/app
     volumes:
       - ./server:/usr/src/app
-    command: npm run dev
+    command: npm run watch
+
 
   client:
-    image: node:14
+    build: ./client
     ports:
       - 8080:8080
-    working_dir: /usr/src/app
     volumes:
       - ./client:/usr/src/app
-    command: npm run dev
 
 volumes:
   db-data: {}
