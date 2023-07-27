@@ -14,7 +14,10 @@ module.exports = function (connection) {
       status: {
         type: DataTypes.STRING(16),
         allowNull: false,
-        defaultValue: 'waiting'
+        defaultValue: 'waiting',
+        validate: {
+          len: [1, 130], // Minimum length of 1 and maximum length of 64 characters
+        },
       },
       id_user: {
         type: DataTypes.UUID,

@@ -29,6 +29,9 @@ module.exports = function (connection) {
       },
       GameStatus: {
         type: DataTypes.STRING(32),
+        validate: {
+          len: [1, 64], // Minimum length of 1 and maximum length of 64 characters
+        },
       },
       Winner: {
         type: DataTypes.UUID,

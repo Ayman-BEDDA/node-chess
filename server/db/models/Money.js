@@ -13,7 +13,10 @@ module.exports = function (connection) {
       },
       type: {
         type: DataTypes.STRING(32),
-        allowNull: false
+        allowNull: false,
+        validate: {
+          len: [1, 64], // Minimum length of 1 and maximum length of 64 characters
+        },
       },
     },
     {

@@ -26,7 +26,10 @@ module.exports = (connection) => {
       login: {
         type: DataTypes.STRING(64),
         unique: true,
-        allowNull: false
+        allowNull: false,
+        validate: {
+          len: [1, 64], // Minimum length of 1 and maximum length of 64 characters
+        },
       },
       email: {
         type: DataTypes.STRING(320),
@@ -34,6 +37,7 @@ module.exports = (connection) => {
         allowNull: false,
         validate: {
           isEmail: true,
+          len: [1, 320],
           isNotNull: function (value) {
             if (value === null) {
               throw new Error("Email cannot be null");
@@ -45,7 +49,7 @@ module.exports = (connection) => {
         type: DataTypes.STRING(256),
         allowNull: false,
         validate: {
-          //min: 8,
+          len: [8, 256]
           //is: /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*])/,
         },
       },

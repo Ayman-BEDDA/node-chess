@@ -13,12 +13,18 @@ module.exports = function (connection) {
       },
       message: {
         type: DataTypes.STRING(512),
-        allowNull: false
+        allowNull: false,
+        validate: {
+          len: [1, 320], // Minimum length of 1 and maximum length of 64 characters
+        },
       },
       status: {
         type: DataTypes.STRING(16),
         allowNull: false,
-        defaultValue: 'unread'
+        defaultValue: 'unread',
+        validate: {
+          len: [1, 64], // Minimum length of 1 and maximum length of 64 characters
+        },
       },
       onCreate: {
         type: DataTypes.DATE,

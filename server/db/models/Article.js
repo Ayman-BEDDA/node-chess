@@ -13,7 +13,10 @@ module.exports = function (connection) {
       },
       libelle: {
         type: DataTypes.STRING(128),
-        allowNull: false
+        allowNull: false,
+        validate: {
+          len: [1, 130],
+        },
       },
       price: {
         type: DataTypes.FLOAT,
