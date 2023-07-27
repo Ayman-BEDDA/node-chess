@@ -17,7 +17,7 @@ const sendVerificationEmail = (email, token) => {
     to: email,
     subject: 'Vérification de votre compte',
     html: `<h2>Bienvenue sur NodeChess</h2>
-    <p>Veuillez cliquer sur le lien ici pour vérifier votre compte : <a href="http://localhost:5173/verify?token=${token}">J'active mon compte</a></p>
+    <p>Veuillez cliquer sur le lien ici pour vérifier votre compte : <a href="http://149.202.52.182:8080/verify?token=${token}">J'active mon compte</a></p>
     <br>
     <img src="https://i0.wp.com/www.printmag.com/wp-content/uploads/2021/02/4cbe8d_f1ed2800a49649848102c68fc5a66e53mv2.gif?resize=476%2C280&ssl=1" alt="gif">
     <br>
@@ -41,7 +41,7 @@ const sendForgotPasswordEmail = (email, token) => {
     to: email,
     subject: 'Réinitialisation de votre mot de passe',
     html: `<h2>Réinitialisation de votre mot de passe</h2>
-    <p>Veuillez cliquer sur le lien ici pour réinitialiser votre mot de passe : <a href="http://localhost:5173/reset-password?token=${token}">Je réinitialise mon mot de passe</a></p>
+    <p>Veuillez cliquer sur le lien ici pour réinitialiser votre mot de passe : <a href="http://149.202.52.182:8080/reset-password?token=${token}">Je réinitialise mon mot de passe</a></p>
     <br>
     <img src="https://media0.giphy.com/media/v1.Y2lkPTc5MGI3NjExeHNlMmxpYW93azB4b3h1Nmd3NWo5eTZtcnF3NWc3ZHg2bzlyb3hvaSZlcD12MV9naWZzX3NlYXJjaCZjdD1n/l0G17mcoGBEabVgn6/giphy.gif" alt="gif">
     <br>
