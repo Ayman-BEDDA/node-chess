@@ -22,8 +22,6 @@ async function matchmaking() {
 
   if (response.ok) {
     const jsonData = await response.json();
-    console.log(jsonData.id)
-    console.log('yeeeeeeees');
     setTimeout(() => {
       router.push(`play/${jsonData.id}`);
     }, 2000);
@@ -37,6 +35,8 @@ matchmaking();
   <div class="container">
     <div v-if="isLoading" class="centered">
       <img src="../assets/loading.svg" class="rotating-image">
+      <h1>En attente...</h1>
+      <button @click="">Annuler</button>
     </div>
   </div>
 </template>

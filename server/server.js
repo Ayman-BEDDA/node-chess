@@ -27,6 +27,23 @@ const port = process.env.NODE_ENV === 'test' ? 3005 : 3000;
 const path = require("path");
 const fs = require("fs");
 const dayjs = require("dayjs");
+const mongoose = require("mongoose");
+
+async function connectToMongoDB() {
+  try {
+    await mongoose.connect("mongodb://root:password@mongo:27017", {
+          useNewUrlParser: true,
+          useUnifiedTopology: true,
+        }
+    );
+
+    console.log("Connected to MongoDB");
+  } catch (error) {
+    console.error("Error connecting to MongoDB:", error);
+  }
+}
+
+connectToMongoDB();
 
 app.use(cors());
 
@@ -62,20 +79,18 @@ app.post('/upload', checkAuth, async (req, res, next) => {
   }
 });
 
-app.use(express.static(path.join(__dirname, 'public')));
-
 app.use(express.json());
 app.use("/", SecurityRouter);
 //app.use(checkAuth); protect all routes below
-app.use("/users", UserRouter); // protect only this route
+app.use("/users", checkAuth, UserRouter); // protect only this route
 app.use("/reports", checkAuth, ReportRouter); // protect only this route
 app.use("/roles", checkAuth, checkAdmin, RoleRouter); // protect only this route
 app.use("/articles", checkAuth, checkValidation, checkNotBan, ArticleRouter);
 app.use("/moneys", checkAuth, MoneyRouter);
 app.use("/owns", checkAuth, OwnRouter);
-app.use("/games", checkAuth, GameRouter); // protect only this route
+app.use("/games",  GameRouter); // protect only this route
 app.use("/buys", checkAuth, BuyRouter);
-app.use("/friends", checkAuth, FriendRouter); //Friend
+app.use("/friends", FriendRouter); //Friend
 
 app.get("/", (req, res) => {
   res.send("Hello World!");

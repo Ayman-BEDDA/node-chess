@@ -35,7 +35,7 @@ services:
     working_dir: /usr/src/app
     volumes:
       - ./server:/usr/src/app
-    command: npm run dev
+    command: npm run watch
 
 volumes:
   db-data: {}
