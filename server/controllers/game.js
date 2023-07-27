@@ -10,7 +10,11 @@ module.exports = function GameController(Service, options = {}) {
       try {
         const { id } = req.params;
         const { user_id } = req.body;
-    
+
+        if (!isUUID(id)) {
+          res.sendStatus(404);
+        }
+        
         const game = await Service.findOne({ id: id });
 
         if (game) {

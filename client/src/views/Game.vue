@@ -15,6 +15,7 @@
     provide('gameId', gameId);
     provide('userColor', userColor);
     provide('gameExists', gameExists);
+    const error = ref(false);
 
 
     onMounted(async () => {
@@ -23,7 +24,7 @@
             gameExists.value = await response.json();
 
             if (!gameExists.value) {
-                router.push({ name: 'Home' });
+                error.value = true
             } else {
                 if (gameExists.value.WhiteUserID === user.value.id) {
                     userColor.value = 'w';
@@ -40,10 +41,14 @@
                 const authData = await authResponse.json();
 
                 if (!authData.authorized) {
-                    router.push({ name: 'Home' });
+                    error.value = true
                 } else {
                     isUserAuthorized.value = true;
                 }
+            }
+
+            if(error.value){
+                router.push({ name: 'Home' });
             }
         } catch (error) {
             console.error(error);
