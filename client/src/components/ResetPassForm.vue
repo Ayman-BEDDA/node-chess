@@ -46,7 +46,6 @@ function handleSubmit() {
     <p v-if="errors.passwordConfirm" class="error">{{ errors.passwordConfirm.join('\n') }}</p>
     <button type="submit" class="button">Confirmer</button>
   </form>
-  <pre>{{ formData }}</pre>
 </template>
 
 <style scoped>
