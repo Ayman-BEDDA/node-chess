@@ -75,7 +75,7 @@ app.use("/moneys", checkAuth, MoneyRouter);
 app.use("/owns", checkAuth, OwnRouter);
 app.use("/games",  GameRouter); // protect only this route
 app.use("/buys", checkAuth, BuyRouter);
-app.use("/friends", FriendRouter); //Friend
+app.use("/friends", checkAuth, FriendRouter); //Friend
 
 app.get("/", (req, res) => {
   res.send("Hello World!");

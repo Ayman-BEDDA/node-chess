@@ -1,18 +1,10 @@
 ##  Users
-#POST http://localhost:3000/users
-#Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwibG9naW4iOiJhZG1pbiIsImlkX3JvbGUiOm51bGwsImlzVmFsaWQiOnRydWUsImlzQmFubmVkIjpmYWxzZSwiaWF0IjoxNjg5MjQ3OTE5LCJleHAiOjE2ODkyNTg3MTl9.4UWnlHYLuIdKfINa2cPe2tGLo4h1zP_1BvhERgkFEko
-#Content-Type: application/json
-#
-#{
-#  "login": "bbbew",
-###  "email": "test@v.fr",
-#    "password": "test",
-#  "elo": 10,
-#  "media": "default.png",
-#  "isBanned": false,
-#  "isValid": true,
-#  "id_role": 3
-#}
+DELETE http://localhost:3000/users
+Content-Type: application/json
+
+{
+  "id": "sIjoiYXltb3g3NTBAZ21haWwuY29tIiwiaWF0IjoxNjkwNDUyMDkxLCJleHAiOjE2OTA0NTkyOTF9.qoZ_VSZqyufxcJx-PFk9CEFObMonjklovvI-pmmSLqc"
+}
 
 ### Articles
 #POST http://localhost:3000/articles
@@ -54,8 +46,8 @@
 #Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwibG9naW4iOiJhZG1pbiIsImlkX3JvbGUiOjEsImlzVmFsaWQiOnRydWUsImlzQmFubmVkIjpmYWxzZSwiaWF0IjoxNjg5NjA5MTEwLCJleHAiOjE2ODk2MTk5MTB9.s7W202jXlI41LC5x6dlJp77t9QDFz6R1pHxDNfUScNw
 #Content-Type: application/json
 
-GET http://localhost:3000/buys
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MywibG9naW4iOiJhZG1pbiIsImlkX3JvbGUiOjEsImlzVmFsaWQiOnRydWUsImlzQmFubmVkIjpmYWxzZSwibGFzdERhaWx5UmV3YXJkRGF0ZSI6bnVsbCwiaWF0IjoxNjg5OTcyMDE2LCJleHAiOjE2ODk5ODI4MTZ9.wPQ-fUgJkUpKRWiMfspHpf89SCDsbfjgxISrlZnhpmQ
+#GET http://localhost:3000/buys
+#Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MywibG9naW4iOiJhZG1pbiIsImlkX3JvbGUiOjEsImlzVmFsaWQiOnRydWUsImlzQmFubmVkIjpmYWxzZSwibGFzdERhaWx5UmV3YXJkRGF0ZSI6bnVsbCwiaWF0IjoxNjg5OTcyMDE2LCJleHAiOjE2ODk5ODI4MTZ9.wPQ-fUgJkUpKRWiMfspHpf89SCDsbfjgxISrlZnhpmQ
 
 ###
 #GET http://localhost:3000/roles
