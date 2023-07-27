@@ -77,10 +77,10 @@ module.exports = function UserController(UserService) {
             }
         },
         deleteUser: async (req, res, next) => {
-            const { id } = req.params;
+            const userId = req.params.id
             try {
-                const result = await UserService.deleteUser(id);
-                res.status(204).result;
+                const result = await UserService.deleteUser(userId);
+                res.status(204)
             } catch (error) {
                 next(error);
             }

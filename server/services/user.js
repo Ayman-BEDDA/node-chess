@@ -354,13 +354,17 @@ module.exports = function UserService() {
         await UserMongo.findOneAndDelete({ id_user: user.id });
         return game;
 
-
-
       } catch (error) {
         throw new Error('Failed to find users with Elo difference: ' + error.message);
       }
     },
-
+    deleteUser: async function (userId) {
+      try {
+        await UserMongo.findOneAndDelete({ id_user: userId });
+      } catch (e) {
+        throw new Error('Failed to delete user from MongoDB: ' + e.message);
+      }
+    },
     getAvatar: async (userId) => {
       try {
         const user = await User.findOne({
