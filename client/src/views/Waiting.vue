@@ -52,8 +52,6 @@ onUnmounted(() => {
   <div class="container">
     <div v-if="isLoading" class="centered">
       <img src="../assets/loading.svg" class="rotating-image">
-      <h1>En attente...</h1>
-      <button @click="redirectToHome()">Annuler</button>
     </div>
   </div>
 </template>
