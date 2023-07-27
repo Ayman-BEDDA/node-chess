@@ -39,6 +39,7 @@ services:
     volumes:
       - ./server:/usr/src/app
     command: npm run watch
+<<<<<<< HEAD
 
 
   client:
@@ -47,6 +48,8 @@ services:
       - 8080:8080
     volumes:
       - ./client:/usr/src/app
+=======
+>>>>>>> develop
 
 volumes:
   db-data: {}

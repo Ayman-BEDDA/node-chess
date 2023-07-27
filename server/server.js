@@ -32,9 +32,9 @@ const mongoose = require("mongoose");
 async function connectToMongoDB() {
   try {
     await mongoose.connect("mongodb://root:password@mongo:27017", {
-        useNewUrlParser: true,
-        useUnifiedTopology: true,
-    }
+          useNewUrlParser: true,
+          useUnifiedTopology: true,
+        }
     );
 
     console.log("Connected to MongoDB");
@@ -79,8 +79,6 @@ app.post('/upload', checkAuth, async (req, res, next) => {
   }
 });
 
-app.use(express.static(path.join(__dirname, 'public')));
-
 app.use(express.json());
 app.use("/", SecurityRouter);
 //app.use(checkAuth); protect all routes below
@@ -92,7 +90,7 @@ app.use("/moneys", checkAuth, MoneyRouter);
 app.use("/owns", checkAuth, OwnRouter);
 app.use("/games",  GameRouter); // protect only this route
 app.use("/buys", checkAuth, BuyRouter);
-app.use("/friends", checkAuth, FriendRouter); //Friend
+app.use("/friends", FriendRouter); //Friend
 
 app.get("/", (req, res) => {
   res.send("Hello World!");
@@ -108,7 +106,6 @@ app.use(errorHandler);
 const server = http.createServer(app);
 
 setupGame(server);
-
 
 server.listen(port, () => {
   console.log("Server running on port " + port);

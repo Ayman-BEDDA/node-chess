@@ -9,7 +9,7 @@ const router = new Router();
 const Controller = new UserController(new UserService());
 
 //route générique
-router.use("/", new genericRouter(new genericController(new UserService())));
+//router.use("/", new genericRouter(new genericController(new UserService())));
 
 //route spécifique
 router.get("/:id_user/lastgames", Controller.getLastGames);
@@ -20,5 +20,6 @@ router.get("/:id_user/avatar", Controller.getAvatar);
 router.get("/", Controller.getUsersFromMongo);
 router.post("/mongo", Controller.postUserToMongo);
 router.post("/matchmaking", Controller.matchmaking);
+router.delete("/", Controller.deleteUser);
 
 module.exports = router; //export du genericRouter + route lastgame

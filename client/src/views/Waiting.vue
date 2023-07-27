@@ -1,9 +1,11 @@
 <script setup>
 
-import {inject, ref} from "vue";
+import {inject, ref, onMounted, onUnmounted} from "vue";
 import router from "@/router";
+import { io } from 'socket.io-client';
 
 const isLoading = ref(true);
+let socket = ref(null);
 
 const user = inject('user');
 
@@ -22,16 +24,29 @@ async function matchmaking() {
 
   if (response.ok) {
     const jsonData = await response.json();
-    console.log(jsonData.id)
-    console.log('yeeeeeeees');
-    setTimeout(() => {
-      router.push(`play/${jsonData.id}`);
-    }, 2000);
+    socket.value.emit('matchFound', jsonData);
   }
 }
 
 matchmaking();
 
+
+onMounted(() => {
+  socket.value = io("http://localhost:3000");
+  socket.value.on('matchFound', (data) => {
+    let game = data;
+    //isLoading.value = false;
+    if(user.value.id == game.BlackUserID || user.value.id == game.WhiteUserID){
+      setTimeout(() => {
+        router.push(`play/${game.id}`);
+      }, 2000);
+    }
+  });
+});
+
+onUnmounted(() => {
+  socket.value.disconnect();
+});
 </script>
 <template>
   <div class="container">

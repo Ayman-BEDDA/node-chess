@@ -27,8 +27,8 @@ async function postUserMongo() {
       isWaiting: true,
     })
   });
-  if (response.ok) {
-    console.log('user added to mongo');
+  if (!response.ok) {
+    throw new Error('Something went wrong');
   }
 }
 

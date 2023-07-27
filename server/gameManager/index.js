@@ -2,8 +2,10 @@ const socketIo = require('socket.io');
 const { startTimer, setPlayerTurn, games } = require('./time.js');
 const drawCooldownDuration = 10000;
 
+let io;
+
 const setupGame = (server) => {
-  const io = socketIo(server, {
+  io = socketIo(server, {
     cors: {
       origin: "http://149.202.52.182:8080",
       methods: ["GET", "POST"]
@@ -12,6 +14,10 @@ const setupGame = (server) => {
 
   io.on('connection', (socket) => {
     console.log('a user connected');
+
+    socket.on('matchFound', (game) => {
+      io.emit('matchFound', game);
+    });
 
     socket.on('joinGame', (gameId) => {
       socket.join(gameId);
@@ -26,7 +32,7 @@ const setupGame = (server) => {
         games[gameId] = {
           intervalId: null,
           activePlayer: 'w',
-          timeWhite: 5,
+          timeWhite: 600,
           timeBlack: 600,
           gameIsActive: true,
           capturedPieces: {
@@ -108,4 +114,4 @@ const setupGame = (server) => {
   });
 }
 
-module.exports = setupGame;
+module.exports =  setupGame ;
