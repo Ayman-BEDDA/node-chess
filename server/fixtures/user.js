@@ -6,8 +6,8 @@ const RoleService = require("../services/role");
 const User = UserModel(sequelize);
 
 async function generateTestData() {
-  const roles = await RoleService().findAll({}, {});
-  const existingRoleIds = roles.map((role) => role.id);
+  const adminRole = await RoleService().findOne({ libelle: 'admin' });
+  const userRole = await RoleService().findOne({ libelle: 'user' });
 
   await User.create({
     login: 'admin',
@@ -17,7 +17,7 @@ async function generateTestData() {
     media: "default.png",
     isBanned: false,
     isValid: true,
-    id_role: existingRoleIds[0],
+    id_role: adminRole.id,
   });
 
   for (let i = 0; i < 50; i++) {
@@ -29,7 +29,7 @@ async function generateTestData() {
       media: "default.png",
       isBanned: false,
       isValid: false,
-      id_role: existingRoleIds[1],
+      id_role: userRole.id,
     });
   }
 }
