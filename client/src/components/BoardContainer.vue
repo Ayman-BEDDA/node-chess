@@ -8,8 +8,22 @@ import { io } from "socket.io-client";
 import { useRoute } from 'vue-router';
 import Modal from './Modal.vue';
 
+// Ajouter ceci au début de votre fichier pour importer l'API Web Audio
+const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+
+// Créez une nouvelle fonction pour jouer les sons
+const playSound = async (soundFile) => {
+    const response = await fetch(soundFile);
+    const arrayBuffer = await response.arrayBuffer();
+    const audioBuffer = await audioContext.decodeAudioData(arrayBuffer);
+    const sourceNode = audioContext.createBufferSource();
+    sourceNode.buffer = audioBuffer;
+    sourceNode.connect(audioContext.destination);
+    sourceNode.start();
+}
+
+
 const user = inject('user');
-//window.$ = window.jQuery = $;
 
 
 let currentRoute = useRoute(); 
@@ -28,6 +42,22 @@ const newReportForm = reactive({
 });
 const gameExists = inject('gameExists');
 const gameId = inject('gameId');
+
+const showPop = ref(false);
+const modalHeader = ref('');
+const modalBody = ref('');
+const modalFooter = ref('');
+
+function openPop(header, body, footer) {
+  modalHeader.value = header;
+  modalBody.value = body;
+  modalFooter.value = footer;
+  showPop.value = true;
+}
+
+function closePop() {
+  showPop.value = false;
+}
 
 const openModal = () => {
   showModal.value = true
@@ -58,13 +88,15 @@ function cancelCreate() {
 
 const gameOver = (player) => {
     clearInterval(intervalId);
-    alert('Fin de la partie, ' + player + ' est à court de temps.');
+    openPop('Fin de la partie', 'Fin de la partie, ' + player + ' est à court de temps.', '');
     let winner = gameExists.value.WhiteUserID;
     if(player == "w"){
       winner = gameExists.value.BlackUserID;
     }
     gameIsActive.value = false;
     fetchWinner(winner);
+    fetchElo();
+    socket.value.disconnect();
 }
 
 let game = ref(new Chess());
@@ -131,6 +163,22 @@ const fetchWinner = (winner) => {
           GameStatus: 'end',
           Winner: winner
       })
+  }).then(response => {
+      if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+      }
+  }).catch(e => {
+      console.error('There was a problem with the fetch operation: ' + e.message);
+  });
+}
+
+const fetchElo = () => {
+  fetch(`http://localhost:3000/games/${gameId.value}/elo`, {
+      method: 'PATCH',
+      headers: {
+          'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({})
   }).then(response => {
       if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
@@ -223,6 +271,7 @@ const onDrop = (source, target) => {
         board.value.position($.extend(true, {}, board.value.position(), finalConfig), false);
     }
 
+
     socket.value.emit('move', move);
     socket.value.emit('turn', { turn: game.value.turn() });
 
@@ -230,6 +279,12 @@ const onDrop = (source, target) => {
         var color = move.color === 'w' ? 'b' : 'w';
 
         socket.value.emit('capture', { color: color, piece: move.captured.toUpperCase() });
+        socket.value.emit('playSound', '/src/assets/capture.mp3');
+    }else if (game.value.in_check()){
+      socket.value.emit('playSound', '/src/assets/capture.mp3');
+    }
+    else{
+      socket.value.emit('playSound', '/src/assets/move-self.mp3');
     }
     fetch(`http://localhost:3000/games/${gameId.value}`, {
         method: 'PATCH',
@@ -252,8 +307,8 @@ const onDrop = (source, target) => {
 
 const resign = () => {
   let winner = userColor.value == 'w' ? gameExists.value.BlackUserID : gameExists.value.WhiteUserID;
-  fetchWinner(winner);
   gameIsActive.value = false;
+  fetchWinner(winner);
   socket.value.emit('resign', { gameId: gameId.value });
 }
 
@@ -325,7 +380,8 @@ onMounted(() => {
     
     socket.value.on('resign', function () {
       gameIsActive.value = false;
-      alert("L'autre joueur a abandonné. Vous avez gagné la partie.");
+      openPop("Victoire", "L'autre joueur a abandonné. Vous avez gagné la partie.");
+      fetchElo();
     });
 
     socket.value.on('drawProposed', function () {
@@ -335,11 +391,13 @@ onMounted(() => {
     socket.value.on('drawAccepted', function () {
       fetchDraw();
       gameIsActive.value = false;
-      alert("La partie est terminée. Match nul.");
+      fetchElo();
+      openPop("Match nul", "L'autre joueur a accepté votre proposition de match nul. La partie est terminée.");
+      socket.value.disconnect();
     });
 
     socket.value.on('drawProposalCooldown', function () {
-      alert("Vous ne pouvez pas proposer un match nul tout de suite. Veuillez attendre 10 secondes.");
+      openPop("Attention", "Vous ne pouvez pas proposer un match nul tout de suite. Veuillez attendre 10 secondes.");
     });
 
     socket.value.on('time', function (msg) {
@@ -352,12 +410,17 @@ onMounted(() => {
         }
     });
 
+    socket.value.on('playSound', function (soundFile) {
+        playSound(soundFile);
+    });
+
     socket.value.on('gameOver', function (player) {
         gameOver(player);
     });
 
     socket.value.on('math', function (msg) {
-        alert(msg);
+        openPop("Math", msg);
+        fetchElo();
     });
 
     $(window).resize(function () {
@@ -371,19 +434,19 @@ onMounted(() => {
       <div class="player" id="black_player">
         <div class="pic-pseudo">
           <img src="../assets/default_pic.jpg" alt="">
-          <span class="player_name">Black player</span>
+          <span class="player_name">{{ user?.id }}</span>
           <div class="player_rating">(500)</div>
           <div class="timer" id="time_black">10:00</div>
         </div>
       </div>
       <div class="board_container">
         <div class="captured_pieces">
-          <div class="pieces" id="black_piece"></div>
+          <div class="piece" id="black_piece"></div>
         </div>
         <div id="board">
         </div>
         <div class="captured_pieces">
-          <div class="pieces" id="white_piece"></div>
+          <div class="piece" id="white_piece"></div>
         </div> 
       </div> 
       <div class="player" id="white_player">  
@@ -396,7 +459,9 @@ onMounted(() => {
       </div>
     </div>
     <div id="moves" class="moves_container">
-      <h3 v-if="!gameIsActive">La partie est finie =)</h3>
+      <router-link v-if="!gameIsActive" :to="{ name: 'Home' }">
+        <button class="back_button"><i class="fas fa-arrow-left"></i> Retour à l'accueil</button>
+      </router-link>
       <button class="draw_button" @click="proposeDraw" v-if="gameIsActive">Match nul</button>
       <button class="resign_button" @click="resign" v-if="gameIsActive">Abandonner</button>
       <div v-if="!reported">
@@ -407,45 +472,72 @@ onMounted(() => {
       </div>
     </div>
 
-    <Modal v-if="showModal" @close="closeModal">
-    <template #header>
-      <div>
-        <h3 style="color: black">Votre adversaire vous propose un match nul</h3>
-      </div>
-    </template>
-    <template #footer>
-      <button @click="closeModal">Non</button>
-      <button @click="declareDraw">Oui</button>
-    </template>
-  </Modal>
+    <Modal v-if="showModal">
+      <template v-slot:header>
+          <button class="modal-close" @click="closeModal">&times;</button>
+      </template>
+      <template v-slot:body>
+          <p style="color: black;">Votre adversaire propose un match nul. Acceptez-vous ?</p>
+          <img src="../assets/handshake.png" alt="handshake" width="100" height="100">
+      </template>
+      <template v-slot:footer>
+          <button class="modal-btn modal-btn-no" @click="closeModal">Non</button>
+          <button class="modal-btn modal-btn-yes" @click="declareDraw">Oui</button>
+      </template>
+    </Modal>
 
-<div v-if="showReportModal" class="modal">
-    <div class="modal-dialog">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h3 class="modal-title">Créer un utilisateur</h3>
+    <Modal v-if="showReportModal">
+      <template v-slot:header>
+          <h3 class="modal-title">Signaler</h3>
           <button type="button" class="modal-close" @click="cancelCreate">&times;</button>
-        </div>
-        <div class="modal-body">
-            <form @submit="() => createReport(user?.id)">
+      </template>
+      <template v-slot:body>
+          <form @submit="() => createReport(user?.id)">
             <div class="form-group">
               <label for="newMessage">Message</label>
               <input type="text" v-model="newReportForm.message" id="newMessage" class="input-field" required>
             </div>
-
-            <div class="modal-footer">
-              <button type="submit" class="button primary">Créer</button>
-              <button type="button" class="button" @click="cancelCreate">Annuler</button>
-            </div>
           </form>
-        </div>
-      </div>
-    </div>
-  </div>
+      </template>
+      <template v-slot:footer>
+          <button type="submit" class="modal-btn modal-btn-yes">Créer</button>
+          <button type="button" class="modal-btn modal-btn-no" @click="cancelCreate">Annuler</button>
+      </template>
+    </Modal>
+
+    <Modal v-if="showPop">
+      <template v-slot:header>
+          {{ modalHeader }}
+      </template>
+      <template v-slot:body>
+          {{ modalBody }}
+      </template>
+      <template v-slot:footer>
+          <button class="modal-btn modal-btn-yes" @click="closePop">OK</button>
+      </template>
+    </Modal>
+
   </template>
 
 <style scoped>
-  /* Modern styling for the chess game */
+
+.back_button {
+  background-color: #333;
+  color: #fff;
+  border: none;
+  padding: 10px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 16px;
+}
+
+  .input-field {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-sizing: border-box;
+}
   .game_container {
     display: flex;
     justify-content: space-between;
@@ -475,12 +567,12 @@ onMounted(() => {
   .player_name {
     font-size: 18px;
     font-weight: bold;
-    color: #333;
+    color: #fff;
   }
 
   .player_rating {
     font-size: 14px;
-    color: #666;
+    color: #fff;
   }
 
   .timer {
@@ -493,13 +585,6 @@ onMounted(() => {
     /* Add your chessboard styling here */
     width: 600px;
     height: 600px;
-  }
-
-  #black_piece {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 5px;
   }
 
   /* CSS pour le conteneur principal de l'échiquier */
@@ -516,25 +601,8 @@ onMounted(() => {
     align-items: center;
     background-color: rgba(255, 255, 255, 0.5);
     border-radius: 5px;
-    height: 600px;
     width: 80px;
     margin: 0 20px;
-  }
-
-  /* CSS pour le style des pièces capturées */
-  .piece {
-    width: 50px;
-    height: 50px;
-  }
-
-  #black_piece img {
-    width: 50px;
-    height: 50px;
-  }
-
-  #white_piece img {
-    width: 50px;
-    height: 50px;
   }
 
   .moves_container {
@@ -547,7 +615,7 @@ onMounted(() => {
     padding: 10px 20px;
     font-size: 16px;
     color: #fff;
-    background-color: #3f51b5;
+    background-color: rgba(0, 0, 0, 0.7);
     border: none;
     border-radius: 5px;
     cursor: pointer;
@@ -556,24 +624,12 @@ onMounted(() => {
   }
 
   .moves_container button:hover {
-    background-color: #303f9f;
+    background-color: rgba(0, 0, 0, 0.9);
   }
   
     .form-group {
         margin-bottom: 20px;
         color: black;
-    }
-    .board_container{
-        width: 100%;
-    }
-    #board{
-        width: 100%;
-    }
-    .game_container{
-        max-width: 600px;
-        width: 100%;
-        display: flex;
-        flex-direction: column;
     }
     .pic-pseudo{
         display: flex;
@@ -590,80 +646,84 @@ onMounted(() => {
         margin-left: 5px;
         margin-top: 5px;
     }
-    .piece{
-        height: 30px;
-        width: 100%;
-        display: flex;
-        margin-right: 5px;
-    }
-    .piece > img{
-        width: 30px;
-    }
-    .timer{
-        width: 150px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-weight: bold;
-        font-size: 2em;
-        background: grey;
-        border: 3px solid black;
-        border-radius: 10px;
-        color: white;
-        margin-left: 40%;
-    }
-
     .modal {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      z-index: 9999;
-      background-color: rgba(0, 0, 0, 0.5);
-    }
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  background-color: rgba(0, 0, 0, 0.5);
+}
 
-    .modal-dialog {
-      max-width: 400px;
-      background-color: #fff;
-      border-radius: 5px;
-      overflow: hidden;
-    }
+.modal-dialog {
+  max-width: 400px;
+  background-color: #fff;
+  border-radius: 5px;
+  overflow: hidden;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+}
 
-    .modal-header {
-      padding: 10px 20px;
-      background-color: #f2f2f2;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-    }
+.modal-header {
+  padding: 10px 20px;
+  background-color: #f2f2f2;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
 
-    .modal-title {
-      font-size: 1.2rem;
-      font-weight: bold;
-      color: black;
-    }
+.modal-title {
+  font-size: 1.2rem;
+  font-weight: bold;
+  color: black;
+}
 
-    .modal-close {
-      border: none;
-      background-color: transparent;
-      font-size: 1.5rem;
-      cursor: pointer;
-      padding: 0;
-    }
+.modal-close {
+  border: none;
+  background-color: transparent;
+  font-size: 1.5rem;
+  cursor: pointer;
+  padding: 0;
+}
 
-    .modal-body {
-      padding: 20px;
-    }
+.modal-body {
+  padding: 20px;
+  color: black;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
 
-    .modal-footer {
-      padding: 10px 20px;
-      background-color: #f2f2f2;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
+.modal-footer {
+  padding: 10px 20px;
+  background-color: #f2f2f2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.modal-btn {
+  padding: 10px 20px;
+  margin: 0 5px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 1rem;
+  font-weight: bold;
+  text-transform: uppercase;
+}
+
+.modal-btn-no {
+  background-color: #e74c3c;
+  color: #fff;
+}
+
+.modal-btn-yes {
+  background-color: #2ecc71;
+  color: #fff;
+}
 </style>

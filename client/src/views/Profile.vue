@@ -56,9 +56,6 @@ async function updateProfile() {
       body: JSON.stringify(data),
     });
 
-    console.log(response);
-
-
     if (!response.ok) {
       throw new Error('Failed to update profile.');
     }
@@ -168,9 +165,6 @@ const imagePath = computed(() => {
                 <li :class="getTabClass('buy')">
                     <a @click="changeTab('buy')">Achats</a>
                 </li>
-                <li :class="getTabClass('password')">
-                    <a @click="changeTab('password')">Sécurité</a>
-                </li>
             </ul>
         </div>
         <div v-show="isActive('profile')">
@@ -215,11 +209,6 @@ const imagePath = computed(() => {
                     </tbody>
                 </table>
                 <p v-else>Aucun achat.</p>
-            </section>
-        </div>
-        <div v-show="isActive('password')">
-            <section>
-                <h1>Sécurité</h1>
             </section>
         </div>
     </main>

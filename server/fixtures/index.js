@@ -9,6 +9,9 @@ const ownFixture = require('./own')
 
 async function generateAllTestData() {
     try {
+        await roleFixture();
+        await moneyFixture();
+        await articleFixture();
         await userFixture();
         await friendFixture();
         await gameFixture();

@@ -26,7 +26,7 @@ const setupGame = (server) => {
         games[gameId] = {
           intervalId: null,
           activePlayer: 'w',
-          timeWhite: 600,
+          timeWhite: 5,
           timeBlack: 600,
           gameIsActive: true,
           capturedPieces: {
@@ -34,6 +34,7 @@ const setupGame = (server) => {
             b: [],
           },
           drawProposalCooldown: false,
+          timeoutProposal: null
         };
       }
 
@@ -44,14 +45,23 @@ const setupGame = (server) => {
       socket.on('time', (msg) => {
         io.to(gameId).emit('time', msg);
       });
+
+      socket.on('playSound', (sound) => {
+          io.to(gameId).emit('playSound', sound);
+      });
+    
       
 
       socket.on('resign', ({ gameId }) => {
+        clearInterval(games[gameId].intervalId);
+        clearTimeout(games[gameId].timeoutProposal);
         games[gameId].gameIsActive = false;
         io.to(gameId).emit('resign');
       });
 
       socket.on('checkmate', ({ gameId }) => {
+        clearInterval(games[gameId].intervalId);
+        clearTimeout(games[gameId].timeoutProposal);
         games[gameId].gameIsActive = false;
         io.to(gameId).emit('math', 'Échec et mat, la partie est terminée.');
       });      
@@ -60,7 +70,7 @@ const setupGame = (server) => {
         if (!games[gameId].drawProposalCooldown) {
           games[gameId].drawProposalCooldown = true;
           socket.broadcast.to(gameId).emit('drawProposed');
-          setTimeout(() => {
+          games[gameId].timeoutProposal = setTimeout(() => {
             games[gameId].drawProposalCooldown = false;
           }, drawCooldownDuration);
         } else {
@@ -69,6 +79,8 @@ const setupGame = (server) => {
       });
       
       socket.on('drawAccepted', ({ gameId }) => {
+        clearInterval(games[gameId].intervalId);
+        clearTimeout(games[gameId].timeoutProposal);
         games[gameId].gameIsActive = false;
         io.to(gameId).emit('drawAccepted');
       });
