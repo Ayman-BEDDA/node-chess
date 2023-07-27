@@ -19,6 +19,6 @@ router.get("/:id_user/buys", Controller.getBuys);
 router.get("/:id_user/avatar", Controller.getAvatar);
 router.post("/mongo", Controller.postUserToMongo);
 router.post("/matchmaking", Controller.matchmaking);
-router.delete("/", Controller.deleteUser);
+router.delete('/:id/delete', Controller.deleteUser);
 
 module.exports = router; //export du genericRouter + route lastgame

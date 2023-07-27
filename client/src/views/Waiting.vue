@@ -44,8 +44,19 @@ onMounted(() => {
   });
 });
 
+async function cancelMatchmaking() {
+  const response = await fetch(`http://localhost:3000/users/${user.value.id}/delete`, {
+    method: 'DELETE',
+    headers: {
+      Authorization: 'Bearer ' + localStorage.getItem('token'),
+      'Content-type': 'application/json'
+    }
+  });
+}
+
 onUnmounted(() => {
   socket.value.disconnect();
+  cancelMatchmaking();
 });
 </script>
 <template>
