@@ -132,8 +132,8 @@ function deleteFriend(userId, friendId) {
   })
       .then(response => {
         if (response.ok) {
-          console.log('Friend deleted')
           friends.splice(friends.findIndex(friend => friend.id === friendId), 1);
+          friendsAccepted.splice(friendsAccepted.findIndex(user => user.id === friendId), 1);
         } else {
           throw new Error('Fetch failed');
         }
