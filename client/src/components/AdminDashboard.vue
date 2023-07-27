@@ -29,7 +29,7 @@ const moneysLink = "/admin/moneys";
         <div class="sidebar-menu">
           <ul>
             <li>
-              <router-link to="/home">
+              <router-link to="/">
                 <span class="fas fa-home"></span>
                 <span>Page d'accueil</span>
               </router-link>
