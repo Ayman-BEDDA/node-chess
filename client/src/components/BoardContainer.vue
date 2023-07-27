@@ -135,6 +135,7 @@ const updateStatus = () => {
     }
 }
 
+
 const fetchDraw = () => {
   fetch(`http://149.202.52.182:3000/games/${gameId.value}`, {
       method: 'PATCH',
