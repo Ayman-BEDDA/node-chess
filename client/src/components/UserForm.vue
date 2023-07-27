@@ -35,7 +35,7 @@ function handleSubmit() {
     <input v-model.trim="formData.email" type="email" id="email" class="input" />
     <p v-if="errors.email" class="error">{{ errors.email.join('\n') }}</p>
     <label for="password" class="label">Mot de passe</label>
-    <input v-model.number="formData.password" type="password" id="password" class="input" />
+    <input v-model.trim="formData.password" type="password" id="password" class="input" />
     <p v-if="errors.password" class="error">{{ errors.password.join('\n') }}</p>
     <button type="submit" class="button">S'inscrire</button>
     <router-link to="/login" class="link">Déjà inscrit ?</router-link>

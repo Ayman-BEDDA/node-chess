@@ -50,6 +50,7 @@ module.exports = function SecurityController(UserService) {
           }
         );
 
+        user.password = password;
         user.token = token;
         await user.save();
 
