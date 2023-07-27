@@ -18,6 +18,7 @@ import Shop from '../views/Shop.vue'
 import Friends from '../views/Friends.vue';
 import Game from '../views/Game.vue';
 import Profile from '../views/Profile.vue';
+import Waiting from "@/views/Waiting.vue";
 
 const routes = [
   {
@@ -122,7 +123,13 @@ const routes = [
     name: 'Friends',
     component: Friends,
     meta: { requiresAuth: true },
-  }
+  },
+    {
+    path: '/waiting',
+    name: 'Waiting',
+    component: Waiting,
+    meta: { requiresAuth: true },
+    }
   ];
 
 const router = createRouter({
