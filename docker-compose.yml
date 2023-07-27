@@ -25,20 +25,28 @@ services:
       - ./pg-data:/var/lib/postgresql/data
 
   server:
-    image: node
+    image: node:14
     ports:
-      - 3000:3000
+    - 3000:3000
     environment:
-      DATABASE_URL: postgres://root:password@db:5432/app
-      JWT_SECRET: ImAstrongSecret
+    DATABASE_URL: postgres://root:password@db:5432/app
+    JWT_SECRET: ImAstrongSecret
     depends_on:
-      - db
-      - mongo
+    - db
+    - mongo
 
     working_dir: /usr/src/app
     volumes:
-      - ./server:/usr/src/app
-    command: npm run watch
+    - ./server:/usr/src/app
+    command: npm start
+
+  client:
+    build: ./client
+    ports:
+    - 8080:8080
+    volumes:
+    - ./client:/usr/src/app
+
 
 volumes:
   db-data: {}
