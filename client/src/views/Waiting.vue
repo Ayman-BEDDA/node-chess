@@ -10,7 +10,7 @@ let socket = ref(null);
 const user = inject('user');
 
 async function matchmaking() {
-  const response = await fetch(`http://localhost:3000/users/matchmaking`, {
+  const response = await fetch(`http://149.202.52.182:3000/users/matchmaking`, {
     method: 'POST',
     headers: {
       Authorization: 'Bearer ' + localStorage.getItem('token'),
