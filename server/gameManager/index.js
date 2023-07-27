@@ -5,7 +5,7 @@ const drawCooldownDuration = 10000;
 const setupGame = (server) => {
   const io = socketIo(server, {
     cors: {
-      origin: "http://localhost:5173",
+      origin: "http://149.202.52.182:8080/",
       methods: ["GET", "POST"]
     }
   });
