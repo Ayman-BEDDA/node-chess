@@ -25,7 +25,7 @@ services:
       - pg-data:/var/lib/postgresql/data
 
   server:
-    image: node
+    image: node:14
     ports:
       - 3000:3000
     environment:
@@ -38,6 +38,20 @@ services:
     volumes:
       - ./server:/usr/src/app
     command: npm run watch
+    
+  client:
+    build: ./client
+    ports:
+      - 8080:8080
+    volumes:
+      - ./client:/usr/src/app
+
+  adminer:
+    image: adminer
+    ports:
+      - 8081:8080
+    depends_on:
+      - db
 
 volumes:
   db-data: {}
