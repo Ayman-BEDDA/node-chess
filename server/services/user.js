@@ -132,7 +132,7 @@ module.exports = function UserService() {
               { WhiteUserID: userId },
               { BlackUserID: userId },
             ],
-            GameStatus: "end",
+            GameStatus: "eloGiven",
           },
           include: [
             {
@@ -164,7 +164,7 @@ module.exports = function UserService() {
               { WhiteUserID: userId },
               { BlackUserID: userId },
             ],
-            GameStatus: "end",
+            GameStatus: "eloGiven",
           },
           order: [["updatedAt", "DESC"]],
         });
@@ -176,7 +176,7 @@ module.exports = function UserService() {
               { WhiteUserID: userId },
               { BlackUserID: userId },
             ],
-            GameStatus: "end",
+            GameStatus: "eloGiven",
             Winner: userId,
           },
         });
@@ -186,7 +186,7 @@ module.exports = function UserService() {
               { WhiteUserID: userId },
               { BlackUserID: userId },
             ],
-            GameStatus: "end",
+            GameStatus: "eloGiven",
             Winner: {
               [Sequelize.Op.not]: userId,
             },
@@ -198,7 +198,7 @@ module.exports = function UserService() {
               { WhiteUserID: userId },
               { BlackUserID: userId },
             ],
-            GameStatus: "end",
+            GameStatus: "eloGiven",
             Winner: null,
           },
         });
