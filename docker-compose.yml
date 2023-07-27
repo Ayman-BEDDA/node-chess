@@ -25,7 +25,7 @@ services:
       - pg-data:/var/lib/postgresql/data
 
   server:
-    image: node
+    image: node:14
     ports:
       - 3000:3000
     environment:
@@ -34,9 +34,19 @@ services:
     depends_on:
       - db
       - mongo
+
     working_dir: /usr/src/app
     volumes:
       - ./server:/usr/src/app
+    command: npm run dev
+
+  client:
+    image: node:14
+    ports:
+      - 8080:8080
+    working_dir: /usr/src/app
+    volumes:
+      - ./client:/usr/src/app
     command: npm run dev
 
 volumes:
