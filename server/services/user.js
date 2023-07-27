@@ -277,8 +277,6 @@ module.exports = function UserService() {
     getUsersFromMongo: async function () {
       try {
         const users = await UserMongo.find();
-        console.log(users)
-
         if (!users || users.length === 0) {
           throw new Error('No users found in MongoDB.');
         }
@@ -333,15 +331,12 @@ module.exports = function UserService() {
         if (users.length === 0) {
           // Aucun utilisateur disponible pour le matchmaking
           // Vous pouvez gérer cette situation comme vous le souhaitez
-          console.log('Aucun utilisateur disponible pour le matchmaking');
           return;
         }
 
 
         const matchedUser = users[0];
-        console.log(matchedUser.id_user);
-        console.log("aaaaaaaaaaaaaaaaaaaaaaaaa")
-        console.log(user.id)
+
 
         // Créer une instance du modèle Game avec les IDs des utilisateurs
         // Créer une instance du modèle Game avec les IDs des utilisateurs (en convertissant en entier)
@@ -353,10 +348,12 @@ module.exports = function UserService() {
         });
 
 
-        console.log(game);
 
         // Enregistrer la partie dans la base de données
+
         await game.save();
+        await UserMongo.findOneAndDelete({ id_user: matchedUser.id_user });
+        await UserMongo.findOneAndDelete({ id_user: user.id });
         return game;
 
 
@@ -365,14 +362,7 @@ module.exports = function UserService() {
         throw new Error('Failed to find users with Elo difference: ' + error.message);
       }
     },
-    notWaiting: async function (userId) {
-      try {
-        const deletedUser = await UserMongo.findOneAndDelete({ id_user: userId });
-        return deletedUser;
-      } catch (e) {
-        throw new Error('Failed to remove user from MongoDB: ' + e.message);
-      }
-    },
+
     getAvatar: async (userId) => {
       try {
         const user = await User.findOne({

@@ -20,7 +20,6 @@ module.exports = function Controller(Service, options = {}) {
     getOne: async (req, res, next) => {
       const { id } = req.params;
       try {
-        console.log(isUUID(id));
         if (!isUUID(id)) {
           return res.sendStatus(404);
         }

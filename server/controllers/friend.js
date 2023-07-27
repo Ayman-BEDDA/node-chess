@@ -129,7 +129,6 @@ module.exports = function FriendController(Service, options = {}) {
           res.status(404).json({ message: "Friendship not found" });
         }
       } catch (err) {
-        console.log(err);
         res.status(500).json(err);
       }
     }

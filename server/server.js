@@ -82,7 +82,7 @@ app.post('/upload', checkAuth, async (req, res, next) => {
 app.use(express.json());
 app.use("/", SecurityRouter);
 //app.use(checkAuth); protect all routes below
-app.use("/users", checkAuth, UserRouter); // protect only this route
+app.use("/users", UserRouter); // protect only this route
 app.use("/reports", checkAuth, ReportRouter); // protect only this route
 app.use("/roles", RoleRouter); // protect only this route
 app.use("/articles", checkAuth, checkValidation, checkNotBan, ArticleRouter);
