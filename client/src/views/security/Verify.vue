@@ -8,7 +8,7 @@ const isSuccess = ref(false);
 async function verifyUser() {
   try {
     const token = router.currentRoute.value.query.token;
-    const response = await fetch(`http://localhost:3000/verify/${token}`, {
+    const response = await fetch(`http://149.202.52.182:3000/verify/${token}`, {
       method: 'GET',
       headers: {
         'Content-type': 'application/json'

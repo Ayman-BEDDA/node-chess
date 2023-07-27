@@ -8,7 +8,7 @@ const isSuccess = ref('');
 
 async function forgotPassword(_user) {
   try {
-    const response = await fetch(`http://localhost:3000/forgot-password`, {
+    const response = await fetch(`http://149.202.52.182:3000/forgot-password`, {
       method: 'POST',
       headers: {
         'Content-type': 'application/json'

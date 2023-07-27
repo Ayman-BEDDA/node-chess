@@ -198,7 +198,7 @@
   });
   
   onMounted(async () => {
-    const response = await fetch(`http://localhost:3000/articles`, {
+    const response = await fetch(`http://149.202.52.182:3000/articles`, {
       headers: {
         Authorization: 'Bearer ' + localStorage.getItem('token')
       }
@@ -263,7 +263,7 @@
   }
   
   function deleteArticle(articleId) {
-    fetch(`http://localhost:3000/articles/${articleId}`, {
+    fetch(`http://149.202.52.182:3000/articles/${articleId}`, {
       method: 'DELETE',
       headers: {
         Authorization: 'Bearer ' + localStorage.getItem('token')
@@ -283,7 +283,7 @@
 
   async function fetchMoneys() {
     try {
-      const response = await fetch(`http://localhost:3000/moneys`, {
+      const response = await fetch(`http://149.202.52.182:3000/moneys`, {
         headers: {
           Authorization: 'Bearer ' + localStorage.getItem('token')
         }
@@ -333,7 +333,7 @@
       media: newArticleForm.image ? getArticleImageName() : null
     };
 
-    const response = await fetch(`http://localhost:3000/articles`, {
+    const response = await fetch(`http://149.202.52.182:3000/articles`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -344,7 +344,7 @@
     
     if (response.ok && newArticleForm.image) {
       try {
-        const imageResponse = await fetch('http://localhost:3000/upload', {
+        const imageResponse = await fetch('http://149.202.52.182:3000/upload', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -356,7 +356,7 @@
         if (imageResponse.ok) {
           const createdArticle = await response.json();
 
-          const moneyTypeResponse = await fetch(`http://localhost:3000/moneys/${createdArticle.id_money}`, {
+          const moneyTypeResponse = await fetch(`http://149.202.52.182:3000/moneys/${createdArticle.id_money}`, {
             headers: {
               Authorization: 'Bearer ' + localStorage.getItem('token')
             }
@@ -422,7 +422,7 @@
       updatedAt: new Date().toISOString()
     };
 
-    const response = await fetch(`http://localhost:3000/articles/${articleId}`, {
+    const response = await fetch(`http://149.202.52.182:3000/articles/${articleId}`, {
       method: 'PATCH',
       headers: {
         'Content-Type': 'application/json',
@@ -434,7 +434,7 @@
     if (response.ok) {
       const updatedArticleData = await response.json();
 
-      const moneyTypeResponse = await fetch(`http://localhost:3000/moneys/${updatedArticleData.id_money}`, {
+      const moneyTypeResponse = await fetch(`http://149.202.52.182:3000/moneys/${updatedArticleData.id_money}`, {
         headers: {
           Authorization: 'Bearer ' + localStorage.getItem('token')
         }

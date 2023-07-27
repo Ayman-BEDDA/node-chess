@@ -14,7 +14,7 @@ const moneysId = reactive([]);
 const user = inject('user');
 
 onMounted(async () => {
-  const articlesResponses = await fetch(`http://localhost:3000/articles`, {
+  const articlesResponses = await fetch(`http://149.202.52.182:3000/articles`, {
     headers: {
       Authorization: 'Bearer ' + localStorage.getItem('token')
     }
@@ -27,7 +27,7 @@ onMounted(async () => {
     alert('Error while fetching articles');
   }
 
-  const moneysIdResponses = await fetch(`http://localhost:3000/moneys`, {
+  const moneysIdResponses = await fetch(`http://149.202.52.182:3000/moneys`, {
     headers: {
       Authorization: 'Bearer ' + localStorage.getItem('token')
     }
@@ -51,7 +51,7 @@ function closePopUp() {
 }
 
 async function buyArticle(articleId) {
-  const response = await fetch(`http://localhost:3000/articles/${articleId}/buy`, {
+  const response = await fetch(`http://149.202.52.182:3000/articles/${articleId}/buy`, {
     method: 'POST',
     headers: {
       Authorization: 'Bearer ' + localStorage.getItem('token'),
@@ -84,7 +84,7 @@ function handleBuy() {
 }
 async function buyMoney(articleId) {
   try {
-    const response = await fetch(`http://localhost:3000/owns/${articleId}/buy-money`, {
+    const response = await fetch(`http://149.202.52.182:3000/owns/${articleId}/buy-money`, {
       method: 'POST',
       headers: {
         Authorization: 'Bearer ' + localStorage.getItem('token'),
@@ -129,7 +129,7 @@ function handleBuyMoney() {
 }
 
 onMounted( async () => {
-  const buysResponses = await fetch(`http://localhost:3000/buys`, {
+  const buysResponses = await fetch(`http://149.202.52.182:3000/buys`, {
     headers: {
       Authorization: 'Bearer ' + localStorage.getItem('token')
     }

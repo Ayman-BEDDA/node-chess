@@ -10,7 +10,7 @@ const pageSize = 10;
 const user = inject('user');
 
 onMounted(async () => {
-  const lastgamesResponse = await fetch(`http://localhost:3000/users/${user.value.id}/lastgames`, {
+  const lastgamesResponse = await fetch(`http://149.202.52.182:3000/users/${user.value.id}/lastgames`, {
     headers: {
       Authorization: 'Bearer ' + localStorage.getItem('token')
     }
@@ -21,7 +21,7 @@ onMounted(async () => {
     isLoading.value = false;
 
     // Fetch gamestats
-    const gamestatsResponse = await fetch(`http://localhost:3000/users/${user.value.id}/gamestats`, {
+    const gamestatsResponse = await fetch(`http://149.202.52.182:3000/users/${user.value.id}/gamestats`, {
       headers: {
         Authorization: 'Bearer ' + localStorage.getItem('token')
       }

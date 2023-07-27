@@ -82,7 +82,7 @@ const searchQuery = ref('');
 const filteredQuery = ref('');
 
 onMounted(async () => {
-  const response = await fetch(`http://localhost:3000/reports`, {
+  const response = await fetch(`http://149.202.52.182:3000/reports`, {
     headers: {
       Authorization: 'Bearer ' + localStorage.getItem('token')
     }
@@ -153,7 +153,7 @@ async function acceptReport(reportId) {
     updatedAt: new Date().toISOString()
   };
 
-  const response = await fetch(`http://localhost:3000/reports/${reportId}`, {
+  const response = await fetch(`http://149.202.52.182:3000/reports/${reportId}`, {
     method: 'PATCH',
     headers: {
       'Content-Type': 'application/json',
@@ -176,7 +176,7 @@ async function refuseReport(reportId) {
     updatedAt: new Date().toISOString()
   };
 
-  const response = await fetch(`http://localhost:3000/reports/${reportId}`, {
+  const response = await fetch(`http://149.202.52.182:3000/reports/${reportId}`, {
     method: 'PATCH',
     headers: {
       'Content-Type': 'application/json',

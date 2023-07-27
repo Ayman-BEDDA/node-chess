@@ -89,7 +89,7 @@ const token = localStorage.getItem('token');
 const user = ref(token ? jwtDecode(token) : null);
 
 async function registerUser(_user) {
-  const response = await fetch(`http://localhost:3000/register`, {
+  const response = await fetch(`http://149.202.52.182:3000/register`, {
     method: 'POST',
     headers: {
       'Content-type': 'application/json'
@@ -104,7 +104,7 @@ async function registerUser(_user) {
   throw new Error('Fetch failed');
 }
 async function loginUser(_user) {
-  const response = await fetch(`http://localhost:3000/login`, {
+  const response = await fetch(`http://149.202.52.182:3000/login`, {
     method: 'POST',
     headers: {
       'Content-type': 'application/json'
@@ -125,7 +125,7 @@ async function loginUser(_user) {
 async function logoutUser() {
   const token = localStorage.getItem('token');
 
-  const response = await fetch(`http://localhost:3000/logout`, {
+  const response = await fetch(`http://149.202.52.182:3000/logout`, {
     method: 'POST',
     headers: {
       'Content-type': 'application/json',

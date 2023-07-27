@@ -24,7 +24,7 @@ const isLoading = ref(true);
 
 const fetchData = async () => {
   try {
-    const responseUsers = await fetch('http://localhost:3000/users', {
+    const responseUsers = await fetch('http://149.202.52.182:3000/users', {
       headers: {
         Authorization: 'Bearer ' + localStorage.getItem('token')
       }
@@ -36,7 +36,7 @@ const fetchData = async () => {
       alert('Error while fetching users');
     }
 
-    const responseArticles = await fetch(`http://localhost:3000/articles`, {
+    const responseArticles = await fetch(`http://149.202.52.182:3000/articles`, {
       headers: {
         Authorization: 'Bearer ' + localStorage.getItem('token')
       }
@@ -48,7 +48,7 @@ const fetchData = async () => {
       alert('Error while fetching');
     }
 
-    const responseBuys = await fetch(`http://localhost:3000/buys`, {
+    const responseBuys = await fetch(`http://149.202.52.182:3000/buys`, {
       headers: {
         Authorization: 'Bearer ' + localStorage.getItem('token')
       }
@@ -60,7 +60,7 @@ const fetchData = async () => {
       alert('Error while fetching');
     }
 
-    const responseMoneys = await fetch(`http://localhost:3000/moneys`, {
+    const responseMoneys = await fetch(`http://149.202.52.182:3000/moneys`, {
       headers: {
         Authorization: 'Bearer ' + localStorage.getItem('token')
       }

@@ -16,7 +16,7 @@ const shouldShowNavbar = computed(() => {
 });
 
 onMounted(async () => {
-  const moneysIdResponses = await fetch(`http://localhost:3000/moneys`, {
+  const moneysIdResponses = await fetch(`http://149.202.52.182:3000/moneys`, {
     headers: {
       Authorization: 'Bearer ' + localStorage.getItem('token')
     }
@@ -26,7 +26,7 @@ onMounted(async () => {
     moneysId.push(...(await moneysIdResponses.json()));
   }
   
-  const moneysResponses = await fetch(`http://localhost:3000/owns`, {
+  const moneysResponses = await fetch(`http://149.202.52.182:3000/owns`, {
     headers: {
       Authorization: 'Bearer ' + localStorage.getItem('token')
     }
@@ -57,7 +57,7 @@ const success = ref();
 
 async function dailyRwards() {
   try {
-    const response = await fetch(`http://localhost:3000/owns`, {
+    const response = await fetch(`http://149.202.52.182:3000/owns`, {
       method: 'POST',
       headers: {
         Authorization: 'Bearer ' + localStorage.getItem('token'),
@@ -97,7 +97,7 @@ const handleDailyRewards = () => {
 };
 
 const logOut = () => {
-    fetch('http://localhost:3000/logout', {
+    fetch('http://149.202.52.182:3000/logout', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

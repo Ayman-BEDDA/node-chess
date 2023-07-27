@@ -90,7 +90,7 @@ async function updateProfile() {
 }
 
 async function fetchProfileData() {
-    const profileResponse = await fetch(`http://localhost:3000/users/${user.value.id}`, {
+    const profileResponse = await fetch(`http://149.202.52.182:3000/users/${user.value.id}`, {
         method: 'GET',
         headers: {
             Authorization: 'Bearer ' + localStorage.getItem('token')
@@ -111,7 +111,7 @@ function enterEditMode() {
 }
 
 async function fetchBuyData() {
-    const buysResponse = await fetch(`http://localhost:3000/users/${user.value.id}/buys`, {
+    const buysResponse = await fetch(`http://149.202.52.182:3000/users/${user.value.id}/buys`, {
         method: 'GET',
         headers: {
             Authorization: 'Bearer ' + localStorage.getItem('token')

@@ -7,7 +7,7 @@ const verificationMessage = ref('');
 const isSuccess = ref('');
 
 async function registerUser(_user) {
-  const response = await fetch(`http://localhost:3000/register`, {
+  const response = await fetch(`http://149.202.52.182:3000/register`, {
     method: 'POST',
     headers: {
       'Content-type': 'application/json'

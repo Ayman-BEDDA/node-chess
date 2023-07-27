@@ -39,7 +39,7 @@ export default {
     },
     uploadImage() {
         const { image } = this;
-        axios.post('http://localhost:3000/upload', { image })
+        axios.post('http://149.202.52.182:3000/upload', { image })
             .then((response) => {
             this.remoteUrl = response.data.url;
             })

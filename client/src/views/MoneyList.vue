@@ -138,7 +138,7 @@
   });
   
   onMounted(async () => {
-    const response = await fetch(`http://localhost:3000/moneys`, {
+    const response = await fetch(`http://149.202.52.182:3000/moneys`, {
       headers: {
         Authorization: 'Bearer ' + localStorage.getItem('token')
       }
@@ -199,7 +199,7 @@ const totalPages = computed(() => Math.ceil(filteredMoneys.value.length / pageSi
   }
   
   function deleteMoney(moneyId) {
-    fetch(`http://localhost:3000/moneys/${moneyId}`, {
+    fetch(`http://149.202.52.182:3000/moneys/${moneyId}`, {
       method: 'DELETE',
       headers: {
         Authorization: 'Bearer ' + localStorage.getItem('token')
@@ -224,7 +224,7 @@ const totalPages = computed(() => Math.ceil(filteredMoneys.value.length / pageSi
       type: newMoneyForm.type
     };
 
-    const response = await fetch(`http://localhost:3000/moneys`, {
+    const response = await fetch(`http://149.202.52.182:3000/moneys`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -266,7 +266,7 @@ const totalPages = computed(() => Math.ceil(filteredMoneys.value.length / pageSi
         updatedAt: new Date().toISOString()
     };
 
-    const response = await fetch(`http://localhost:3000/moneys/${moneyId}`, {
+    const response = await fetch(`http://149.202.52.182:3000/moneys/${moneyId}`, {
       method: 'PATCH',
       headers: {
         'Content-Type': 'application/json',

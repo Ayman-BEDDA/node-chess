@@ -246,7 +246,7 @@ const newUserForm = reactive({
 });
 
 onMounted(async () => {
-  const response = await fetch(`http://localhost:3000/users`, {
+  const response = await fetch(`http://149.202.52.182:3000/users`, {
     headers: {
       Authorization: 'Bearer ' + localStorage.getItem('token')
     }
@@ -265,7 +265,7 @@ onMounted(async () => {
 
 async function fetchRoles() {
   try {
-    const response = await fetch(`http://localhost:3000/roles`, {
+    const response = await fetch(`http://149.202.52.182:3000/roles`, {
       headers: {
         Authorization: 'Bearer ' + localStorage.getItem('token')
       }
@@ -346,7 +346,7 @@ function confirmDeleteUser(userId) {
 }
 
 function deleteUser(userId) {
-  fetch(`http://localhost:3000/users/${userId}`, {
+  fetch(`http://149.202.52.182:3000/users/${userId}`, {
     method: 'DELETE',
     headers: {
       Authorization: 'Bearer ' + localStorage.getItem('token')
@@ -384,7 +384,7 @@ async function createUser() {
     media: newUserForm.image ? getUserImageName() : null
   };
 
-  const response = await fetch(`http://localhost:3000/users`, {
+  const response = await fetch(`http://149.202.52.182:3000/users`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -395,7 +395,7 @@ async function createUser() {
 
   if (response.ok && newUserForm.image) {
     try {
-      const imageResponse = await fetch('http://localhost:3000/upload', {
+      const imageResponse = await fetch('http://149.202.52.182:3000/upload', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -407,7 +407,7 @@ async function createUser() {
       if (imageResponse.ok) {
         const createdUser = await response.json();
 
-        const roleResponse = await fetch(`http://localhost:3000/roles/${createdUser.id_role}`, {
+        const roleResponse = await fetch(`http://149.202.52.182:3000/roles/${createdUser.id_role}`, {
         headers: {
             Authorization: 'Bearer ' + localStorage.getItem('token')
           }
@@ -482,7 +482,7 @@ async function updateUser() {
     updatedAt: new Date().toISOString()
   };
 
-  const response = await fetch(`http://localhost:3000/users/${userId}`, {
+  const response = await fetch(`http://149.202.52.182:3000/users/${userId}`, {
     method: 'PATCH',
     headers: {
       'Content-Type': 'application/json',
@@ -495,7 +495,7 @@ async function updateUser() {
     const index = users.findIndex(user => user.id === userId);
     users[index] = { ...users[index], ...updatedUser };
 
-    const roleResponse = await fetch(`http://localhost:3000/roles/${updatedUser.id_role}`, {
+    const roleResponse = await fetch(`http://149.202.52.182:3000/roles/${updatedUser.id_role}`, {
       headers: {
         Authorization: 'Bearer ' + localStorage.getItem('token')
       }

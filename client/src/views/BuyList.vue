@@ -70,7 +70,7 @@
   const filteredQuery = ref('');
   
   onMounted(async () => {
-    const response = await fetch(`http://localhost:3000/buys`, {
+    const response = await fetch(`http://149.202.52.182:3000/buys`, {
       headers: {
         Authorization: 'Bearer ' + localStorage.getItem('token')
       }

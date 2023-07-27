@@ -136,7 +136,7 @@ const updateStatus = () => {
 }
 
 const fetchDraw = () => {
-  fetch(`http://localhost:3000/games/${gameId.value}`, {
+  fetch(`http://149.202.52.182:3000/games/${gameId.value}`, {
       method: 'PATCH',
       headers: {
           'Content-Type': 'application/json',
@@ -154,7 +154,7 @@ const fetchDraw = () => {
 }
 
 const fetchWinner = (winner) => {
-  fetch(`http://localhost:3000/games/${gameId.value}`, {
+  fetch(`http://149.202.52.182:3000/games/${gameId.value}`, {
       method: 'PATCH',
       headers: {
           'Content-Type': 'application/json',
@@ -201,7 +201,7 @@ const taken = (color, piece) => {
 async function createReport(id_user) {
   event.preventDefault();
 
-  const gameResponse = await fetch(`http://localhost:3000/games/${currentGameid}`, {
+  const gameResponse = await fetch(`http://149.202.52.182:3000/games/${currentGameid}`, {
     headers: {
         Authorization: 'Bearer ' + localStorage.getItem('token')
         }
@@ -220,7 +220,7 @@ async function createReport(id_user) {
         id_user_reported: id_user_reported
     };
 
-    const response = await fetch(`http://localhost:3000/reports`, {
+    const response = await fetch(`http://149.202.52.182:3000/reports`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -286,7 +286,7 @@ const onDrop = (source, target) => {
     else{
       socket.value.emit('playSound', '/src/assets/move-self.mp3');
     }
-    fetch(`http://localhost:3000/games/${gameId.value}`, {
+    fetch(`http://149.202.52.182:3000/games/${gameId.value}`, {
         method: 'PATCH',
         headers: {
             'Content-Type': 'application/json',
@@ -341,7 +341,7 @@ onMounted(() => {
     game.value.load(gameExists.value.fen);
     board.value = Chessboard('board', config);
 
-    socket.value = io("http://localhost:3000");
+    socket.value = io("http://149.202.52.182:3000");
 
     let route = useRoute(); 
     let gameId = route.params.gameId;

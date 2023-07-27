@@ -21,7 +21,7 @@
 
     onMounted(async () => {
         try {
-            const response = await fetch(`http://localhost:3000/games/${gameId.value}`, {method: 'GET'});
+            const response = await fetch(`http://149.202.52.182:3000/games/${gameId.value}`, {method: 'GET'});
             gameExists.value = await response.json();
 
             if (!gameExists.value) {
@@ -32,7 +32,7 @@
                 } else if (gameExists.value.BlackUserID === user.value.id) {
                     userColor.value = 'b';
                 }
-                const authResponse = await fetch(`http://localhost:3000/games/${gameId.value}/authorized`, {
+                const authResponse = await fetch(`http://149.202.52.182:3000/games/${gameId.value}/authorized`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',

@@ -30,7 +30,7 @@ watch(isDeleteModalVisible, () => {
 
 
 onMounted(async () => {
-  const response = await fetch(`http://localhost:3000/users`, {
+  const response = await fetch(`http://149.202.52.182:3000/users`, {
     headers: {
       Authorization: 'Bearer ' + localStorage.getItem('token')
     }
@@ -46,7 +46,7 @@ onMounted(async () => {
 });
 
 onMounted(async () => {
-  const friendsResponses = await fetch(`http://localhost:3000/friends`, {
+  const friendsResponses = await fetch(`http://149.202.52.182:3000/friends`, {
     headers: {
       Authorization: 'Bearer ' + localStorage.getItem('token')
     }
@@ -61,7 +61,7 @@ onMounted(async () => {
     const waitingFriendsIds = waitingFriends.map(friend => friend.id_user_receiver);
 
     // Effectuer une nouvelle requête pour récupérer les informations des amis
-    const usersResponses = await fetch(`http://localhost:3000/users`, {
+    const usersResponses = await fetch(`http://149.202.52.182:3000/users`, {
       headers: {
         Authorization: 'Bearer ' + localStorage.getItem('token')
       }
@@ -123,7 +123,7 @@ const paginatedUsers = computed(() => {
 });
 
 function deleteFriend(userId, friendId) {
-  fetch(`http://localhost:3000/friends/${userId}/delete/${friendId}`, {
+  fetch(`http://149.202.52.182:3000/friends/${userId}/delete/${friendId}`, {
     method: 'DELETE',
     headers: {
       'Content-Type': 'application/json',
@@ -168,7 +168,7 @@ watch([filteredUsers, currentPage], () => {
 
 async function addFriend(userId ,friendId) {
   try {
-    const response = await fetch(`http://localhost:3000/friends/${userId}/send/${friendId}`, {
+    const response = await fetch(`http://149.202.52.182:3000/friends/${userId}/send/${friendId}`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -189,7 +189,7 @@ async function addFriend(userId ,friendId) {
 async function acceptFriend(userId ,friendId) {
 
   try {
-    const response = await fetch(`http://localhost:3000/friends/${userId}/accept/${friendId}`, {
+    const response = await fetch(`http://149.202.52.182:3000/friends/${userId}/accept/${friendId}`, {
       method: 'PATCH',
       headers: {
         'Content-Type': 'application/json',
@@ -216,7 +216,7 @@ async function acceptFriend(userId ,friendId) {
 async function denyFriend(userId, friendId) {
 
   try {
-    const response = await fetch(`http://localhost:3000/friends/${userId}/deny/${friendId}`, {
+    const response = await fetch(`http://149.202.52.182:3000/friends/${userId}/deny/${friendId}`, {
       method: 'PATCH',
       headers: {
         'Content-Type': 'application/json',
