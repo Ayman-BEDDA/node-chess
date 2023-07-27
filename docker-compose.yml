@@ -29,8 +29,8 @@ services:
     ports:
     - 3000:3000
     environment:
-    DATABASE_URL: postgres://root:password@db:5432/app
-    JWT_SECRET: ImAstrongSecret
+      DATABASE_URL: postgres://root:password@db:5432/app
+      JWT_SECRET: ImAstrongSecret
     depends_on:
     - db
     - mongo
