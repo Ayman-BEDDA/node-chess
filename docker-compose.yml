@@ -47,6 +47,13 @@ services:
     volumes:
       - ./client:/usr/src/app
 
+  adminer:
+    image: adminer
+    ports:
+      - 8081:8080
+    depends_on:
+      - db
+
 volumes:
   db-data: {}
   pg-data: {}
