@@ -3,6 +3,7 @@ import {computed, onMounted, reactive, ref, inject} from "vue";
 import router from '../router';
 
 const moneys = reactive([]);
+const avatar = ref('');
 
 const user = inject('user');
 
@@ -20,6 +21,16 @@ onMounted(async () => {
 
     if (moneysResponses.ok){
       moneys.push(...(await moneysResponses.json()));
+    }
+
+    const avatarResponse = await fetch(`http://localhost:3000/users/${user.value.id}/avatar`, {
+      headers: {
+        Authorization: 'Bearer ' + localStorage.getItem('token')
+      }
+    });
+
+    if (avatarResponse.ok){
+      avatar.value = await avatarResponse.json();
     }
 });
 
@@ -48,6 +59,14 @@ const logOut = () => {
       });
 };
 
+const imagePath = computed(() => {
+  if (avatar.value) {
+    return `http://localhost:3000/${avatar.value}`;
+  } else {
+    return `http://localhost:3000/default.png`;
+  }
+});
+
 </script>
   
 <template>
@@ -66,7 +85,7 @@ const logOut = () => {
       <router-link to="/"><img src="../assets/logo.png" alt="logo" class="logo"/></router-link>
       <div class="dropdown">
         {{ user.login }}
-        <img :src="user.media" class="avatar" />
+        <img :src="imagePath" alt="avatar" class="avatar"/>
         <div class="dropdown-content">
           <router-link to="/me"><i class="fas fa-user"></i> Mon profil</router-link>
           <button @click="logOut"><i class="fas fa-sign-out-alt"></i> Se déconnecter</button>

@@ -1,6 +1,12 @@
 <script setup>
-import { inject, onMounted, ref } from 'vue'
+import { inject, onMounted, ref, reactive, computed } from 'vue'
 import { useRoute } from 'vue-router'
+import dayjs from 'dayjs';
+import 'dayjs/locale/fr';
+import utc from 'dayjs/plugin/utc'; // Import the utc plugin separately
+
+dayjs.locale('fr');
+dayjs.extend(utc); 
 
 const route = useRoute()
 const activeTab = ref(route.query.tab || 'profile')
@@ -8,8 +14,80 @@ const isLoading = ref(true);
 const userData = ref([]);
 const buys = ref([]);
 const buyDate = ref('');
+const updatedProfileForm = ref({
+  avatar: null,
+});
+const isEditMode = ref(false);
 
 const user = inject('user')
+
+function handleAvatarUpload(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+
+  const reader = new FileReader();
+  reader.onloadend = () => {
+    updatedProfileForm.value.avatar = {
+      data: reader.result,
+      name: file.name,
+    };
+  };
+  reader.readAsDataURL(file);
+}
+
+function getAvatarUrl() {
+    const formattedDate = dayjs().utc().format('YYYY-MM-DD_HH:mm'); // Use UTC time zone
+    const filename = updatedProfileForm.value.avatar.name;
+    return `${formattedDate}_${filename}`;
+  }
+
+async function updateProfile() {
+  try {
+    const data = {
+      media: updatedProfileForm.value.avatar ? getAvatarUrl() : null,
+    };
+
+    const response = await fetch(`http://localhost:3000/users/${user.value.id}`, {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: 'Bearer ' + localStorage.getItem('token'),
+      },
+      body: JSON.stringify(data),
+    });
+
+    console.log(response);
+
+
+    if (!response.ok) {
+      throw new Error('Failed to update profile.');
+    }
+
+    if (updatedProfileForm.value.avatar) {
+      const imageResponse = await fetch('http://localhost:3000/upload', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: 'Bearer ' + localStorage.getItem('token')
+        },
+        body: JSON.stringify(updatedProfileForm.value.avatar)
+        });
+
+      if (imageResponse.ok) {
+        userData.value.media = await imageResponse.json();
+        userData.value.media = userData.value.media.imageName;
+      } else {
+        throw new Error('Error while uploading the image');
+      }
+    }
+
+    updatedProfileForm.value.avatar = null;
+    isEditMode.value = false;
+  } catch (error) {
+    console.error(error);
+    alert('Error while updating profile.');
+  }
+}
 
 async function fetchProfileData() {
     const profileResponse = await fetch(`http://localhost:3000/users/${user.value.id}`, {
@@ -25,6 +103,11 @@ async function fetchProfileData() {
     } else {
         alert('Error while fetching profile');
     }
+}
+
+function enterEditMode() {
+  updatedProfileForm.value.avatar = null;
+  isEditMode.value = true;
 }
 
 async function fetchBuyData() {
@@ -69,6 +152,10 @@ onMounted(async () => {
     await fetchProfileData();
 });
 
+const imagePath = computed(() => {
+    return userData.value.media ? `http://localhost:3000/${userData.value.media}` : '';
+});
+
 </script>
 
 <template>
@@ -84,22 +171,25 @@ onMounted(async () => {
                 <li :class="getTabClass('password')">
                     <a @click="changeTab('password')">Sécurité</a>
                 </li>
-                <li :class="getTabClass('friend')">
-                    <a @click="changeTab('friend')">Amis</a>
-                </li>
             </ul>
         </div>
         <div v-show="isActive('profile')">
             <section class="profile">
                 <h1>Profil</h1>
-                <img :src="user.media" alt="Avatar" width="100" height="100">
                 <div class="info">
-                    <label for="login">Nom</label>
-                    <input type="text" id="login" name="login" :value="userData.login">
+                <label for="avatar">Avatar</label>
+                <img :src="imagePath" width="100" height="100" />
+                <input type="file" accept="image/*" @change="handleAvatarUpload" v-if="isEditMode" />
+                <button v-if="!isEditMode" @click="enterEditMode">Modifier l'avatar</button>
+                <button v-if="isEditMode" @click="updateProfile">Sauvegarder</button>
                 </div>
                 <div class="info">
-                    <label for="email">Email</label>
-                    <input type="email" id="email" name="email" :value="userData.email" disabled>
+                <label for="login">Login</label>
+                <span>{{ userData.login }}</span>
+                </div>
+                <div class="info">
+                <label for="email">Email</label>
+                <span>{{ userData.email }}</span>
                 </div>
             </section>
         </div>
@@ -233,3 +323,18 @@ onMounted(async () => {
 
 
 </style>
+
+<script>
+import dayjs from 'dayjs';
+import 'dayjs/locale/fr';
+
+dayjs.locale('fr');
+export default {
+  methods: {
+    formatDate(dateString) {
+      const date = dayjs(dateString);
+      return date.format('dddd D MMMM, YYYY');
+    }
+  }
+}
+</script>

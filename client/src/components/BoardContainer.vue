@@ -208,7 +208,6 @@ onMounted(() => {
 <template>
     <div id="game_container" class="game_container">
       <div class="player" id="black_player">
-        <div class="piece" id="black_piece"></div>
         <div class="pic-pseudo">
           <img src="../assets/default_pic.jpg" alt="">
           <span class="player_name">Black player</span>
@@ -217,11 +216,16 @@ onMounted(() => {
         </div>
       </div>
       <div class="board_container">
+        <div class="captured_pieces">
+          <div class="pieces" id="black_piece"></div>
+        </div>
         <div id="board">
         </div>
-      </div>
-      <div class="player" id="white_player">
-        <div class="piece" id="white_piece"></div>
+        <div class="captured_pieces">
+          <div class="pieces" id="white_piece"></div>
+        </div> 
+      </div> 
+      <div class="player" id="white_player">  
         <div class="pic-pseudo">
           <img src="../assets/default_pic.jpg" alt="">
           <span class="player_name">White player</span>
@@ -247,7 +251,6 @@ onMounted(() => {
 
   .player {
     display: flex;
-    flex-direction: column;
     align-items: center;
     gap: 10px;
   }
@@ -282,22 +285,52 @@ onMounted(() => {
     color: #fff;
   }
 
-  .board_container {
-    margin: 0 20px;
-  }
-
   #board {
     /* Add your chessboard styling here */
     width: 600px;
     height: 600px;
   }
 
-  .piece {
+  #black_piece {
     display: flex;
     flex-direction: column;
+    align-items: center;
+    gap: 5px;
+  }
+
+  /* CSS pour le conteneur principal de l'échiquier */
+  .board_container {
+    display: flex;
     justify-content: center;
     align-items: center;
+  }
 
+  /* CSS pour le conteneur des pièces capturées */
+  .captured_pieces {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background-color: rgba(255, 255, 255, 0.5);
+    border-radius: 5px;
+    height: 600px;
+    width: 80px;
+    margin: 0 20px;
+  }
+
+  /* CSS pour le style des pièces capturées */
+  .piece {
+    width: 50px;
+    height: 50px;
+  }
+
+  #black_piece img {
+    width: 50px;
+    height: 50px;
+  }
+
+  #white_piece img {
+    width: 50px;
+    height: 50px;
   }
 
   .moves_container {

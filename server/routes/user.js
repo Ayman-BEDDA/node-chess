@@ -16,5 +16,6 @@ router.get("/:id_user/lastgames", Controller.getLastGames);
 router.get("/:id_user/gamestats", Controller.getGameStats);
 router.get("/:id_user/friends", Controller.getFriends);
 router.get("/:id_user/buys", Controller.getBuys);
+router.get("/:id_user/avatar", Controller.getAvatar);
 
 module.exports = router; //export du genericRouter + route lastgame

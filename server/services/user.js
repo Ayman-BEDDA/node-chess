@@ -264,5 +264,18 @@ module.exports = function UserService() {
         throw new Error('Failed to retrieve the buys for the user.');
       }
     },
+    getAvatar: async (userId) => {
+      try {
+        const user = await User.findOne({
+          where: {
+            id: userId,
+          },
+        });
+
+        return user.media;
+      } catch (e) {
+        throw new Error('Failed to retrieve the avatar for the user.');
+      }
+    }
   };
 };
