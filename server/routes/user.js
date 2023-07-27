@@ -17,5 +17,8 @@ router.get("/:id_user/gamestats", Controller.getGameStats);
 router.get("/:id_user/friends", Controller.getFriends);
 router.get("/:id_user/buys", Controller.getBuys);
 router.get("/:id_user/avatar", Controller.getAvatar);
+router.get("/", Controller.getUsersFromMongo);
+router.post("/mongo", Controller.postUserToMongo);
+router.post("/matchmaking", Controller.matchmaking);
 
 module.exports = router; //export du genericRouter + route lastgame
