@@ -100,7 +100,6 @@ async function buyMoney(articleId) {
     if (response.status === 422) {
       throw await response.json();
     } else if (response.ok) {
-      successMoney.value = "Monnaie achetée avec succès"
     } else {
       throw new Error('Fetch failed');
     }
@@ -117,7 +116,6 @@ async function buyMoney(articleId) {
 function handleBuyMoney() {
   const moneyId = selectedArticle.value ? selectedArticle.value.id : null;
   buyMoney(moneyId).then(() => {
-    successMoney.value = "Monnaie achetée avec succès"
     setTimeout(() => {
       successMoney.value = null;
       closePopUp();
@@ -131,7 +129,9 @@ function handleBuyMoney() {
   });
 }
 
-async function payMoney(articleEuros){
+async function payMoney(articleEuros, articleId) {
+
+  handleBuyMoney();
 
   const stripePromise = loadStripe('pk_test_51NSiaQDP3IyimeBr1KMKlmmg0UqfUKBIwndVIig0aLuMZY5LrIAIwsG5dzVd5YMFj7MlZW35nDXSD7l7EPOQbzOl0084Stjm3s');
   const stripe = await stripePromise;
@@ -151,23 +151,14 @@ async function payMoney(articleEuros){
   }
 
   const data = await response.json();
-  console.log(data);
   const sessionId = data.sessionId;
 
-  console.log(sessionId)
 
   const {error} = await stripe.redirectToCheckout({
     sessionId: sessionId,
   });
 
-  if (error){
-    console.log("aaaaaaaaaaaaaaaa")
-    console.log(error)
-  }
 
-  if (sessionId){
-    handleBuyMoney();
-  }
 }
 
 
@@ -214,7 +205,6 @@ function filterCategory(category) {
       <p class="error">{{ errors.buy }}</p>
       <p class="error">{{ errors.money }}</p>
       <p class="success" v-if="success">Article acheté avec succès</p>
-      <p class="success" v-if="successMoney">Monnaie achetée avec succès</p>
       <img src="../assets/echiquier-bois.jpg" class="image">
       <h2>{{ selectedArticle.libelle }}</h2>
       <p class="price-pop" v-if="selectedArticle.id_money === moneysId[0]?.id">{{ selectedArticle.price }}<img class="img-coin" src="../assets/premium-coin.svg"></p>
@@ -222,7 +212,7 @@ function filterCategory(category) {
       <p class="price-pop" v-if="selectedArticle.id_money === moneysId[2]?.id">{{ selectedArticle.euros }} €</p>
       <button v-if="selectedArticle.id_money === moneysId[0]?.id" @click="handleBuy()" class="buy">Acheter</button>
       <button v-if="selectedArticle.id_money === moneysId[1]?.id" @click="handleBuy()" class="buy">Acheter</button>
-      <button v-if="selectedArticle.id_money === moneysId[2]?.id" @click="payMoney(selectedArticle.euros)" class="buy-money">Acheter</button>
+      <button v-if="selectedArticle.id_money === moneysId[2]?.id" @click="payMoney(selectedArticle.euros, selectedArticle.euros)" class="buy-money">Acheter</button>
     </div>
   </div>
   <div class="shop">
