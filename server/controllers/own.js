@@ -49,8 +49,8 @@ module.exports = function OwnController(OwnService) {
                         },
                     ],
                     mode: 'payment',
-                    success_url: 'http://localhost:5173/shop',
-                    cancel_url: 'http://localhost:5173/shop',
+                    success_url: 'http://149.202.52.182:5173/shop',
+                    cancel_url: 'http://149.202.52.182:5173/shop',
                 });
                 res.json({ sessionId: session.id });
             } catch (err) {
