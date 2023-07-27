@@ -337,16 +337,14 @@ module.exports = function UserService() {
 
         const matchedUser = users[0];
 
-
         // Créer une instance du modèle Game avec les IDs des utilisateurs
         // Créer une instance du modèle Game avec les IDs des utilisateurs (en convertissant en entier)
         const game = await Game.create({
 
-          WhiteUserID: user.id,
-          BlackUserID: matchedUser.id_user,
+          WhiteUserID: matchedUser.id_user,
+          BlackUserID: user.id,
           GameStatus: "playing",
         });
-
 
 
         // Enregistrer la partie dans la base de données

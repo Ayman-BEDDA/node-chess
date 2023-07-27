@@ -107,7 +107,6 @@ const server = http.createServer(app);
 
 setupGame(server);
 
-
 server.listen(port, () => {
   console.log("Server running on port " + port);
 });
