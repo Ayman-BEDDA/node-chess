@@ -22,6 +22,8 @@ async function matchmaking() {
     })
   });
 
+  console.log(response);
+
   if (response.ok) {
     const jsonData = await response.json();
     socket.value.emit('matchFound', jsonData);
