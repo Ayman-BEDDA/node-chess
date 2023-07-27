@@ -11,9 +11,6 @@ module.exports = function FriendController(Service, options = {}) {
     send: async (req, res) => {
         const { id, id_receiver } = req.params;
 
-        const userExists = await UserService.findOne({ id: id });
-        const receiverExists = await UserService.findOne({ id: id_receiver });
-
         if (!isUUID(id) || !isUUID(id_receiver)) {
           return res.status(404).json({ message: "User not found" });
         }
@@ -45,7 +42,15 @@ module.exports = function FriendController(Service, options = {}) {
             status: 'waiting',
             date: new Date(),
             });
-            res.status(201).json(result);
+
+            const result2 = await Service.create({
+              id_user: id_receiver,
+              id_user_receiver: id,
+              status: 'waiting',
+              date: new Date(),
+            });
+            
+            res.status(201).json({ result, result2 });
         } catch (err) {
             res.status(500).json(err);
         }
@@ -57,7 +62,12 @@ module.exports = function FriendController(Service, options = {}) {
           { id_user: id, id_user_receiver: id_receiver },
           { status: 'denied' }
         );
-        if (result) res.json(result);
+
+        const result2 = await Service.update(
+          { id_user: id, id_user_receiver: id_receiver },
+          { status: 'denied' }
+        );
+        if (result && result2) res.json({result, result2});
         else res.sendStatus(404);
       } catch (err) {
         res.status(500).json(err);
@@ -70,7 +80,11 @@ module.exports = function FriendController(Service, options = {}) {
           { id_user: id, id_user_receiver: id_receiver },
           { status: 'accepted' }
         );
-        if (result) res.json(result);
+        const result2 = await Service.update(
+          { id_user: id_receiver, id_user_receiver: id },
+          { status: 'accepted' }
+        );
+        if (result && result2) res.json({result, result2});
         else res.sendStatus(404);
       } catch (err) {
         res.status(500).json(err);
@@ -107,12 +121,12 @@ module.exports = function FriendController(Service, options = {}) {
           return res.status(404);
         }
         const result = await Service.delete({ id_user: id, id_user_receiver: id_receiver });
+        const result2 = await Service.delete({ id_user: id_receiver, id_user_receiver: id });
 
-        if (result) res.status(200).json({ message: "Friendship deleted successfully" });
-        else{ 
-          const result = await Service.delete({ id_user: id_receiver, id_user_receiver: id });
-          if (result) res.status(200).json({ message: "Friendship deleted successfully" });
-          else res.status(404).json({ message: "Friendship not found" });
+        if (result && result2) {
+          res.status(200).json({ message: "Friendship deleted successfully" });
+        } else{ 
+          res.status(404).json({ message: "Friendship not found" });
         }
       } catch (err) {
         console.log(err);
