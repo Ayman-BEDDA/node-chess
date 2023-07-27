@@ -40,7 +40,6 @@ function handleSubmit() {
     <button type="submit" class="button">S'inscrire</button>
     <router-link to="/login" class="link">Déjà inscrit ?</router-link>
   </form>
-  <pre>{{ formData }}</pre>
 </template>
 
 <style scoped>
