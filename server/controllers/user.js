@@ -49,6 +49,32 @@ module.exports = function UserController(UserService) {
             console.error(error);
             res.status(500).json({ error: 'Failed to retrieve the avatar for the user.' });
           }
+        },
+        getUsersFromMongo: async (req, res, next) => {
+            try {
+                const users = await UserService.getUsersFromMongo();
+                res.status(200).json(users);
+            } catch (error) {
+                next(error);
+            }
+        },
+        postUserToMongo: async (req, res, next) => {
+            const { body } = req;
+            try {
+                const result = await UserService.postUserToMongo(body);
+                res.status(201).json(result);
+            } catch (error) {
+                next(error);
+            }
+        },
+        matchmaking: async (req, res, next) => {
+            const { body } = req;
+            try {
+                const users = await UserService.matchmaking(body);
+                res.status(201).json(users);
+            } catch (error) {
+                next(error);
+            }
         }
     };
 };
