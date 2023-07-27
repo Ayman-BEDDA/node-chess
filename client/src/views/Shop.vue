@@ -1,6 +1,8 @@
 <script setup>
 
 import {computed, inject, onMounted, reactive, ref, watch} from "vue";
+import { loadStripe } from '@stripe/stripe-js';
+import Cookies from 'js-cookie';
 
 const articles  = reactive([]);
 const isLoading = ref(true);
@@ -12,6 +14,7 @@ const selectedCategory = ref("all");
 const buys = reactive([]);
 const moneysId = reactive([]);
 const user = inject('user');
+const article = reactive(null);
 
 onMounted(async () => {
   const articlesResponses = await fetch(`http://localhost:3000/articles`, {
@@ -128,6 +131,46 @@ function handleBuyMoney() {
   });
 }
 
+async function payMoney(articleEuros){
+
+  const stripePromise = loadStripe('pk_test_51NSiaQDP3IyimeBr1KMKlmmg0UqfUKBIwndVIig0aLuMZY5LrIAIwsG5dzVd5YMFj7MlZW35nDXSD7l7EPOQbzOl0084Stjm3s');
+  const stripe = await stripePromise;
+  const response = await fetch(`http://localhost:3000/owns/pay`, {
+    method: 'POST',
+    headers: {
+      Authorization: 'Bearer ' + localStorage.getItem('token'),
+      'Content-type': 'application/json'
+    },
+    body: JSON.stringify({
+      articleEuros: articleEuros
+    })
+  });
+
+  if (!response.ok) {
+    throw new Error('Fetch failed');
+  }
+
+  const data = await response.json();
+  console.log(data);
+  const sessionId = data.sessionId;
+
+  console.log(sessionId)
+
+  const {error} = await stripe.redirectToCheckout({
+    sessionId: sessionId,
+  });
+
+  if (error){
+    console.log("aaaaaaaaaaaaaaaa")
+    console.log(error)
+  }
+
+  if (sessionId){
+    handleBuyMoney();
+  }
+}
+
+
 onMounted( async () => {
   const buysResponses = await fetch(`http://localhost:3000/buys`, {
     headers: {
@@ -179,7 +222,7 @@ function filterCategory(category) {
       <p class="price-pop" v-if="selectedArticle.id_money === moneysId[2]?.id">{{ selectedArticle.euros }} €</p>
       <button v-if="selectedArticle.id_money === moneysId[0]?.id" @click="handleBuy()" class="buy">Acheter</button>
       <button v-if="selectedArticle.id_money === moneysId[1]?.id" @click="handleBuy()" class="buy">Acheter</button>
-      <button v-if="selectedArticle.id_money === moneysId[2]?.id" @click="handleBuyMoney()" class="buy-money">Acheter</button>
+      <button v-if="selectedArticle.id_money === moneysId[2]?.id" @click="payMoney(selectedArticle.euros)" class="buy-money">Acheter</button>
     </div>
   </div>
   <div class="shop">
