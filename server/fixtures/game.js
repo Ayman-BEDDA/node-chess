@@ -32,8 +32,8 @@ async function generateGameData() {
     const winnerId = Math.random() > 0.5 ? whiteUserId : blackUserId;
 
     const game = {
-      WhiteUserID: existingUserIds[whiteUserId],
-      BlackUserID: existingUserIds[blackUserId],
+      WhiteUserID: existingUserIds[Math.floor(Math.random() * users.length)],
+      BlackUserID: existingUserIds[Math.floor(Math.random() * users.length)],
       GameStatus: status,
       Winner: status == 'end' ? existingUserIds[winnerId] : null, 
     };

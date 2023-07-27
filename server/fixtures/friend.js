@@ -20,17 +20,19 @@ async function generateFriendData() {
   const statuses = ['waiting', 'denied', 'accepted'];
 
   for (let i = 0; i < users.length; i++) {
+    let userId = null;
     let friendId = null;
     do {
+      userId = existingUserIds[Math.floor(Math.random() * users.length)];
       friendId = existingUserIds[Math.floor(Math.random() * users.length)];
-    } while (friendId == i);
+    } while (friendId == userId);
 
     const status = statuses[Math.floor(Math.random() * statuses.length)];
 
     const friend = {
       status: status,
-      user: existingUserIds[i],
-      id_user_receiver: existingUserIds[friendId],
+      id_user: existingUserIds[Math.floor(Math.random() * users.length)],
+      id_user_receiver: existingUserIds[Math.floor(Math.random() * users.length)],
     };
 
     await Friend.create(friend);
