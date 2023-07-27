@@ -8,7 +8,7 @@ import router from '../../router';
 const user = inject('user');
 
 async function loginUser(_user) {
-  const response = await fetch(`http://localhost:3000/login`, {
+  const response = await fetch(`http://149.202.52.182:3000/login`, {
     method: 'POST',
     headers: {
       'Content-type': 'application/json'
