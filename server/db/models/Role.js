@@ -1,4 +1,5 @@
 const { Model, DataTypes } = require("sequelize");
+const { v4: uuidv4 } = require('uuid');
 
 module.exports = function (connection) {
   class Role extends Model {}
@@ -6,8 +7,8 @@ module.exports = function (connection) {
   Role.init(
     {
       id: {
-        type: DataTypes.INTEGER,
-        autoIncrement: true,
+        type: DataTypes.UUID,
+        defaultValue: DataTypes.UUIDV4,
         primaryKey: true
       },
       libelle: {

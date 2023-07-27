@@ -7,8 +7,8 @@ module.exports = function (connection) {
   Move.init(
     {
       id: {
-        type: DataTypes.INTEGER,
-        autoIncrement: true,
+        type: DataTypes.UUID,
+        defaultValue: DataTypes.UUIDV4, 
         primaryKey: true
       },
       fromSquare: {
@@ -28,7 +28,7 @@ module.exports = function (connection) {
         }
       },
       id_user: {
-        type: DataTypes.INTEGER,
+        type: DataTypes.UUID,
         references: {
           model: 'users',
           key: 'id',

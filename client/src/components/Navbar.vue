@@ -3,6 +3,9 @@ import {computed, onMounted, reactive, ref, inject} from "vue";
 import router from '../router';
 
 const moneys = reactive([]);
+const moneysId = reactive([]);
+const premiumMoney = reactive([]);
+const freeMoney = reactive([]);
 const avatar = ref('');
 
 const user = inject('user');
@@ -13,15 +16,29 @@ const shouldShowNavbar = computed(() => {
 });
 
 onMounted(async () => {
-    const moneysResponses = await fetch(`http://localhost:3000/owns`, {
-      headers: {
-        Authorization: 'Bearer ' + localStorage.getItem('token')
-      }
-    });
-
-    if (moneysResponses.ok){
-      moneys.push(...(await moneysResponses.json()));
+  const moneysIdResponses = await fetch(`http://localhost:3000/moneys`, {
+    headers: {
+      Authorization: 'Bearer ' + localStorage.getItem('token')
     }
+  });
+
+  if (moneysIdResponses.ok){
+    moneysId.push(...(await moneysIdResponses.json()));
+  }
+  
+  const moneysResponses = await fetch(`http://localhost:3000/owns`, {
+    headers: {
+      Authorization: 'Bearer ' + localStorage.getItem('token')
+    }
+  });
+
+  if (moneysResponses.ok){
+      const jsonDatas = await moneysResponses.json();
+      const premium = jsonDatas.filter(item => item.id_money === moneysId[0]?.id);
+      const free = jsonDatas.filter(item => item.id_money === moneysId[1]?.id);
+      premiumMoney.push(...premium);
+      freeMoney.push(...free);
+   }
 
     const avatarResponse = await fetch(`http://localhost:3000/users/${user.value.id}/avatar`, {
       headers: {
@@ -34,8 +51,50 @@ onMounted(async () => {
     }
 });
 
-const premiumMoney = computed(() => moneys.filter(item => item.id_money === 1));
-const freeMoney = computed(() => moneys.filter(item => item.id_money === 2));
+///daily rewards
+const errors = ref({});
+const success = ref();
+
+async function dailyRwards() {
+  try {
+    const response = await fetch(`http://localhost:3000/owns`, {
+      method: 'POST',
+      headers: {
+        Authorization: 'Bearer ' + localStorage.getItem('token'),
+        'Content-type': 'application/json'
+      },
+    });
+
+    if (response.status === 422) {
+      throw await response.json();
+    } else if (response.ok) {
+      success.value = "You got your daily rewards ! (100 credits)";
+      freeMoney[0].amount += 100;
+    } else {
+      throw new Error('Fetch failed');
+    }
+  } catch (error) {
+    errors.value = error;
+    setTimeout(() => {
+      errors.value = {};
+    }, 3000);
+    throw error; // Ajout de cette ligne pour rejeter la promesse avec l'erreur
+  }
+}
+
+const handleDailyRewards = () => {
+  dailyRwards().then(() => {
+    success.value = "You got your daily rewards ! (100 credits)";
+    setTimeout(() => {
+      success.value = null;
+    }, 3000);
+  }).catch((error) => {
+    errors.value = error;
+    setTimeout(() => {
+      errors.value = {};
+    }, 3000);
+  });
+};
 
 const logOut = () => {
     fetch('http://localhost:3000/logout', {
@@ -81,6 +140,11 @@ const imagePath = computed(() => {
           <img class="img-coin" src="../assets/premium-coin.svg" />
           <p v-if="premiumMoney.length > 0">{{ premiumMoney[0].amount }}</p>
         </div>
+        <div class="button-rewards" @click="handleDailyRewards()">
+          <p><i class="fa-solid fa-coins"></i> Récupère tes récompenses !</p>
+        </div>
+        <p class="error">{{errors.dailyReward}}</p>
+        <p class="success" v-if="success">{{ success }}</p>
       </div>
       <router-link to="/"><img src="../assets/logo.png" alt="logo" class="logo"/></router-link>
       <div class="dropdown">
@@ -96,6 +160,11 @@ const imagePath = computed(() => {
 </template>
 
 <style scoped>
+@font-face {
+  font-family: The Bomb Sound;
+  src: url('../assets/fonts/The Bomb Sound.ttf');
+}
+
 .navbar {
   display: flex;
   justify-content: space-between;
@@ -195,6 +264,22 @@ const imagePath = computed(() => {
 .img-coin{
   padding-right: 5px;
 }
+.button-rewards{
+  font-family: The Bomb Sound;
+  font-size: 1rem;
+  background-color: rgba(225, 10, 10, 0.5);
+  border-radius: 2%;
+  padding: 6px;
+  width: 20%;
+  text-align: center;
+  cursor: pointer;
+  width: 100%;
+}
+
+.button-rewards:hover{
+  background-color: rgba(225, 10, 10, 0.8);
+}
+
 .error{
   color: red;
 }

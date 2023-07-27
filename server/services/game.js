@@ -20,11 +20,6 @@ module.exports = function GameService() {
       return Game.findAll(dbOptions);
     },
     findOne: async function (filters) {
-      if (filters.id) {
-        if (!isUUID(filters.id)) {
-          return null;
-        }
-      }
       return Game.findOne({ where: filters });
     },
     create: async function (data) {

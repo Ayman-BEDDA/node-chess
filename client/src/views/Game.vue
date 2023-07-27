@@ -11,9 +11,11 @@
     const userColor = ref(null);
     const gameExists = ref(null);
     const dataReady = ref(false);
+    const isUserAuthorized = ref(false);
     provide('gameId', gameId);
     provide('userColor', userColor);
     provide('gameExists', gameExists);
+
 
     onMounted(async () => {
         try {
@@ -39,6 +41,8 @@
 
                 if (!authData.authorized) {
                     router.push({ name: 'Home' });
+                } else {
+                    isUserAuthorized.value = true;
                 }
             }
         } catch (error) {
@@ -50,7 +54,7 @@
 </script>
 
     <template>
-        <BoardContainer v-if="dataReady" />
+        <BoardContainer v-if="dataReady && isUserAuthorized" />
     </template>
 
     <style scoped>

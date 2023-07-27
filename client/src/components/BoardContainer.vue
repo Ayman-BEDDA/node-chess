@@ -1,22 +1,50 @@
 <script setup>
-import { onMounted, ref, inject } from 'vue';
+import { onMounted, ref, inject, reactive } from 'vue';
 //import $ from "jquery";
 import '../assets/chessboard-1.0.0.min.css'
 import Chess from '../assets/chess'
 import Chessboard from '../assets/chessboard-1.0.0.js'
 import { io } from "socket.io-client";
 import { useRoute } from 'vue-router';
+import Modal from './Modal.vue';
 
+const user = inject('user');
 //window.$ = window.jQuery = $;
 
+
+let currentRoute = useRoute(); 
+let currentGameid = currentRoute.params.gameId;
+const showModal = ref(false);
 let intervalId = ref(null);
 let gameIsActive = ref(true);
 let socket = ref(null);
 let timeBlack = ref(600); 
 let timeWhite = ref(600);
 const userColor = inject('userColor');
+const showReportModal = ref(false);
+const reported = ref(false);
+const newReportForm = reactive({
+  message: ''
+});
 const gameExists = inject('gameExists');
 const gameId = inject('gameId');
+
+const openModal = () => {
+  showModal.value = true
+}
+
+const closeModal = () => {
+  showModal.value = false
+}
+
+const declareDraw = () => {
+  closeModal();
+  socket.value.emit('drawAccepted', { gameId: gameId.value });
+}
+
+const proposeDraw = () => {
+  socket.value.emit('proposeDraw', { gameId: gameId.value });
+}
 
 const formatTime = (seconds) => {
     let minutes = Math.floor(seconds / 60);
@@ -24,10 +52,19 @@ const formatTime = (seconds) => {
     return minutes + ':' + (seconds < 10 ? '0' : '') + seconds;
 }
 
+function cancelCreate() {
+    showReportModal.value = false;
+}
+
 const gameOver = (player) => {
     clearInterval(intervalId);
     alert('Fin de la partie, ' + player + ' est à court de temps.');
-    gameIsActive = false;
+    let winner = gameExists.value.WhiteUserID;
+    if(player == "w"){
+      winner = gameExists.value.BlackUserID;
+    }
+    gameIsActive.value = false;
+    fetchWinner(winner);
 }
 
 let game = ref(new Chess());
@@ -52,37 +89,113 @@ const updateStatus = () => {
     }
 
     if (game.value.game_over()) {
-        gameIsActive = false;
+        gameIsActive.value = false;
 
         // Détermination du gagnant
         let winnerId = null;
         if (game.value.in_checkmate()) {
             winnerId = game.value.turn() === 'b' ? gameExists.value.WhiteUserID : gameExists.value.BlackUserID;
+            socket.value.emit('checkmate', { gameId: gameId.value });
         }
 
-
-        // Mettre à jour le jeu dans la base de données
-        fetch(`http://localhost:3000/games/${gameId.value}`, {
-            method: 'PATCH',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                GameStatus: 'end',
-                Winner: winnerId
-            })
-        }).then(response => {
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
-            }
-        }).catch(e => {
-            console.error('There was a problem with the fetch operation: ' + e.message);
-        });
+        fetchWinner(winnerId);
+        
     }
 }
 
+const fetchDraw = () => {
+  fetch(`http://localhost:3000/games/${gameId.value}`, {
+      method: 'PATCH',
+      headers: {
+          'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+          GameStatus: 'draw'
+      })
+  }).then(response => {
+      if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+      }
+  }).catch(e => {
+      console.error('There was a problem with the fetch operation: ' + e.message);
+  });
+}
+
+const fetchWinner = (winner) => {
+  fetch(`http://localhost:3000/games/${gameId.value}`, {
+      method: 'PATCH',
+      headers: {
+          'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+          GameStatus: 'end',
+          Winner: winner
+      })
+  }).then(response => {
+      if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+      }
+  }).catch(e => {
+      console.error('There was a problem with the fetch operation: ' + e.message);
+  });
+}
+
+const taken = (color, piece) => {
+  var pieceElement = document.createElement('img');
+    pieceElement.src = '/src/assets/chesspieces/wikipedia/' + color + '' + piece + '.png';
+    let id = "black_piece";
+    if(color == "b"){
+        id = "white_piece";
+    }
+    document.getElementById(id).appendChild(pieceElement);
+}
+
+async function createReport(id_user) {
+  event.preventDefault();
+
+  const gameResponse = await fetch(`http://localhost:3000/games/${currentGameid}`, {
+    headers: {
+        Authorization: 'Bearer ' + localStorage.getItem('token')
+        }
+  });
+
+  if (gameResponse.ok) {
+    const gameInfo = await gameResponse.json();
+    let id_user_reported = gameInfo.WhiteUserID == id_user ? gameInfo.BlackUserID : gameInfo.WhiteUserID;
+
+    const newReport = {
+        message: newReportForm.message,
+        status: 'unread',
+        onCreate: new Date().toISOString(),
+        onUpdate: new Date().toISOString(),
+        id_user: id_user,
+        id_user_reported: id_user_reported
+    };
+
+    const response = await fetch(`http://localhost:3000/reports`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: 'Bearer ' + localStorage.getItem('token')
+      },
+      body: JSON.stringify(newReport)
+    });
+
+    if (response.ok) {
+        showReportModal.value = false;
+        newReportForm.message = '';
+        reported.value = true;
+        localStorage.setItem('reportedStatus', true);
+    } else {
+        alert('Error while creating report');
+    }
+  } else {
+    alert('Error while fetching the current game');
+  }
+}
+
 const onDrop = (source, target) => {
-    if (!gameIsActive) {
+    if (!gameIsActive.value) {
         return 'snapback';
     }
 
@@ -115,15 +228,9 @@ const onDrop = (source, target) => {
 
     if(move.captured){
         var color = move.color === 'w' ? 'b' : 'w';
-        var pieceElement = document.createElement('img');
-        pieceElement.src = '/src/assets/chesspieces/wikipedia/' + color + '' + move.captured.toUpperCase() + '.png';
-        let id = "black_piece";
-        if(color == "b"){
-            id = "white_piece";
-        }
-        document.getElementById(id).appendChild(pieceElement);
-    }
 
+        socket.value.emit('capture', { color: color, piece: move.captured.toUpperCase() });
+    }
     fetch(`http://localhost:3000/games/${gameId.value}`, {
         method: 'PATCH',
         headers: {
@@ -141,6 +248,13 @@ const onDrop = (source, target) => {
     });
 
     updateStatus();
+}
+
+const resign = () => {
+  let winner = userColor.value == 'w' ? gameExists.value.BlackUserID : gameExists.value.WhiteUserID;
+  fetchWinner(winner);
+  gameIsActive.value = false;
+  socket.value.emit('resign', { gameId: gameId.value });
 }
 
 const onSnapEnd = () => {
@@ -178,6 +292,19 @@ onMounted(() => {
     let gameId = route.params.gameId;
     socket.value.emit('joinGame', gameId);
 
+    socket.value.on('capturedPieces', (capturedPieces) => {
+      capturedPieces.w.forEach((piece) => {
+          taken("w" ,piece);
+      });
+      capturedPieces.b.forEach((piece) => {
+          taken("b" ,piece);
+      });
+    });
+
+    socket.value.on('updateCapture', function (msg) {
+        taken(msg.color, msg.piece);
+    });
+
     socket.value.on('move', function (msg) {
         let move = game.value.move(msg);
 
@@ -190,6 +317,31 @@ onMounted(() => {
         updateStatus();
     });
 
+
+    const localStorageReportedStatus = localStorage.getItem('reportedStatus');
+    if (localStorageReportedStatus) {
+        reported.value = true;
+    }
+    
+    socket.value.on('resign', function () {
+      gameIsActive.value = false;
+      alert("L'autre joueur a abandonné. Vous avez gagné la partie.");
+    });
+
+    socket.value.on('drawProposed', function () {
+      openModal();
+    });
+
+    socket.value.on('drawAccepted', function () {
+      fetchDraw();
+      gameIsActive.value = false;
+      alert("La partie est terminée. Match nul.");
+    });
+
+    socket.value.on('drawProposalCooldown', function () {
+      alert("Vous ne pouvez pas proposer un match nul tout de suite. Veuillez attendre 10 secondes.");
+    });
+
     socket.value.on('time', function (msg) {
         if (msg.type === 'black') {
             timeBlack.value = msg.time;
@@ -199,6 +351,15 @@ onMounted(() => {
             document.getElementById('time_white').textContent = formatTime(timeWhite.value);
         }
     });
+
+    socket.value.on('gameOver', function (player) {
+        gameOver(player);
+    });
+
+    socket.value.on('math', function (msg) {
+        alert(msg);
+    });
+
     $(window).resize(function () {
         board.value.resize();
     }).resize();
@@ -235,9 +396,52 @@ onMounted(() => {
       </div>
     </div>
     <div id="moves" class="moves_container">
-      <button class="draw_button">Match nul</button>
-      <button class="resign_button">Abandonner</button>
+      <h3 v-if="!gameIsActive">La partie est finie =)</h3>
+      <button class="draw_button" @click="proposeDraw" v-if="gameIsActive">Match nul</button>
+      <button class="resign_button" @click="resign" v-if="gameIsActive">Abandonner</button>
+      <div v-if="!reported">
+          <button @click="showReportModal = true" class="report-button">Signaler</button>
+      </div>
+      <div v-else>
+          <button disabled>Déjà signalé</button>
+      </div>
     </div>
+
+    <Modal v-if="showModal" @close="closeModal">
+    <template #header>
+      <div>
+        <h3 style="color: black">Votre adversaire vous propose un match nul</h3>
+      </div>
+    </template>
+    <template #footer>
+      <button @click="closeModal">Non</button>
+      <button @click="declareDraw">Oui</button>
+    </template>
+  </Modal>
+
+<div v-if="showReportModal" class="modal">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h3 class="modal-title">Créer un utilisateur</h3>
+          <button type="button" class="modal-close" @click="cancelCreate">&times;</button>
+        </div>
+        <div class="modal-body">
+            <form @submit="() => createReport(user?.id)">
+            <div class="form-group">
+              <label for="newMessage">Message</label>
+              <input type="text" v-model="newReportForm.message" id="newMessage" class="input-field" required>
+            </div>
+
+            <div class="modal-footer">
+              <button type="submit" class="button primary">Créer</button>
+              <button type="button" class="button" @click="cancelCreate">Annuler</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
   </template>
 
 <style scoped>
@@ -354,4 +558,112 @@ onMounted(() => {
   .moves_container button:hover {
     background-color: #303f9f;
   }
+  
+    .form-group {
+        margin-bottom: 20px;
+        color: black;
+    }
+    .board_container{
+        width: 100%;
+    }
+    #board{
+        width: 100%;
+    }
+    .game_container{
+        max-width: 600px;
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+    }
+    .pic-pseudo{
+        display: flex;
+        justify-content: start;
+    }
+    .pic-pseudo > img{
+        border: 1px solid #cecece;
+        width: 50px;
+        height: 50px;
+        border-radius: 5px;
+    }
+    .pic-pseudo > span{
+        font-weight: bold;
+        margin-left: 5px;
+        margin-top: 5px;
+    }
+    .piece{
+        height: 30px;
+        width: 100%;
+        display: flex;
+        margin-right: 5px;
+    }
+    .piece > img{
+        width: 30px;
+    }
+    .timer{
+        width: 150px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+        font-size: 2em;
+        background: grey;
+        border: 3px solid black;
+        border-radius: 10px;
+        color: white;
+        margin-left: 40%;
+    }
+
+    .modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 9999;
+      background-color: rgba(0, 0, 0, 0.5);
+    }
+
+    .modal-dialog {
+      max-width: 400px;
+      background-color: #fff;
+      border-radius: 5px;
+      overflow: hidden;
+    }
+
+    .modal-header {
+      padding: 10px 20px;
+      background-color: #f2f2f2;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .modal-title {
+      font-size: 1.2rem;
+      font-weight: bold;
+      color: black;
+    }
+
+    .modal-close {
+      border: none;
+      background-color: transparent;
+      font-size: 1.5rem;
+      cursor: pointer;
+      padding: 0;
+    }
+
+    .modal-body {
+      padding: 20px;
+    }
+
+    .modal-footer {
+      padding: 10px 20px;
+      background-color: #f2f2f2;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
 </style>

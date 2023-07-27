@@ -8,52 +8,6 @@ const user = inject('user');
 function navigateTo(route) {
     router.push(`/${route}`);
 }
-
-///daily rewards
-const errors = ref({});
-const success = ref();
-
-async function dailyRwards() {
-  try {
-    const response = await fetch(`http://localhost:3000/owns`, {
-      method: 'POST',
-      headers: {
-        Authorization: 'Bearer ' + localStorage.getItem('token'),
-        'Content-type': 'application/json'
-      },
-    });
-
-    if (response.status === 422) {
-      throw await response.json();
-    } else if (response.ok) {
-      success.value = "You got your daily rewards ! (100 credits)";
-    } else {
-      throw new Error('Fetch failed');
-    }
-  } catch (error) {
-    errors.value = error;
-    setTimeout(() => {
-      errors.value = {};
-    }, 3000);
-    throw error; // Ajout de cette ligne pour rejeter la promesse avec l'erreur
-  }
-}
-
-const handleDailyRewards = () => {
-  dailyRwards().then(() => {
-    success.value = "You got your daily rewards ! (100 credits)";
-    setTimeout(() => {
-      success.value = null;
-      window.location.reload();
-    }, 3000);
-  }).catch((error) => {
-    errors.value = error;
-    setTimeout(() => {
-      errors.value = {};
-    }, 3000);
-  });
-};
-
 </script>
 
 <template>
@@ -67,7 +21,7 @@ const handleDailyRewards = () => {
         <div class="button" @click="navigateTo('shop')">
           <span class="label"><i class="fa-solid fa-cart-shopping"></i> Shop</span>
         </div>
-        <div v-if="user?.id_role === 1" class="button" @click="navigateTo('admin')">
+        <div v-if="user?.role_libelle === 'admin'" class="button" @click="navigateTo('admin/home')">
           <span class="label"><i class="fa-solid fa-skull"></i> Admin</span>
         </div>
       </div>
@@ -76,15 +30,17 @@ const handleDailyRewards = () => {
       </div>
     </div>
     <div class="bottom-buttons">
-      <div class="button" @click="handleDailyRewards()">
-          <p><i class="fa-solid fa-coins"></i> Daily rewards !</p>
-        <p class="error">{{errors.dailyReward}}</p>
-        <p class="success" v-if="success">{{ success }}</p>
-      </div>
       <div class="button" @click="navigateTo('play')">
         <span class="label"><i class="fa-solid fa-chess-knight fa-bounce"></i> Play</span>
       </div>
     </div>
+    <div class="button v12" @click="navigateTo('friends')">
+      <span class="label">Friends</span>
+      <span class="icon">
+          <span></span>
+      </span>
+    </div>
+
   </div>
 </template>
 

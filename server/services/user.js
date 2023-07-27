@@ -1,6 +1,7 @@
 const { User, Game, Friend, Article, Buy, Own, Role} = require("../db");
 const Sequelize = require("sequelize");
 const ValidationError = require("../errors/ValidationError");
+const MoneyService = require("./money");
 
 module.exports = function UserService() {
   return {
@@ -23,9 +24,16 @@ module.exports = function UserService() {
       return User.findAll(dbOptions);
     },
     findOne: async function (filters) {
-      return User.findOne({ where: filters });
+      return User.findOne({ 
+        where: filters, 
+        include: [
+          { model: Role, as: 'role' },
+        ], 
+      });
     },
     create: async function (data) {
+      const moneys = await MoneyService().findAll({}, {});
+      const existingMoneyIds = moneys.map((money) => money.id);
       let createdUser;
       let createdOwns;
 
@@ -35,8 +43,8 @@ module.exports = function UserService() {
 
         // Créer les enregistrements Own associés à l'utilisateur
         createdOwns = await Own.bulkCreate([
-          { id_user: createdUser.id, id_money: 1, amount: 0 },
-          { id_user: createdUser.id, id_money: 2, amount: 0 }
+          { id_user: createdUser.id, id_money: existingMoneyIds[0], amount: 0 },
+          { id_user: createdUser.id, id_money: existingMoneyIds[1], amount: 0 }
         ]);
 
         // Retourner l'utilisateur créé
@@ -91,7 +99,7 @@ module.exports = function UserService() {
       return User.destroy({ where: filters });
     },
     login: async (email, password) => {
-      const user = await User.findOne({ where: { email } });
+      const user = await User.findOne({ where: { email }, include: [{ model: Role, as: 'role' },],  });
       if (!user) {
         throw new ValidationError({
           error: "Invalid credentials",

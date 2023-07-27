@@ -1,4 +1,5 @@
 const { Model, DataTypes } = require("sequelize");
+const { v4: uuidv4 } = require('uuid');
 
 module.exports = function (connection) {
   class Friend extends Model {}
@@ -6,8 +7,8 @@ module.exports = function (connection) {
   Friend.init(
     {
       id: {
-        type: DataTypes.INTEGER,
-        autoIncrement: true,
+        type: DataTypes.UUID,
+        defaultValue: DataTypes.UUIDV4,
         primaryKey: true
       },
       status: {
@@ -16,7 +17,7 @@ module.exports = function (connection) {
         defaultValue: 'waiting'
       },
       id_user: {
-        type: DataTypes.INTEGER,
+        type: DataTypes.UUID,
         references: {
           model: 'users',
           key: 'id',
@@ -24,7 +25,7 @@ module.exports = function (connection) {
         onDelete: 'CASCADE'
       },
       id_user_receiver: {
-        type: DataTypes.INTEGER,
+        type: DataTypes.UUID,
         references: {
           model: 'users',
           key: 'id',
