@@ -16,6 +16,7 @@
     provide('userColor', userColor);
     provide('gameExists', gameExists);
     const error = ref(false);
+    console.log(error);
 
 
     onMounted(async () => {
@@ -51,7 +52,6 @@
                 router.push({ name: 'Home' });
             }
         } catch (error) {
-            console.error(error);
             router.push({ name: 'Home' });
         }
         dataReady.value = true;

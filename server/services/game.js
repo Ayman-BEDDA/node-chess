@@ -63,5 +63,29 @@ module.exports = function GameService() {
     delete: async (filters) => {
       return Game.destroy({ where: filters });
     },
+    calculateElo: (white, black, winner) => {
+      const whiteExpectation = 1 / (1 + Math.pow(10, ((black - white) / 400)));
+      const blackExpectation = 1 / (1 + Math.pow(10, ((white - black) / 400)));
+    
+      let whiteScore, blackScore;
+    
+      const K = 32;
+    
+      if (winner === 'white') {
+        whiteScore = 1;
+        blackScore = 0;
+      } else if (winner === 'black') {
+        whiteScore = 0;
+        blackScore = 1;
+      } else {
+        whiteScore = 0.5;
+        blackScore = 0.5;
+      }
+    
+      const whiteNewElo = Math.floor(white + K * (whiteScore - whiteExpectation));
+      const blackNewElo = Math.floor(black + K * (blackScore - blackExpectation));
+    
+      return { whiteNewElo, blackNewElo };
+    }
   };
 };

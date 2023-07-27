@@ -9,6 +9,7 @@ const Controller = new GameController(new GameService());
 
 router.use("/", new genericRouter(new genericController(new GameService())));
 router.post("/:id/authorized", Controller.authorized);
+router.patch("/:id/elo", Controller.elo);
 
 
 module.exports = router;

@@ -26,7 +26,7 @@ const setupGame = (server) => {
         games[gameId] = {
           intervalId: null,
           activePlayer: 'w',
-          timeWhite: 600,
+          timeWhite: 5,
           timeBlack: 600,
           gameIsActive: true,
           capturedPieces: {

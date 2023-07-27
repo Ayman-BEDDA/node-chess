@@ -95,6 +95,7 @@ const gameOver = (player) => {
     }
     gameIsActive.value = false;
     fetchWinner(winner);
+    fetchElo();
     socket.value.disconnect();
 }
 
@@ -162,6 +163,22 @@ const fetchWinner = (winner) => {
           GameStatus: 'end',
           Winner: winner
       })
+  }).then(response => {
+      if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+      }
+  }).catch(e => {
+      console.error('There was a problem with the fetch operation: ' + e.message);
+  });
+}
+
+const fetchElo = () => {
+  fetch(`http://localhost:3000/games/${gameId.value}/elo`, {
+      method: 'PATCH',
+      headers: {
+          'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({})
   }).then(response => {
       if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
@@ -290,8 +307,8 @@ const onDrop = (source, target) => {
 
 const resign = () => {
   let winner = userColor.value == 'w' ? gameExists.value.BlackUserID : gameExists.value.WhiteUserID;
-  fetchWinner(winner);
   gameIsActive.value = false;
+  fetchWinner(winner);
   socket.value.emit('resign', { gameId: gameId.value });
 }
 
@@ -364,6 +381,7 @@ onMounted(() => {
     socket.value.on('resign', function () {
       gameIsActive.value = false;
       openPop("Victoire", "L'autre joueur a abandonné. Vous avez gagné la partie.");
+      fetchElo();
     });
 
     socket.value.on('drawProposed', function () {
@@ -373,7 +391,9 @@ onMounted(() => {
     socket.value.on('drawAccepted', function () {
       fetchDraw();
       gameIsActive.value = false;
+      fetchElo();
       openPop("Match nul", "L'autre joueur a accepté votre proposition de match nul. La partie est terminée.");
+      socket.value.disconnect();
     });
 
     socket.value.on('drawProposalCooldown', function () {
@@ -400,6 +420,7 @@ onMounted(() => {
 
     socket.value.on('math', function (msg) {
         openPop("Math", msg);
+        fetchElo();
     });
 
     $(window).resize(function () {
