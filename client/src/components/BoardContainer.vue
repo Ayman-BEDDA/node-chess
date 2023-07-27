@@ -1,5 +1,5 @@
 <script setup>
-import { onMounted, ref, inject, reactive } from 'vue';
+import { onMounted, ref, inject, reactive, onUnmounted } from 'vue';
 //import $ from "jquery";
 import '../assets/chessboard-1.0.0.min.css'
 import Chess from '../assets/chess'
@@ -426,6 +426,10 @@ onMounted(() => {
     $(window).resize(function () {
         board.value.resize();
     }).resize();
+});
+
+onUnmounted(() => {
+  socket.value.disconnect();
 });
 </script>
 
