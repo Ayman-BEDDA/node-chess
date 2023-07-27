@@ -8,8 +8,24 @@ import { io } from "socket.io-client";
 import { useRoute } from 'vue-router';
 import Modal from './Modal.vue';
 
+// Ajouter ceci au début de votre fichier pour importer l'API Web Audio
+const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+
+// Créez une nouvelle fonction pour jouer les sons
+const playSound = async (soundFile) => {
+    const response = await fetch(soundFile);
+    const arrayBuffer = await response.arrayBuffer();
+    const audioBuffer = await audioContext.decodeAudioData(arrayBuffer);
+    const sourceNode = audioContext.createBufferSource();
+    sourceNode.buffer = audioBuffer;
+    sourceNode.connect(audioContext.destination);
+    sourceNode.start();
+}
+
+
 const user = inject('user');
 //window.$ = window.jQuery = $;
+console.log(user.value.id);
 
 
 let currentRoute = useRoute(); 
@@ -65,6 +81,7 @@ const gameOver = (player) => {
     }
     gameIsActive.value = false;
     fetchWinner(winner);
+    socket.value.disconnect();
 }
 
 let game = ref(new Chess());
@@ -223,6 +240,7 @@ const onDrop = (source, target) => {
         board.value.position($.extend(true, {}, board.value.position(), finalConfig), false);
     }
 
+
     socket.value.emit('move', move);
     socket.value.emit('turn', { turn: game.value.turn() });
 
@@ -230,6 +248,12 @@ const onDrop = (source, target) => {
         var color = move.color === 'w' ? 'b' : 'w';
 
         socket.value.emit('capture', { color: color, piece: move.captured.toUpperCase() });
+        socket.value.emit('playSound', '/src/assets/capture.mp3');
+    }else if (game.value.in_check()){
+      socket.value.emit('playSound', '/src/assets/capture.mp3');
+    }
+    else{
+      socket.value.emit('playSound', '/src/assets/move-self.mp3');
     }
     fetch(`http://localhost:3000/games/${gameId.value}`, {
         method: 'PATCH',
@@ -326,6 +350,7 @@ onMounted(() => {
     socket.value.on('resign', function () {
       gameIsActive.value = false;
       alert("L'autre joueur a abandonné. Vous avez gagné la partie.");
+      socket.value.disconnect();
     });
 
     socket.value.on('drawProposed', function () {
@@ -336,6 +361,7 @@ onMounted(() => {
       fetchDraw();
       gameIsActive.value = false;
       alert("La partie est terminée. Match nul.");
+      socket.value.disconnect();
     });
 
     socket.value.on('drawProposalCooldown', function () {
@@ -352,12 +378,17 @@ onMounted(() => {
         }
     });
 
+    socket.value.on('playSound', function (soundFile) {
+        playSound(soundFile);
+    });
+
     socket.value.on('gameOver', function (player) {
         gameOver(player);
     });
 
     socket.value.on('math', function (msg) {
         alert(msg);
+        socket.value.disconnect();
     });
 
     $(window).resize(function () {

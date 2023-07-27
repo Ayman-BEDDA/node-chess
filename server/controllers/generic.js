@@ -20,8 +20,9 @@ module.exports = function Controller(Service, options = {}) {
     getOne: async (req, res, next) => {
       const { id } = req.params;
       try {
+        console.log(isUUID(id));
         if (!isUUID(id)) {
-          res.sendStatus(404);
+          return res.sendStatus(404);
         }
         const result = await Service.findOne({ id: id });
         if (result) res.json(result);
