@@ -167,9 +167,6 @@ watch([filteredUsers, currentPage], () => {
 });
 
 async function addFriend(userId ,friendId) {
-  console.log('user ID:', user.value.id);
-  console.log('friend ID:', friendId);
-
   try {
     const response = await fetch(`http://localhost:3000/friends/${userId}/send/${friendId}`, {
       method: 'POST',

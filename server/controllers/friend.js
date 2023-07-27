@@ -11,9 +11,6 @@ module.exports = function FriendController(Service, options = {}) {
     send: async (req, res) => {
         const { id, id_receiver } = req.params;
 
-        const userExists = await UserService.findOne({ id: id });
-        const receiverExists = await UserService.findOne({ id: id_receiver });
-
         if (!isUUID(id) || !isUUID(id_receiver)) {
           return res.status(404).json({ message: "User not found" });
         }
@@ -45,7 +42,15 @@ module.exports = function FriendController(Service, options = {}) {
             status: 'waiting',
             date: new Date(),
             });
-            res.status(201).json(result);
+
+            const result2 = await Service.create({
+              id_user: id_receiver,
+              id_user_receiver: id,
+              status: 'waiting',
+              date: new Date(),
+            });
+            
+            res.status(201).json({ result, result2 });
         } catch (err) {
             res.status(500).json(err);
         }
