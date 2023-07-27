@@ -27,6 +27,23 @@ const port = process.env.NODE_ENV === 'test' ? 3005 : 3000;
 const path = require("path");
 const fs = require("fs");
 const dayjs = require("dayjs");
+const mongoose = require("mongoose");
+
+async function connectToMongoDB() {
+  try {
+    await mongoose.connect("mongodb://root:password@mongo:27017", {
+        useNewUrlParser: true,
+        useUnifiedTopology: true,
+    }
+    );
+
+    console.log("Connected to MongoDB");
+  } catch (error) {
+    console.error("Error connecting to MongoDB:", error);
+  }
+}
+
+connectToMongoDB();
 
 app.use(cors());
 
