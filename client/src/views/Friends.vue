@@ -254,6 +254,10 @@ const formatDate = (dateString) => {
   return date.toLocaleDateString(undefined, options);
 };
 
+const imagePath = (image) => {
+  return image ? `http://localhost:3000/images/${image}` : 'http://localhost:3000/images/default.png';
+};
+
 </script>
 
 <template>
@@ -277,7 +281,7 @@ const formatDate = (dateString) => {
           </thead>
           <tbody>
           <tr v-for="friend in friendsAccepted" :key="friend.id">
-            <td><img :src="friend.avatar" alt="avatar"></td>
+            <td><img :src="imagePath" alt="avatar"></td>
             <td>{{friend.login}}</td>
             <td>{{friend.elo}}</td>
             <td>{{ formatDate(friend.createdAt) }}</td>
@@ -330,7 +334,7 @@ const formatDate = (dateString) => {
           </thead>
           <tbody>
           <tr v-for="friend in paginatedUsers" :key="friend.id">
-            <td><img :src="friend.avatar" alt="avatar"></td>
+            <td><img src="http://localhost:3000/default.png" alt="avatar" width="25" height="25" ></td>
             <td>{{friend.login}}</td>
             <td>{{friend.elo}}</td>
             <td>{{ formatDate(friend.createdAt) }}</td>

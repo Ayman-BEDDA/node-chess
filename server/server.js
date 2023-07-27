@@ -79,6 +79,7 @@ app.post('/upload', checkAuth, async (req, res, next) => {
   }
 });
 
+app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.json());
 app.use("/", SecurityRouter);
 //app.use(checkAuth); protect all routes below

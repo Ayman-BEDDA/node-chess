@@ -19,6 +19,7 @@ import Friends from '../views/Friends.vue';
 import Game from '../views/Game.vue';
 import Profile from '../views/Profile.vue';
 import Waiting from "@/views/Waiting.vue";
+import NotFound from "@/views/NotFound.vue";
 
 const routes = [
   {
@@ -98,7 +99,9 @@ const routes = [
   },
   {
     path: '/:pathMatch(.*)*',
-    redirect: "/",
+    name: 'NotFound',
+    component: NotFound,
+    meta: { requiresAuth: false },
   },
   {
     path: '/stats',
@@ -144,7 +147,10 @@ router.beforeEach((to, from, next) => {
   const isLogged = !!user.value;
   const isAdmin = user.value?.role_libelle === 'admin';
 
-  if (to.matched.some(record => record.meta.requiresAuth)) {
+  if (to.matched.length === 0) {
+    // Route not found, redirect to the 404 page
+    next({ name: 'NotFound' });
+  } else if (to.matched.some(record => record.meta.requiresAuth)) {
     if (!isLogged && to.name !== 'Login' && to.name !== 'Register' && to.name !== 'ForgotPassword' && to.name !== 'ResetPassword' && to.name !== 'Verify') {
       next({ name: 'Login' });
     } else {

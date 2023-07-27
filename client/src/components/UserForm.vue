@@ -29,13 +29,13 @@ function handleSubmit() {
   <form class="form" @submit.prevent="handleSubmit">
     <h1>Inscription</h1>
     <label for="login" class="label">Login</label>
-    <input v-model.trim="formData.login" type="text" id="login" class="input" />
+    <input v-model.trim="formData.login" type="text" id="login" class="input" required />
     <p v-if="errors.login" class="error">{{ errors.login.join('\n') }}</p>
     <label for="email" class="label">Email</label>
-    <input v-model.trim="formData.email" type="email" id="email" class="input" />
+    <input v-model.trim="formData.email" type="email" id="email" class="input" required />
     <p v-if="errors.email" class="error">{{ errors.email.join('\n') }}</p>
     <label for="password" class="label">Mot de passe</label>
-    <input v-model.trim="formData.password" type="password" id="password" class="input" />
+    <input v-model.trim="formData.password" type="password" id="password" class="input" required />
     <p v-if="errors.password" class="error">{{ errors.password.join('\n') }}</p>
     <button type="submit" class="button">S'inscrire</button>
     <router-link to="/login" class="link">Déjà inscrit ?</router-link>
