@@ -16,7 +16,6 @@
     provide('userColor', userColor);
     provide('gameExists', gameExists);
     const error = ref(false);
-    console.log(error);
 
 
     onMounted(async () => {

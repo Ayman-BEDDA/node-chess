@@ -33,7 +33,6 @@ function handleSubmit() {
     <router-link to="/login" class="link">Se connecter</router-link>
 
   </form>
-  <pre>{{ formData }}</pre>
 </template>
 
 <style scoped>
