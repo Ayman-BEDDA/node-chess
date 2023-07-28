@@ -51,7 +51,7 @@ onMounted(async () => {
     }
 });
 
-///daily rewards
+
 const errors = ref({});
 const success = ref();
 

@@ -82,16 +82,15 @@ app.post('/upload', checkAuth, async (req, res, next) => {
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.json());
 app.use("/", SecurityRouter);
-//app.use(checkAuth); protect all routes below
-app.use("/users", UserRouter); // protect only this route
-app.use("/reports", checkAuth, ReportRouter); // protect only this route
-app.use("/roles", RoleRouter); // protect only this route
+app.use("/users", checkAuth,UserRouter); 
+app.use("/reports", checkAuth, ReportRouter);
+app.use("/roles", RoleRouter); 
 app.use("/articles", checkAuth, checkValidation, checkNotBan, ArticleRouter);
 app.use("/moneys", checkAuth, MoneyRouter);
 app.use("/owns", checkAuth, OwnRouter);
-app.use("/games",  GameRouter); // protect only this route
+app.use("/games",  GameRouter); 
 app.use("/buys", checkAuth, BuyRouter);
-app.use("/friends", FriendRouter); //Friend
+app.use("/friends",checkAuth, FriendRouter); 
 
 app.get("/", (req, res) => {
   res.send("Hello World!");

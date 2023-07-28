@@ -148,7 +148,6 @@ router.beforeEach((to, from, next) => {
   const isAdmin = user.value?.role_libelle === 'admin';
 
   if (to.matched.length === 0) {
-    // Route not found, redirect to the 404 page
     next({ name: 'NotFound' });
   } else if (to.matched.some(record => record.meta.requiresAuth)) {
     if (!isLogged && to.name !== 'Login' && to.name !== 'Register' && to.name !== 'ForgotPassword' && to.name !== 'ResetPassword' && to.name !== 'Verify') {

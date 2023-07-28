@@ -1,6 +1,6 @@
 <script setup>
 import { onMounted, ref, inject, reactive, onUnmounted } from 'vue';
-//import $ from "jquery";
+
 import '../assets/chessboard-1.0.0.min.css'
 import Chess from '../assets/chess'
 import Chessboard from '../assets/chessboard-1.0.0.js'
@@ -8,10 +8,9 @@ import { io } from "socket.io-client";
 import { useRoute } from 'vue-router';
 import Modal from './Modal.vue';
 
-// Ajouter ceci au début de votre fichier pour importer l'API Web Audio
+
 const audioContext = new (window.AudioContext || window.webkitAudioContext)();
 
-// Créez une nouvelle fonction pour jouer les sons
 const playSound = async (soundFile) => {
     const response = await fetch(soundFile);
     const arrayBuffer = await response.arrayBuffer();
@@ -123,7 +122,6 @@ const updateStatus = () => {
     if (game.value.game_over()) {
         gameIsActive.value = false;
 
-        // Détermination du gagnant
         let winnerId = null;
         if (game.value.in_checkmate()) {
             winnerId = game.value.turn() === 'b' ? gameExists.value.WhiteUserID : gameExists.value.BlackUserID;

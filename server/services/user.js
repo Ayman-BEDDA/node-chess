@@ -318,27 +318,24 @@ module.exports = function UserService() {
           },
           {
             $addFields: {
-              eloDifference: { $abs: { $subtract: ['$elo', '$elo'] } }, // Calcul de la différence absolue des Elo avec lui-même (toujours 0)
+              eloDifference: { $abs: { $subtract: ['$elo', '$elo'] } }, 
             },
           },
           {
             $match: {
-              eloDifference: { $lte: eloDifference }, // Filtrer les utilisateurs avec une différence d'Elo inférieure ou égale à 100
+              eloDifference: { $lte: eloDifference }, 
             },
           },
         ]);
 
         if (users.length === 0) {
-          // Aucun utilisateur disponible pour le matchmaking
-          // Vous pouvez gérer cette situation comme vous le souhaitez
+
           return;
         }
 
 
         const matchedUser = users[0];
 
-        // Créer une instance du modèle Game avec les IDs des utilisateurs
-        // Créer une instance du modèle Game avec les IDs des utilisateurs (en convertissant en entier)
         const game = await Game.create({
 
           WhiteUserID: matchedUser.id_user,
@@ -347,7 +344,6 @@ module.exports = function UserService() {
         });
 
 
-        // Enregistrer la partie dans la base de données
 
         await game.save();
         await UserMongo.findOneAndDelete({ id_user: matchedUser.id_user });

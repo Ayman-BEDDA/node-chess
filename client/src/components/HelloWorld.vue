@@ -6,15 +6,7 @@ defineProps({
   }
 });
 
-// Vue2
-// export default {
-//   props: {
-//     msg: {
-//       type: String,
-//       required: true
-//     }
-//   }
-// }
+
 </script>
 
 <template>
