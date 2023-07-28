@@ -66,6 +66,9 @@ const getGameStyle = (game) => {
   }
   return { color: 'white', fontWeight: 'bold', background: 'linear-gradient(90deg, rgba(255,255,255,255) 0%, rgba(0,0,0,0) 100%' };
 };
+const imagePath = (image) => {
+  return `http://localhost:3000/${image}`;
+};
 </script>
 
 <template>
@@ -98,6 +101,10 @@ const getGameStyle = (game) => {
           <h1>{{ gamestats[0]?.winRate }}%</h1>
           <p>Taux de victoire</p>
         </div>
+        <div class="stat">
+          <h1>{{ user.elo }}</h1>
+          <p>Elo</p>
+        </div>
       </div> 
     </div>
     <div class="lastgames-block">
@@ -106,7 +113,7 @@ const getGameStyle = (game) => {
           <div v-for="lastgame in paginatedLastgames" :key="lastgame.id" :style="getGameStyle(lastgame)">
             <div class="game">
               <div class="player">
-                <img class="avatar" :src="lastgame.whiteUser.media" />
+                <img class="avatar" :src="imagePath(lastgame.whiteUser.media)" />
                 <div class="white">{{ lastgame.whiteUser.login }}</div>
               </div>
               <div class="player">
@@ -114,7 +121,7 @@ const getGameStyle = (game) => {
               </div>
               <div class="player">
                 <div class="black">{{ lastgame.blackUser.login }}</div>
-                <img class="avatar" :src="lastgame.blackUser.media" />
+                <img class="avatar" :src="imagePath(lastgame.blackUser.media)" />
                 <div class="result">{{ lastgame.Winner === null ? 'NUL' : lastgame.Winner === user.id ? 'VICTOIRE' : 'DEFAITE' }}</div>
               </div>
             </div>
