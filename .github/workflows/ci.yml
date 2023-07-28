@@ -28,7 +28,7 @@ jobs:
 
     # Install dependencies
     - name: Install Node.js dependencies
-      run: docker-compose exec -T server npm ci
+      run: docker-compose exec -T server npm update
 
     # Install Snyk globally
     - name: Install Snyk
