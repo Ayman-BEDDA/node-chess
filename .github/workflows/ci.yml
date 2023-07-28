@@ -26,10 +26,6 @@ jobs:
     - name: Build the Docker Compose stack
       run: docker-compose up -d
 
-    # Install dependencies
-    - name: Install Node.js dependencies
-      run: docker-compose exec -T server npm update
-
     # Install Snyk globally
     - name: Install Snyk
       run: docker-compose exec -T server npm install -g snyk
@@ -41,6 +37,10 @@ jobs:
     # Run security checks with Snyk
     - name: Run Snyk to check for vulnerabilities
       run: docker-compose exec -T server snyk test --all-projects --severity-threshold=high
+      
+    # Install dependencies
+    - name: Install Node.js dependencies
+      run: docker-compose exec -T server npm i
 
     # Run your database migration
     - name: Run database migration
