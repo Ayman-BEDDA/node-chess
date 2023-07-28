@@ -302,23 +302,15 @@
     }
   }
 
-  const handleImageUpload = (event) => {
-    const file = event.target.files[0];
-    if (!file) return;
+  const selectedFile = ref(null);
 
-    const reader = new FileReader();
-    reader.onloadend = () => {
-      newArticleForm.image = {
-        data: reader.result,
-        name: file.name
-      };
-    };
-    reader.readAsDataURL(file);
-  };
+  function handleImageUpload(event) {
+    selectedFile.value = event.target.files[0];
+  }
 
   function getArticleImageName() {
-    const formattedDate = dayjs().utc().format('YYYY-MM-DD_HH:mm'); // Use UTC time zone
-    const filename = newArticleForm.image.name;
+    const formattedDate = dayjs().utc().format('YYYY-MM-DD_HH:mm');
+    const filename = selectedFile.value.name;
     return `${formattedDate}_${filename}`;
   }
 
@@ -330,7 +322,7 @@
       price: newArticleForm.price,
       euros: newArticleForm.euros,
       id_money: newArticleForm.id_money,
-      media: newArticleForm.image ? getArticleImageName() : null
+      media: getArticleImageName()
     };
 
     const response = await fetch(`http://localhost:3000/articles`, {
@@ -341,17 +333,24 @@
       },
       body: JSON.stringify(newArticle)
     });
+
+    console.log(response);
     
-    if (response.ok && newArticleForm.image) {
+    if (response.ok && selectedFile.value) {
       try {
-        const imageResponse = await fetch('http://localhost:3000/upload', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: 'Bearer ' + localStorage.getItem('token')
-          },
-          body: JSON.stringify(newArticleForm.image)
-        });
+        let imageResponse;
+        if (selectedFile.value) {
+          let formData = new FormData();
+          formData.append('image', selectedFile.value);
+
+          imageResponse = await fetch('http://localhost:3000/upload', {
+            method: 'POST',
+            headers: {
+              Authorization: 'Bearer ' + localStorage.getItem('token') 
+            },
+            body: formData
+          });
+        }
 
         if (imageResponse.ok) {
           const createdArticle = await response.json();

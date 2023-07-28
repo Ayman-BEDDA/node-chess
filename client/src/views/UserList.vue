@@ -375,9 +375,6 @@ async function createUser() {
     media: getUserImageName()
   };
 
-  console.log(getUserImageName());
-  console.log(newUser);
-
   const response = await fetch(`http://localhost:3000/users`, {
     method: 'POST',
     headers: {
@@ -387,24 +384,20 @@ async function createUser() {
     body: JSON.stringify(newUser)
   });
 
-  if (response.ok && newUserForm.image) {
+  if (response.ok && selectedFile.value) {
     try {
+      let imageResponse;
       let formData = new FormData();
       formData.append('image', selectedFile.value);
       console.log(selectedFile.value);
 
-      const imageResponse = await fetch('http://localhost:3000/upload', {
+      imageResponse = await fetch('http://localhost:3000/upload', {
         method: 'POST',
         headers: {
           Authorization: 'Bearer ' + localStorage.getItem('token') 
         },
         body: formData
       });
-
-      if (imageResponse.status === 201) {
-        const data = await response.json();
-        isEditMode.value = false; 
-      }
 
       if (imageResponse.ok) {
         const createdUser = await response.json();

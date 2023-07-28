@@ -35,9 +35,9 @@ function getAvatarUrl() {
 
 async function updateProfile() {
     if (selectedFile.value) {
-    console.log(selectedFile.value);
     let formData = new FormData();
     formData.append('image', selectedFile.value);
+          console.log(formData);
 
     try {
       const response = await fetch('http://localhost:3000/upload', {
