@@ -1,0 +1,63 @@
+name: Node.js CI
+
+on: [push, pull_request]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [14.x]
+
+    steps:
+    - uses: actions/checkout@v2
+
+    # Install Docker Compose
+    - name: Docker Compose Install
+      run: |
+        sudo rm /usr/local/bin/docker-compose
+        curl -L "https://github.com/docker/compose/releases/download/1.29.2/docker-compose-$(uname -s)-$(uname -m)" -o docker-compose
+        chmod +x docker-compose
+        sudo mv docker-compose /usr/local/bin/docker-compose
+
+    # Build and start your Docker containers
+    - name: Build the Docker Compose stack
+      run: docker-compose up -d
+
+    # Install dependencies
+    - name: Install Node.js dependencies
+      run: docker-compose exec -T server npm install
+
+    # Install Snyk globally
+    - name: Install Snyk
+      run: docker-compose exec -T server npm install -g snyk
+
+    # Authenticate Snyk
+    - name: Auth Snyk
+      run: docker-compose exec -T server snyk auth ${{ secrets.SNYK_TOKEN }}
+
+    # Run security checks with Snyk
+    - name: Run Snyk to check for vulnerabilities
+      run: docker-compose exec -T server snyk test --all-projects --severity-threshold=high
+
+    # Run your database migration
+    - name: Run database migration
+      run: docker-compose exec -T server node migrate force
+
+    # Run your database migration
+    - name: Run migration
+      run: docker-compose exec -T server node fixtures/index.js
+
+    # Run your tests
+    - name: Run tests
+      run: docker-compose exec -T server npm test
+
+    # Install artillery
+    - name: Install artillery
+      run: docker-compose exec -T server npm install -g artillery
+
+    # Run your load test
+    - name: Run load test
+      run: docker-compose exec -T server artillery run test/loadtest.yml

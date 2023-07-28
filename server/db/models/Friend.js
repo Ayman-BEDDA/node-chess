@@ -1,4 +1,5 @@
 const { Model, DataTypes } = require("sequelize");
+const { v4: uuidv4 } = require('uuid');
 
 module.exports = function (connection) {
   class Friend extends Model {}
@@ -6,32 +7,33 @@ module.exports = function (connection) {
   Friend.init(
     {
       id: {
-        type: DataTypes.INTEGER,
-        autoIncrement: true,
+        type: DataTypes.UUID,
+        defaultValue: DataTypes.UUIDV4,
         primaryKey: true
       },
       status: {
         type: DataTypes.STRING(16),
         allowNull: false,
-        defaultValue: 'waiting'
-      },
-      date: {
-        type: DataTypes.DATE,
-        allowNull: false
+        defaultValue: 'waiting',
+        validate: {
+          len: [1, 130], // Minimum length of 1 and maximum length of 64 characters
+        },
       },
       id_user: {
-        type: DataTypes.INTEGER,
+        type: DataTypes.UUID,
         references: {
           model: 'users',
           key: 'id',
-        }
+        },
+        onDelete: 'CASCADE'
       },
       id_user_receiver: {
-        type: DataTypes.INTEGER,
+        type: DataTypes.UUID,
         references: {
           model: 'users',
           key: 'id',
-        }
+        },
+        onDelete: 'CASCADE'
       },
     },
     {
@@ -39,6 +41,11 @@ module.exports = function (connection) {
       tableName: "friends",
     }
   );
+
+  Friend.associate = (models) => {
+    Friend.belongsTo(models.User, { foreignKey: 'id_user', as: 'user' });
+    Friend.belongsTo(models.User, { foreignKey: 'id_user_receiver', as: 'user_receiver' });
+  };
 
   return Friend;
 };

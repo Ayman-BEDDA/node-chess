@@ -1,4 +1,5 @@
 const { Model, DataTypes } = require("sequelize");
+const { v4: uuidv4 } = require('uuid');
 
 module.exports = function (connection) {
   class Own extends Model {}
@@ -6,8 +7,8 @@ module.exports = function (connection) {
   Own.init(
     {
       id: {
-        type: DataTypes.INTEGER,
-        autoIncrement: true,
+        type: DataTypes.UUID,
+        defaultValue: DataTypes.UUIDV4,
         primaryKey: true
       },
       amount: {
@@ -15,18 +16,19 @@ module.exports = function (connection) {
         allowNull: false
       },
       id_money: {
-        type: DataTypes.INTEGER,
+        type: DataTypes.UUID,
         references: {
           model: 'moneys',
           key: 'id', 
         }
       },
       id_user: {
-        type: DataTypes.INTEGER,
+        type: DataTypes.UUID,
         references: {
           model: 'users',
           key: 'id',
-        }
+        },
+        onDelete: 'CASCADE'
       },
     },
     {
@@ -34,6 +36,11 @@ module.exports = function (connection) {
       tableName: "owns",
     }
   );
+
+  Own.associate = (models) => {
+    Own.belongsTo(models.Money, { foreignKey: 'id_money', as: 'money' });
+    Own.belongsTo(models.User, { foreignKey: 'id_user', as: 'user' });
+  };
 
   return Own;
 };
