@@ -95,7 +95,7 @@
             </div>
             <div class="form-group">
               <label for="newImage">Image</label>
-              <input type="file" @change="handleImageUpload" id="newImage" class="input-field" accept="image/png, image/jpeg">
+              <input type="file" @change="handleAvatarUpload" id="newImage" class="input-field" accept="image/png, image/jpeg">
             </div>
             <div class="form-group">
               <label for="newIsBanned">Bannir</label>
@@ -300,20 +300,11 @@ const paginatedUsers = computed(() => {
 });
 
 const totalPages = computed(() => Math.ceil(filteredUsers.value.length / pageSize));
+const selectedFile = ref(null);
 
-const handleImageUpload = (event) => {
-  const file = event.target.files[0];
-  if (!file) return;
-
-  const reader = new FileReader();
-  reader.onloadend = () => {
-    newUserForm.image = {
-      data: reader.result,
-      name: file.name
-    };
-  };
-  reader.readAsDataURL(file);
-};
+function handleAvatarUpload(event) {
+  selectedFile.value = event.target.files[0];
+}
 
 function nextPage() {
   if (currentPage.value < totalPages.value) {
@@ -366,7 +357,7 @@ function deleteUser(userId) {
 
 function getUserImageName() {
   const formattedDate = dayjs().utc().format('YYYY-MM-DD_HH:mm'); // Use UTC time zone
-  const filename = newUserForm.image.name;
+  const filename = selectedFile.value.name;
   return `${formattedDate}_${filename}`;
 }
 
@@ -381,8 +372,11 @@ async function createUser() {
     isBanned: newUserForm.isBanned,
     isValid: newUserForm.isValid,
     id_role: newUserForm.id_role,
-    media: newUserForm.image ? getUserImageName() : null
+    media: getUserImageName()
   };
+
+  console.log(getUserImageName());
+  console.log(newUser);
 
   const response = await fetch(`http://localhost:3000/users`, {
     method: 'POST',
@@ -395,14 +389,22 @@ async function createUser() {
 
   if (response.ok && newUserForm.image) {
     try {
+      let formData = new FormData();
+      formData.append('image', selectedFile.value);
+      console.log(selectedFile.value);
+
       const imageResponse = await fetch('http://localhost:3000/upload', {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json',
-          Authorization: 'Bearer ' + localStorage.getItem('token')
+          Authorization: 'Bearer ' + localStorage.getItem('token') 
         },
-        body: JSON.stringify(newUserForm.image)
+        body: formData
       });
+
+      if (imageResponse.status === 201) {
+        const data = await response.json();
+        isEditMode.value = false; 
+      }
 
       if (imageResponse.ok) {
         const createdUser = await response.json();

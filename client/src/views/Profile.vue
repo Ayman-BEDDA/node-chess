@@ -21,30 +21,44 @@ const isEditMode = ref(false);
 
 const user = inject('user')
 
-function handleAvatarUpload(event) {
-  const file = event.target.files[0];
-  if (!file) return;
+const selectedFile = ref(null);
 
-  const reader = new FileReader();
-  reader.onloadend = () => {
-    updatedProfileForm.value.avatar = {
-      data: reader.result,
-      name: file.name,
-    };
-  };
-  reader.readAsDataURL(file);
+function handleAvatarUpload(event) {
+  selectedFile.value = event.target.files[0];
 }
 
 function getAvatarUrl() {
-    const formattedDate = dayjs().utc().format('YYYY-MM-DD_HH:mm'); // Use UTC time zone
-    const filename = updatedProfileForm.value.avatar.name;
+    const formattedDate = dayjs().utc().format('YYYY-MM-DD_HH:mm');
+    const filename = selectedFile.value.name;
     return `${formattedDate}_${filename}`;
-  }
+}
 
 async function updateProfile() {
+    if (selectedFile.value) {
+    console.log(selectedFile.value);
+    let formData = new FormData();
+    formData.append('image', selectedFile.value);
+
+    try {
+      const response = await fetch('http://localhost:3000/upload', {
+        method: 'POST',
+        headers: {
+          Authorization: 'Bearer ' + localStorage.getItem('token') 
+        },
+        body: formData
+      });
+
+      if (response.status === 201) {
+        const data = await response.json();
+        isEditMode.value = false; 
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  }
   try {
     const data = {
-      media: updatedProfileForm.value.avatar ? getAvatarUrl() : null,
+      media: getAvatarUrl(),
     };
 
     const response = await fetch(`http://localhost:3000/users/${user.value.id}`, {
@@ -58,24 +72,6 @@ async function updateProfile() {
 
     if (!response.ok) {
       throw new Error('Failed to update profile.');
-    }
-
-    if (updatedProfileForm.value.avatar) {
-      const imageResponse = await fetch('http://localhost:3000/upload', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: 'Bearer ' + localStorage.getItem('token')
-        },
-        body: JSON.stringify(updatedProfileForm.value.avatar)
-        });
-
-      if (imageResponse.ok) {
-        userData.value.media = await imageResponse.json();
-        userData.value.media = userData.value.media.imageName;
-      } else {
-        throw new Error('Error while uploading the image');
-      }
     }
 
     updatedProfileForm.value.avatar = null;
