@@ -15,7 +15,7 @@ describe("UserController", () => {
 
   describe("getLastGames", () => {
     it("should get last games for a user", async () => {
-      const userId = 1;
+      const userId = "1dea8ab9-cf25-4733-b923-d394261c38db";
       const req = httpMocks.createRequest({
         params: { id_user: userId },
       });
@@ -24,8 +24,8 @@ describe("UserController", () => {
       const UserService = require("../services/user");
 
       const sampleGames = [
-        { id: 1, GameStatus: "end", updatedAt: "2023-07-22T12:00:00Z", whiteUser: {}, blackUser: {}, winnerUser: {} },
-        { id: 2, GameStatus: "end", updatedAt: "2023-07-21T12:00:00Z", whiteUser: {}, blackUser: {}, winnerUser: {} },
+        { id: "1dea8ab9-cf25-4733-b923-d394261c38dc", GameStatus: "end", updatedAt: "2023-07-22T12:00:00Z", whiteUser: {}, blackUser: {}, winnerUser: {} },
+        { id: "1dea8ab9-cf25-4733-b923-d394261c38dd", GameStatus: "end", updatedAt: "2023-07-21T12:00:00Z", whiteUser: {}, blackUser: {}, winnerUser: {} },
       ];
       UserService.getLastGames.mockResolvedValue(sampleGames);
 
@@ -39,7 +39,7 @@ describe("UserController", () => {
     });
 
     it("should handle errors when getting last games", async () => {
-      const userId = 1;
+      const userId = "1dea8ab9-cf25-4733-b923-d394261c38db";
       const req = httpMocks.createRequest({
         params: { id_user: userId },
       });
@@ -63,7 +63,7 @@ describe("UserController", () => {
 
   describe("getGameStats", () => {
     it("should get game statistics for a user", async () => {
-      const userId = 1;
+      const userId = "1dea8ab9-cf25-4733-b923-d394261c38db";
       const req = httpMocks.createRequest({
         params: { id_user: userId },
       });
@@ -90,7 +90,7 @@ describe("UserController", () => {
     });
 
     it("should handle errors when getting game statistics", async () => {
-      const userId = 1;
+      const userId = "1dea8ab9-cf25-4733-b923-d394261c38db";
       const req = httpMocks.createRequest({
         params: { id_user: userId },
       });
@@ -114,7 +114,7 @@ describe("UserController", () => {
 
   describe("getBuys", () => {
     it("should get buys for a user", async () => {
-      const userId = 1;
+      const userId = "1dea8ab9-cf25-4733-b923-d394261c38db";
       const req = httpMocks.createRequest({
         params: { id_user: userId },
       });
@@ -123,8 +123,8 @@ describe("UserController", () => {
       const UserService = require("../services/user");
 
       const sampleBuys = [
-        { id: 1, id_user: 1, id_article: 1, date: "2023-07-22T12:00:00Z" },
-        { id: 2, id_user: 1, id_article: 2, date: "2023-07-21T12:00:00Z" },
+        { id: "1dea8ab9-cf25-4733-b923-d394261c38dd", id_user: "1dea8ab9-cf25-4733-b923-d394261c38db", id_article: "1dea8ab9-cf25-4733-b923-d394261c38df", date: "2023-07-22T12:00:00Z" },
+        { id: "1dea8ab9-cf25-4733-b923-d394261c38de", id_user: "1dea8ab9-cf25-4733-b923-d394261c38db", id_article: "1dea8ab9-cf25-4733-b923-d394261c38df", date: "2023-07-21T12:00:00Z" },
       ];
       UserService.getBuys.mockResolvedValue(sampleBuys);
 
@@ -138,7 +138,7 @@ describe("UserController", () => {
     });
 
     it("should handle errors when getting buys", async () => {
-      const userId = 1;
+      const userId = "1dea8ab9-cf25-4733-b923-d394261c38db";
       const req = httpMocks.createRequest({
         params: { id_user: userId },
       });
@@ -162,7 +162,7 @@ describe("UserController", () => {
 
   describe("getFriends", () => {
     it("should get friends for a user", async () => {
-      const userId = 1;
+      const userId = "1dea8ab9-cf25-4733-b923-d394261c38db";
       const req = httpMocks.createRequest({
         params: { id_user: userId },
       });
@@ -171,8 +171,8 @@ describe("UserController", () => {
       const UserService = require("../services/user");
 
       const sampleFriends = [
-        { id: 1, id_user: 1, id_user_receiver: 2, status: "accepted", date: "2023-06-22T12:00:00Z" },
-        { id: 2, id_user: 1, id_user_receiver: 3, status: "accepted", date: "2023-07-21T12:00:00Z" },
+        { id: "1dea8ab9-cf25-4733-b923-d394261c38dg", id_user: "1dea8ab9-cf25-4733-b923-d394261c38db", id_user_receiver: "1dea8ab9-cf25-4733-b923-d394261c38di", status: "accepted", date: "2023-06-22T12:00:00Z" },
+        { id: "1dea8ab9-cf25-4733-b923-d394261c38dh", id_user: "1dea8ab9-cf25-4733-b923-d394261c38db", id_user_receiver: "1dea8ab9-cf25-4733-b923-d394261c38dj", status: "accepted", date: "2023-07-21T12:00:00Z" },
       ];
       UserService.getFriends.mockResolvedValue(sampleFriends);
 

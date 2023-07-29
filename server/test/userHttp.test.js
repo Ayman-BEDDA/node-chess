@@ -12,7 +12,7 @@ describe('User API', () => {
         user1 = await User.create({
             login: 'user1',
             email: 'user1@example.com',
-            password: 'azerty',
+            password: 'azertytest',
             elo: 500,
             media: 'default.png',
             isBanned: false,
@@ -23,7 +23,7 @@ describe('User API', () => {
         user2 = await User.create({
             login: 'user2',
             email: 'user2@example.com',
-            password: 'azerty',
+            password: 'azertytest',
             elo: 500,
             media: 'default.png',
             isBanned: false,
@@ -34,7 +34,7 @@ describe('User API', () => {
         user3 = await User.create({
             login: 'user3',
             email: 'user3@example.com',
-            password: 'azerty',
+            password: 'azertytest',
             elo: 500,
             media: 'default.png',
             isBanned: false,
@@ -45,7 +45,7 @@ describe('User API', () => {
         user4 = await User.create({
             login: 'Muthu',
             email: 'muthu@example.com',
-            password: 'azerty',
+            password: 'azertytest',
             elo: 500,
             media: 'default.png',
             isBanned: false,
@@ -56,7 +56,7 @@ describe('User API', () => {
         user5 = await User.create({
             login: 'Ayman',
             email: 'ayman@example.com',
-            password: 'azerty',
+            password: 'azertytest',
             elo: 500,
             media: 'default.png',
             isBanned: false,
