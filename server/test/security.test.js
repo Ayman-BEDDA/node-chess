@@ -31,9 +31,9 @@ describe("SecurityController", () => {
   describe("login", () => {
     it("should log in the user and return a JWT token", async () => {
       const mockUser = {
-        id: 1,
+        id: "1dea8ab9-cf25-4733-b923-d394261c38db",
         login: "testuser",
-        id_role: 2,
+        id_role: "1dea8ab9-cf25-4733-b923-d394261c38dc",
         isValid: true,
         isBanned: false,
         lastDailyRewardDate: null,
@@ -91,7 +91,7 @@ describe("SecurityController", () => {
   describe("register", () => {
     it("should register a new user and send verification email", async () => {
       const mockUser = {
-        id: 1,
+        id: "1dea8ab9-cf25-4733-b923-d394261c38db",
         login: "testuser",
         email: "test@example.com",
         password: "testpassword",
@@ -151,7 +151,7 @@ describe("SecurityController", () => {
       await controller.register(req, res, next);
 
       expect(res.statusCode).toBe(409);
-      expect(res._getData()).toBe("Un utilisateur avec cet email existe déjà.");
+      expect(res._getData()).toBe('{"error": "Un utilisateur avec cette adresse e-mail existe déjà."}');
     });
 
     it("should call the 'next' middleware with an error if registration fails", async () => {

@@ -84,13 +84,13 @@ app.use(express.json());
 app.use("/", SecurityRouter);
 //app.use(checkAuth); protect all routes below
 app.use("/users", UserRouter); // protect only this route
-app.use("/reports", checkAuth, ReportRouter); // protect only this route
+app.use("/reports", ReportRouter); // protect only this route
 app.use("/roles", RoleRouter); // protect only this route
-app.use("/articles", checkAuth, checkValidation, checkNotBan, ArticleRouter);
-app.use("/moneys", checkAuth, MoneyRouter);
-app.use("/owns", checkAuth, OwnRouter);
+app.use("/articles", ArticleRouter);
+app.use("/moneys", MoneyRouter);
+app.use("/owns",  OwnRouter);
 app.use("/games",  GameRouter); // protect only this route
-app.use("/buys", checkAuth, BuyRouter);
+app.use("/buys",  BuyRouter);
 app.use("/friends", FriendRouter); //Friend
 
 app.get("/", (req, res) => {

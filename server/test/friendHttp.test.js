@@ -14,7 +14,7 @@ describe('Friend API', () => {
         user1 = await User.create({
             login: 'user1',
             email: 'user1@example.com',
-            password: 'azerty',
+            password: 'azertytest',
             elo: 500,
             media: 'default.png',
             isBanned: false,
@@ -25,7 +25,7 @@ describe('Friend API', () => {
         user2 = await User.create({
             login: 'user2',
             email: 'user2@example.com',
-            password: 'azerty',
+            password: 'azertytest',
             elo: 500,
             media: 'default.png',
             isBanned: false,
@@ -36,7 +36,7 @@ describe('Friend API', () => {
         user3 = await User.create({
             login: 'user3',
             email: 'user3@example.com',
-            password: 'azerty',
+            password: 'azertytest',
             elo: 500,
             media: 'default.png',
             isBanned: false,
@@ -47,7 +47,7 @@ describe('Friend API', () => {
         user4 = await User.create({
             login: 'Muthu',
             email: 'muthu@example.com',
-            password: 'azerty',
+            password: 'azertytest',
             elo: 500,
             media: 'default.png',
             isBanned: false,
@@ -58,7 +58,7 @@ describe('Friend API', () => {
         user5 = await User.create({
             login: 'Ayman',
             email: 'ayman@example.com',
-            password: 'azerty',
+            password: 'azertytest',
             elo: 500,
             media: 'default.png',
             isBanned: false,
@@ -129,12 +129,11 @@ describe('Friend API', () => {
 
     //VALID
     it('should fetch a specific friendship by id', async () => {
-        const friendshipId = 1;
         const res = await request(app)
-            .get(`/friends/${friendshipId}`)
+            .get(`/friends/${friendRequest1.id}`)
             .expect(200);
         expect(res.body).toHaveProperty('id');
-        expect(res.body.id).toEqual(friendshipId);
+        expect(res.body.id).toEqual(friendRequest1.id);
     });
     
 

@@ -16,7 +16,7 @@ describe("FriendController", () => {
   describe("send", () => {
     it("should send a friend request", async () => {
       const req = httpMocks.createRequest({
-        params: { id: "1", id_receiver: "2" },
+        params: { id: "1dea8ab9-cf25-4733-b923-d394261c38db", id_receiver: "1dea8ab9-cf25-4733-b923-d394261c38db" },
       });
       const res = httpMocks.createResponse();
 
@@ -29,8 +29,8 @@ describe("FriendController", () => {
       await Controller.send(req, res);
 
       expect(FriendService.create).toHaveBeenCalledWith({
-        id_user: "1",
-        id_user_receiver: "2",
+        id_user: "1dea8ab9-cf25-4733-b923-d394261c38db",
+        id_user_receiver: "1dea8ab9-cf25-4733-b923-d394261c38db",
         status: "waiting",
         date: expect.any(Date),
       });
@@ -41,7 +41,7 @@ describe("FriendController", () => {
   describe("deny", () => {
     it("should deny a friend request", async () => {
       const req = httpMocks.createRequest({
-        params: { id: "1", id_receiver: "2" },
+        params: { id: "1dea8ab9-cf25-4733-b923-d394261c38db", id_receiver: "1dea8ab9-cf25-4733-b923-d394261c38db" },
       });
       const res = httpMocks.createResponse();
 
@@ -54,7 +54,7 @@ describe("FriendController", () => {
       await Controller.deny(req, res);
 
       expect(FriendService.update).toHaveBeenCalledWith(
-        { id_user: "1", id_user_receiver: "2" },
+        { id_user: "1dea8ab9-cf25-4733-b923-d394261c38db", id_user_receiver: "1dea8ab9-cf25-4733-b923-d394261c38db" },
         { status: "denied" }
       );
       expect(res.statusCode).toBe(200);
@@ -64,7 +64,7 @@ describe("FriendController", () => {
   describe("accept", () => {
     it("should accept a friend request", async () => {
       const req = httpMocks.createRequest({
-        params: { id: "1", id_receiver: "2" },
+        params: { id: "1dea8ab9-cf25-4733-b923-d394261c38db", id_receiver: "1dea8ab9-cf25-4733-b923-d394261c38db" },
       });
       const res = httpMocks.createResponse();
 
@@ -77,7 +77,7 @@ describe("FriendController", () => {
       await Controller.accept(req, res);
 
       expect(FriendService.update).toHaveBeenCalledWith(
-        { id_user: "1", id_user_receiver: "2" },
+        { id_user: "1dea8ab9-cf25-4733-b923-d394261c38db", id_user_receiver: "1dea8ab9-cf25-4733-b923-d394261c38db" },
         { status: "accepted" }
       );
       expect(res.statusCode).toBe(200);
@@ -87,7 +87,7 @@ describe("FriendController", () => {
   describe("friends_list", () => {
     it("should return the friends list of a user", async () => {
       const req = httpMocks.createRequest({
-        params: { id: "1" },
+        params: { id: "1dea8ab9-cf25-4733-b923-d394261c38db" },
       });
       const res = httpMocks.createResponse();
 
@@ -100,7 +100,7 @@ describe("FriendController", () => {
       await Controller.friends_list(req, res);
 
       expect(FriendService.findAll).toHaveBeenCalledWith({
-        id_user: parseInt("1", 10),
+        id_user: "1dea8ab9-cf25-4733-b923-d394261c38db",
         status: "accepted",
       });
       expect(res.statusCode).toBe(200);
@@ -110,7 +110,7 @@ describe("FriendController", () => {
   describe("pending", () => {
     it("should return the pending friend requests of a user", async () => {
       const req = httpMocks.createRequest({
-        params: { id: "1" },
+        params: { id: "1dea8ab9-cf25-4733-b923-d394261c38db" },
       });
       const res = httpMocks.createResponse();
 
@@ -123,7 +123,7 @@ describe("FriendController", () => {
       await Controller.pending(req, res);
 
       expect(FriendService.findAll).toHaveBeenCalledWith({
-        id_user_receiver: parseInt("1", 10),
+        id_user_receiver: "1dea8ab9-cf25-4733-b923-d394261c38db",
         status: "waiting",
       });
       expect(res.statusCode).toBe(200);
