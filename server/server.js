@@ -82,13 +82,13 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.json());
 app.use("/", SecurityRouter);
 app.use("/users", checkAuth,UserRouter); 
-app.use("/reports", checkAuth, ReportRouter);
+app.use("/reports",checkAuth, ReportRouter);
 app.use("/roles", RoleRouter); 
-app.use("/articles", checkAuth, checkValidation, checkNotBan, ArticleRouter);
-app.use("/moneys", checkAuth, MoneyRouter);
-app.use("/owns", checkAuth, OwnRouter);
+app.use("/articles",checkAuth, checkValidation, checkNotBan, ArticleRouter);
+app.use("/moneys",checkAuth, MoneyRouter);
+app.use("/owns",checkAuth, OwnRouter);
 app.use("/games",  GameRouter); 
-app.use("/buys", checkAuth, BuyRouter);
+app.use("/buys",checkAuth, BuyRouter);
 app.use("/friends",checkAuth, FriendRouter); 
 
 app.get("/", (req, res) => {

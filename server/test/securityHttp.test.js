@@ -137,7 +137,6 @@ describe('Security API', () => {
 
         expect(sendVerificationEmail).toHaveBeenCalledTimes(1);
         expect(sendVerificationEmail).toHaveBeenCalledWith(newUser.email, expect.any(String));
-      // Vérifier la réponse renvoyée par l'API
         expect(res.body).toHaveProperty('message');
         expect(res.body.message).toBe('Votre compte a été créé avec succès. Veuillez vérifier votre boîte de réception pour activer votre compte.');
     });

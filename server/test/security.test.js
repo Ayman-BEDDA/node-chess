@@ -37,6 +37,8 @@ describe("SecurityController", () => {
         isValid: true,
         isBanned: false,
         lastDailyRewardDate: null,
+        elo: 667, 
+        role: { libelle: "Test role" }
       };
       const mockToken = "mockJWTToken";
       req.body = {
@@ -61,6 +63,8 @@ describe("SecurityController", () => {
           isValid: mockUser.isValid,
           isBanned: mockUser.isBanned,
           lastDailyRewardDate: mockUser.lastDailyRewardDate,
+          elo: mockUser.elo,
+          role_libelle: mockUser.role.libelle
         },
         process.env.JWT_SECRET,
         { expiresIn: "3h" }
@@ -68,6 +72,7 @@ describe("SecurityController", () => {
       expect(res.statusCode).toBe(200);
       expect(res._getJSONData()).toEqual({ token: mockToken });
     });
+
 
     it("should call the 'next' middleware with an error if login fails", async () => {
       req.body = {
@@ -139,8 +144,12 @@ describe("SecurityController", () => {
 
     it("should return 409 if user with email already exists", async () => {
       const req = httpMocks.createRequest({
-        body: { email: "existing@example.com" },
-      });
+        body: {
+          login: "existing_user",
+          email: "existing@example.com",
+          password: "testpassword",
+        },
+      });      
       const res = httpMocks.createResponse();
 
       mockUserService.findOne.mockResolvedValue({
@@ -151,11 +160,18 @@ describe("SecurityController", () => {
       await controller.register(req, res, next);
 
       expect(res.statusCode).toBe(409);
-      expect(res._getData()).toBe('{"error": "Un utilisateur avec cette adresse e-mail existe déjà."}');
+      expect(res._getData()).toEqual({error: "Un utilisateur avec cette adresse e-mail existe déjà."});
     });
 
     it("should call the 'next' middleware with an error if registration fails", async () => {
-      const req = httpMocks.createRequest();
+      const req = httpMocks.createRequest({
+        body: {
+          login: "new_user",
+          email: "new@example.com",
+          password: "testpassword",
+        },
+      });
+      
       const res = httpMocks.createResponse();
       const next = jest.fn();
       const error = new Error("Registration failed");

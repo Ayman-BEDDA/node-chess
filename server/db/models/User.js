@@ -119,10 +119,6 @@ User.associate = (models) => {
     );
   }
 
-  User.addHook("beforeCreate", (user) => {
-    return updatePassword(user);
-  });
-
   User.addHook("beforeCreate", async (user) => {
     try {
       const roles = await Role.findAll({ limit: 2 });
@@ -135,7 +131,7 @@ User.associate = (models) => {
       console.error("Error setting default role:", error);
     }
     return updatePassword(user);
-  });
+  });  
 
   User.addHook("beforeUpdate", async (user, options) => {
     if (options.fields.includes("password")) {
