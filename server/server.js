@@ -21,13 +21,15 @@ const checkAdmin  = require("./middlewares/check-role");
 const checkValidation = require("./middlewares/check-validation");
 const checkNotBan = require("./middlewares/check-not-banned");
 const setupGame = require('./gameManager');
-const base64Img = require("base64-img");
 const bodyParser = require("body-parser");
 const port = process.env.NODE_ENV === 'test' ? 3005 : 3000;
 const path = require("path");
 const fs = require("fs");
 const dayjs = require("dayjs");
 const mongoose = require("mongoose");
+// multer <3
+const multer = require('multer');
+const upload = multer({ dest: 'public/' });
 
 async function connectToMongoDB() {
   try {
@@ -51,17 +53,14 @@ app.use(checkFormat);
 
 app.use(bodyParser.json({ limit: '50mb' }));
 
-app.post('/upload', checkAuth, async (req, res, next) => {
+app.post('/upload', upload.single('image'), async (req, res, next) => {
   try {
-    if (!req.body.data || !req.body.name) {
-      throw new ValidationError('No image data or name provided');
+    if (!req.file) {
+      throw new ValidationError('No image provided');
     }
 
-    const imageBase64 = req.body.data;
-    const imageBuffer = Buffer.from(imageBase64.split(',')[1], 'base64');
-    const imageName = req.body.name;
-
-    const imageExtension = path.extname(imageName).toLowerCase();
+    const image = req.file;
+    const imageExtension = path.extname(image.originalname).toLowerCase();
     const allowedExtensions = ['.png', '.jpg', '.jpeg', '.webp'];
 
     if (!allowedExtensions.includes(imageExtension)) {
@@ -69,9 +68,9 @@ app.post('/upload', checkAuth, async (req, res, next) => {
     }
 
     const formattedDate = dayjs().format('YYYY-MM-DD_HH:mm');
-    const finalImageName = `${formattedDate}_${imageName}`;
+    const finalImageName = `${formattedDate}_${image.originalname}`;
 
-    fs.writeFileSync(path.join(__dirname, 'public', finalImageName), imageBuffer);
+    fs.renameSync(image.path, path.join('public', finalImageName));
 
     res.status(201).json({ message: 'Image uploaded successfully', imageName: finalImageName });
   } catch (error) {
@@ -82,16 +81,15 @@ app.post('/upload', checkAuth, async (req, res, next) => {
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.json());
 app.use("/", SecurityRouter);
-//app.use(checkAuth); protect all routes below
-app.use("/users", UserRouter); // protect only this route
-app.use("/reports", ReportRouter); // protect only this route
-app.use("/roles", RoleRouter); // protect only this route
-app.use("/articles", ArticleRouter);
-app.use("/moneys", MoneyRouter);
-app.use("/owns",  OwnRouter);
-app.use("/games",  GameRouter); // protect only this route
-app.use("/buys",  BuyRouter);
-app.use("/friends", FriendRouter); //Friend
+app.use("/users", checkAuth,UserRouter); 
+app.use("/reports", checkAuth, ReportRouter);
+app.use("/roles", RoleRouter); 
+app.use("/articles", checkAuth, checkValidation, checkNotBan, ArticleRouter);
+app.use("/moneys", checkAuth, MoneyRouter);
+app.use("/owns", checkAuth, OwnRouter);
+app.use("/games",  GameRouter); 
+app.use("/buys", checkAuth, BuyRouter);
+app.use("/friends",checkAuth, FriendRouter); 
 
 app.get("/", (req, res) => {
   res.send("Hello World!");

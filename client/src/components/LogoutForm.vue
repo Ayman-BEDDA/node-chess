@@ -9,7 +9,7 @@ const { onSubmit } = defineProps({
 });
 
 const defaultValue = {
-  // Ajoutez d'autres champs si nécessaire
+
 };
 
 const formData = reactive({ ...defaultValue });
