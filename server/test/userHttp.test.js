@@ -1,10 +1,12 @@
-// users.test.js
 const request = require('supertest');
+const jwt = require('jsonwebtoken');
 const app = require('../server');
 const { User, Role, Game } = require('../db');
 
 describe('User API', () => {
     let user1, user2, user3, user4, user5, role, game1, game2, game3, game4, game5;
+    let testTokenUser1;
+    
     beforeAll(async () => {
         role = await Role.create({
             libelle: 'test_role'
@@ -12,7 +14,7 @@ describe('User API', () => {
         user1 = await User.create({
             login: 'user1',
             email: 'user1@example.com',
-            password: 'azerty',
+            password: 'azertytest',
             elo: 500,
             media: 'default.png',
             isBanned: false,
@@ -20,10 +22,13 @@ describe('User API', () => {
             id_role: role.id
         });
 
+        const testUser1 = { id: user1.id, username: user1.login };
+        testTokenUser1 = jwt.sign(testUser1, process.env.JWT_SECRET);
+
         user2 = await User.create({
             login: 'user2',
             email: 'user2@example.com',
-            password: 'azerty',
+            password: 'azertytest',
             elo: 500,
             media: 'default.png',
             isBanned: false,
@@ -34,7 +39,7 @@ describe('User API', () => {
         user3 = await User.create({
             login: 'user3',
             email: 'user3@example.com',
-            password: 'azerty',
+            password: 'azertytest',
             elo: 500,
             media: 'default.png',
             isBanned: false,
@@ -45,7 +50,7 @@ describe('User API', () => {
         user4 = await User.create({
             login: 'Muthu',
             email: 'muthu@example.com',
-            password: 'azerty',
+            password: 'azertytest',
             elo: 500,
             media: 'default.png',
             isBanned: false,
@@ -56,7 +61,7 @@ describe('User API', () => {
         user5 = await User.create({
             login: 'Ayman',
             email: 'ayman@example.com',
-            password: 'azerty',
+            password: 'azertytest',
             elo: 500,
             media: 'default.png',
             isBanned: false,
@@ -74,42 +79,45 @@ describe('User API', () => {
         game2 = await Game.create({
             BlackUserID: user1.id,
             GameStatus : "end",
+            WhiteUserID : user2.id,
+            Winner: user1.id
+        });
+
+        game3 = await Game.create({
+            BlackUserID: user1.id,
+            GameStatus : "end",
             WhiteUserID : user4.id,
             Winner: user4.id
         });
 
-        game3 = await Game.create({
+        game4 = await Game.create({
             BlackUserID: user1.id,
             GameStatus : "end",
             WhiteUserID : user5.id,
             Winner: null
         });
 
-        game4 = await Game.create({
+        game5 = await Game.create({
             BlackUserID: user1.id,
             GameStatus : "end",
             WhiteUserID : user3.id,
             Winner: user3.id
         });
-
-        game5 = await Game.create({
-            BlackUserID: user1.id,
-            GameStatus : "end",
-            WhiteUserID : user2.id,
-            Winner: user1.id
-        });
-
     });
 
     it('should fetch the last games for a user', async () => {
-        const response = await request(app).get(`/users/${user1.id}/lastgames`);
-        expect(response.statusCode).toBe(200);
+        const response = await request(app)
+            .get(`/users/${user1.id}/lastgames`)
+            .set('Authorization', `Bearer ${testTokenUser1}`)
+            .expect(200);
         expect(Array.isArray(response.body)).toBe(true);
     });
 
     it('should fetch the game statistics for a user', async () => {
-        const response = await request(app).get(`/users/${user1.id}/gamestats`);
-        expect(response.statusCode).toBe(200);
+        const response = await request(app)
+            .get(`/users/${user1.id}/gamestats`)
+            .set('Authorization', `Bearer ${testTokenUser1}`)
+            .expect(200);
         expect(response.body).toEqual({
             nbGames: 5,
             nbWins: 2,
@@ -120,20 +128,25 @@ describe('User API', () => {
     });
 
     it('should fetch the friends for a user', async () => {
-        const response = await request(app).get(`/users/${user1.id}/friends`);
-        expect(response.statusCode).toBe(200);
+        const response = await request(app)
+            .get(`/users/${user1.id}/friends`)
+            .set('Authorization', `Bearer ${testTokenUser1}`)
+            .expect(200);
         expect(Array.isArray(response.body)).toBe(true);
     });
 
     it('should fetch the buys for a user', async () => {
-        const response = await request(app).get(`/users/${user1.id}/buys`);
-        expect(response.statusCode).toBe(200);
+        const response = await request(app)
+            .get(`/users/${user1.id}/buys`)
+            .set('Authorization', `Bearer ${testTokenUser1}`)
+            .expect(200);
         expect(Array.isArray(response.body)).toBe(true);
     });
 
     afterAll(async () => {
         await Game.destroy({ where: { id: [game1.id, game2.id, game3.id, game4.id, game5.id] } });
         await User.destroy({ where: { id: [user1.id, user2.id, user3.id, user4.id, user5.id] } });
+        await Role.destroy({ where: { id: role.id }});
     
         app.close();
     });

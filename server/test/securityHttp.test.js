@@ -21,7 +21,7 @@ describe('Security API', () => {
         user1 = await User.create({
             login: 'user1',
             email: 'user1@example.com',
-            password: 'azerty',
+            password: 'azertytest',
             elo: 500,
             media: 'default.png',
             isBanned: false,
@@ -32,7 +32,7 @@ describe('Security API', () => {
         user2 = await User.create({
             login: 'user2',
             email: 'user2@example.com',
-            password: 'azerty',
+            password: 'azertytest',
             elo: 500,
             media: 'default.png',
             isBanned: false,
@@ -43,7 +43,7 @@ describe('Security API', () => {
         user3 = await User.create({
             login: 'user3',
             email: 'user3@example.com',
-            password: 'azerty',
+            password: 'azertytest',
             elo: 500,
             media: 'default.png',
             isBanned: false,
@@ -54,7 +54,7 @@ describe('Security API', () => {
         user4 = await User.create({
             login: 'Muthu',
             email: 'muthu@example.com',
-            password: 'azerty',
+            password: 'azertytest',
             elo: 500,
             media: 'default.png',
             isBanned: false,
@@ -66,7 +66,7 @@ describe('Security API', () => {
         user5 = await User.create({
             login: 'Ayman',
             email: 'ayman@example.com',
-            password: 'azerty',
+            password: 'azertytest',
             elo: 500,
             media: 'default.png',
             isBanned: false,
@@ -78,7 +78,7 @@ describe('Security API', () => {
     it('should login a user', async () => {
         const res = await request(app).post('/login').send({
             email: user1.email,
-            password: 'azerty'
+            password: 'azertytest'
         });
 
         expect(res.statusCode).toEqual(200);
@@ -98,7 +98,7 @@ describe('Security API', () => {
     it('should not login a user with wrong email', async () => {
         const res = await request(app).post('/login').send({
             email: 'wrongemail@test.fr',
-            password: 'azerty'
+            password: 'azertytest'
         });
 
         expect(res.statusCode).toEqual(422);
@@ -137,7 +137,6 @@ describe('Security API', () => {
 
         expect(sendVerificationEmail).toHaveBeenCalledTimes(1);
         expect(sendVerificationEmail).toHaveBeenCalledWith(newUser.email, expect.any(String));
-      // Vérifier la réponse renvoyée par l'API
         expect(res.body).toHaveProperty('message');
         expect(res.body.message).toBe('Votre compte a été créé avec succès. Veuillez vérifier votre boîte de réception pour activer votre compte.');
     });
@@ -146,7 +145,7 @@ describe('Security API', () => {
         const res = await request(app).post('/register').send({
             login: 'MarksLander21',
             email: user2.email,
-            password: 'azerty',
+            password: 'azertytest',
         });
 
         expect(res.statusCode).toEqual(409);        

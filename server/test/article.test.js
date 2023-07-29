@@ -23,7 +23,7 @@ describe("ArticleController", () => {
       const res = httpMocks.createResponse();
 
       const ArticleService = require("../services/article");
-      const mockArticles = [{ id: 1, libelle: "Article 1", price: 10 }, { id: 2, libelle: "Article 2", price: 15 }];
+      const mockArticles = [{ id: "1dea8ab9-cf25-4733-b923-d394261c38db", libelle: "Article 1", price: 10 }, { id: "1dea8ab9-cf25-4733-b923-d394261c38dc", libelle: "Article 2", price: 15 }];
       ArticleService.findAll.mockResolvedValue(mockArticles);
 
       const Controller = ArticleController(ArticleService);
@@ -53,11 +53,11 @@ describe("ArticleController", () => {
 
   describe("getOne", () => {
     it("should return an article by ID", async () => {
-      const req = httpMocks.createRequest({ params: { id: "1" } });
+      const req = httpMocks.createRequest({ params: { id: "1dea8ab9-cf25-4733-b923-d394261c38db" } });
       const res = httpMocks.createResponse();
 
       const ArticleService = require("../services/article");
-      const mockArticle = { id: 1, libelle: "Article 1", price: 10 };
+      const mockArticle = { id: "1dea8ab9-cf25-4733-b923-d394261c38db", libelle: "Article 1", price: 10 };
       ArticleService.findOne.mockResolvedValue(mockArticle);
 
       const Controller = ArticleController(ArticleService);
@@ -69,7 +69,7 @@ describe("ArticleController", () => {
     });
 
     it("should return 404 if article is not found", async () => {
-      const req = httpMocks.createRequest({ params: { id: "1" } });
+      const req = httpMocks.createRequest({ params: { id: "1dea8ab9-cf25-4733-b923-d394261c38db" } });
       const res = httpMocks.createResponse();
 
       const ArticleService = require("../services/article");
@@ -83,7 +83,7 @@ describe("ArticleController", () => {
     });
 
     it("should handle errors and call the next middleware", async () => {
-      const req = httpMocks.createRequest({ params: { id: "1" } });
+      const req = httpMocks.createRequest({ params: { id: "1dea8ab9-cf25-4733-b923-d394261c38db" } });
       const res = httpMocks.createResponse();
       const next = jest.fn();
 
@@ -105,7 +105,7 @@ describe("ArticleController", () => {
       const res = httpMocks.createResponse();
 
       const ArticleService = require("../services/article");
-      const mockArticle = { id: 1, libelle: "New Article", price: 20 };
+      const mockArticle = { id: "1dea8ab9-cf25-4733-b923-d394261c38db", libelle: "New Article", price: 20 };
       ArticleService.create.mockResolvedValue(mockArticle);
 
       const Controller = ArticleController(ArticleService);
@@ -135,11 +135,11 @@ describe("ArticleController", () => {
 
   describe("update", () => {
     it("should update an existing article", async () => {
-      const req = httpMocks.createRequest({ params: { id: "1" }, body: { price: 30 } });
+      const req = httpMocks.createRequest({ params: { id: "1dea8ab9-cf25-4733-b923-d394261c38db" }, body: { price: 30 } });
       const res = httpMocks.createResponse();
 
       const ArticleService = require("../services/article");
-      const mockArticle = { id: 1, libelle: "Article 1", price: 30 };
+      const mockArticle = { id: "1dea8ab9-cf25-4733-b923-d394261c38db", libelle: "Article 1", price: 30 };
       ArticleService.update.mockResolvedValue([mockArticle]);
 
       const Controller = ArticleController(ArticleService);
@@ -151,7 +151,7 @@ describe("ArticleController", () => {
     });
 
     it("should return 404 if article is not found", async () => {
-      const req = httpMocks.createRequest({ params: { id: "1" }, body: { price: 30 } });
+      const req = httpMocks.createRequest({ params: { id: "1dea8ab9-cf25-4733-b923-d394261c38db" }, body: { price: 30 } });
       const res = httpMocks.createResponse();
 
       const ArticleService = require("../services/article");
@@ -165,7 +165,7 @@ describe("ArticleController", () => {
     });
 
     it("should handle errors and call the next middleware", async () => {
-      const req = httpMocks.createRequest({ params: { id: "1" }, body: { price: 30 } });
+      const req = httpMocks.createRequest({ params: { id: "1dea8ab9-cf25-4733-b923-d394261c38db" }, body: { price: 30 } });
       const res = httpMocks.createResponse();
       const next = jest.fn();
 
@@ -183,7 +183,7 @@ describe("ArticleController", () => {
 
   describe("delete", () => {
     it("should delete an existing article", async () => {
-      const req = httpMocks.createRequest({ params: { id: "1" } });
+      const req = httpMocks.createRequest({ params: { id: "1dea8ab9-cf25-4733-b923-d394261c38db" } });
       const res = httpMocks.createResponse();
 
       const ArticleService = require("../services/article");
@@ -197,7 +197,7 @@ describe("ArticleController", () => {
     });
 
     it("should return 404 if article is not found", async () => {
-      const req = httpMocks.createRequest({ params: { id: "1" } });
+      const req = httpMocks.createRequest({ params: { id: "1dea8ab9-cf25-4733-b923-d394261c38db" } });
       const res = httpMocks.createResponse();
 
       const ArticleService = require("../services/article");
@@ -211,7 +211,7 @@ describe("ArticleController", () => {
     });
 
     it("should handle errors and call the next middleware", async () => {
-      const req = httpMocks.createRequest({ params: { id: "1" } });
+      const req = httpMocks.createRequest({ params: { id: "1dea8ab9-cf25-4733-b923-d394261c38db" } });
       const res = httpMocks.createResponse();
       const next = jest.fn();
 
@@ -229,11 +229,11 @@ describe("ArticleController", () => {
 
   describe("buyArticle", () => {
     it("should buy an article for a user", async () => {
-        const req = httpMocks.createRequest({ params: { idArticle: "1" }, user: { id: 123 } });
+        const req = httpMocks.createRequest({ params: { idArticle: "1dea8ab9-cf25-4733-b923-d394261c38db" }, user: { id: 123 } });
         const res = httpMocks.createResponse();
     
         const ArticleService = require("../services/article");
-        const mockBuyResult = { id: 1, articleId: "1", userId: 123, createdAt: new Date() };
+        const mockBuyResult = { id: "1dea8ab9-cf25-4733-b923-d394261c38db", articleId: "1dea8ab9-cf25-4733-b923-d394261c38db", userId: 123, createdAt: new Date() };
         ArticleService.buyArticle.mockResolvedValue(mockBuyResult);
     
         const Controller = ArticleController(ArticleService);
@@ -247,7 +247,7 @@ describe("ArticleController", () => {
     });
 
     it("should handle errors and call the next middleware", async () => {
-      const req = httpMocks.createRequest({ params: { idArticle: "1" }, user: { id: 123 } });
+      const req = httpMocks.createRequest({ params: { idArticle: "1dea8ab9-cf25-4733-b923-d394261c38db" }, user: { id: "1dea8ab9-cf25-4733-b923-d394261c38de" } });
       const res = httpMocks.createResponse();
       const next = jest.fn();
 
@@ -269,7 +269,7 @@ describe("ArticleController", () => {
       const res = httpMocks.createResponse();
 
       const ArticleService = require("../services/article");
-      const mockArticles = [{ id: 1, libelle: "Article 1", price: 10 }, { id: 2, libelle: "Article 2", price: 15 }];
+      const mockArticles = [{ id: "1dea8ab9-cf25-4733-b923-d394261c38db", libelle: "Article 1", price: 10 }, { id: "1dea8ab9-cf25-4733-b923-d394261c38dc", libelle: "Article 2", price: 15 }];
       ArticleService.getArticlesMoney.mockResolvedValue(mockArticles);
 
       const Controller = ArticleController(ArticleService);

@@ -31,13 +31,10 @@ services:
     environment:
       DATABASE_URL: postgres://root:password@db:5432/app
       JWT_SECRET: ImAstrongSecret
-    depends_on:
-      - db
-      - mongo
     working_dir: /usr/src/app
     volumes:
       - ./server:/usr/src/app
-    command: npm run watch
+    command: npm run dev
 
 volumes:
   db-data: {}
